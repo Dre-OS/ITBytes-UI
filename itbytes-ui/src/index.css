@@ -3,6 +3,47 @@ body {
   margin: 0;
 }
 
+.ant-typography,
+.ant-btn,
+.ant-menu,
+.ant-layout,
+.ant-card,
+.ant-input,
+.ant-select,
+.ant-modal,
+.ant-dropdown,
+.ant-table,
+.ant-input-number,
+.ant-input-number-input,
+.ant-form-item-label,
+.ant-form {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 400;
+}
+
+.ant-message {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-typography h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+p {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* .custom-spinner .ant-spin-dot-item {
+  background-color: #B33939 !important;
+} */
+
 .ant-menu {
   font-family: 'Poppins', sans-serif;
 }
@@ -25,4 +66,5 @@ body {
 .ant-menu-item {
   border-radius: 5px !important;
   line-height: 2.5 !important;
-} 
+}
+
