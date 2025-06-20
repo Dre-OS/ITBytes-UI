@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+//Admin Routes
+import Admin from "./pages/layouts/AdminLayout";
+import Dashboard from "./pages/Dashboard";
+import ManageInventory from "./pages/ManageInventory";
+import ManageOrders from "./pages/ManageOrders";
+import ManageSales from "./pages/ManageSales";
+//import ManageUsers from "./pages/ManageUsers";
 
+//Customer Routes
+import Main from "./pages//layouts/MainLayout";
+import Products from "./pages/Products";
+import Home from "./pages/Home";
+
+
+const PrivateRoute = () => {
+  sessionStorage.setItem("isAuthenticated", "true"); // For testing purposes, remove in production
+  const token = sessionStorage.getItem("isAuthenticated");
+  return token ? <Outlet /> : <Navigate to="/" />;
+};
+
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+     <Router>
+      <Routes>
+          <Route path="/" element={<Main />}>
+            <Route index element={<Home />} />
+            <Route path="products" element={<Products />} />
+          </Route>
 
-export default App
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/admin" element={<Admin />}>
+            <Route index element={<Dashboard />} />
+            <Route path="manage-inventory" element={<ManageInventory />} />
+            <Route path="manage-orders" element={<ManageOrders />} />
+            <Route path="manage-sales" element={<ManageSales />} />
+          </Route>
+        </Route>
+
+        {/* <Route path="/login" element={<Login />} /> */}
+
+      </Routes>
+    </Router>
+  );
+}
