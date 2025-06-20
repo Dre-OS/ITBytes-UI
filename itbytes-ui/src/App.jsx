@@ -6,12 +6,16 @@ import Dashboard from "./pages/Dashboard";
 import ManageInventory from "./pages/ManageInventory";
 import ManageOrders from "./pages/ManageOrders";
 import ManageSales from "./pages/ManageSales";
-//import ManageUsers from "./pages/ManageUsers";
+import ManageUsers from "./pages/ManageUsers";
+import Settings from "./pages/Settings";
 
 //Customer Routes
 import Main from "./pages//layouts/MainLayout";
 import Products from "./pages/Products";
 import Home from "./pages/Home";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 
 const PrivateRoute = () => {
@@ -36,10 +40,16 @@ export default function App() {
             <Route path="manage-inventory" element={<ManageInventory />} />
             <Route path="manage-orders" element={<ManageOrders />} />
             <Route path="manage-sales" element={<ManageSales />} />
+            <Route path="manage-users" element={<ManageUsers />} />
+            <Route path="settings" element={<Settings />} />
+            
           </Route>
         </Route>
 
-        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        {/* Redirect any unmatched routes to the home page */}
 
       </Routes>
     </Router>
