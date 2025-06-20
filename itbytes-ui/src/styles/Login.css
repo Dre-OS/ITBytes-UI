@@ -1,0 +1,154 @@
+.login-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.login-image {
+    background-image: url('../assets/login_image.jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    background-blend-mode: darken;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+}
+
+.login-image h1 {
+    color: white;
+    font-size: 25px;
+    text-align: center;
+    margin-bottom: -10px;
+    font-weight: 500;
+}
+
+.login-image-logo {
+    width: 300px;
+    height: auto;
+}
+
+.login-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    flex-direction: column;
+}
+
+.login-form h1 {
+    text-align: center;
+    font-weight: 700;
+    margin: 0;
+}
+
+.login-form p {
+    color: grey;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 40px;
+    font-family: 'Poppins';
+}
+
+.login-form-footer {
+    display: flex;
+    font-size: 13px;
+    margin-top: -10px;
+    justify-content: flex-start;
+    align-items: left;
+}
+
+.login-form-footer p {
+    text-align: left;
+    margin: 0;
+}
+
+.login-form-footer a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #2C485F;
+}
+
+.ant-btn-primary {
+    background-color: #2C485F;
+    border-color: #2C485F;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+    background-color: #2C485F;
+    border-color: #2C485F;
+}
+
+.login-back {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+    color: #5E5E5E;
+}
+
+@media (max-width: 1024px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .login-back {
+        color: white !important;
+    }
+
+    .login-image {
+        width: 100%;
+        height: 40vh;
+    }
+
+    .login-form {
+        width: 100%;
+        padding: 20px;
+        margin-left: -20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .login-back {
+        color: white !important;
+    }
+
+    .login-image {
+        width: 100%;
+        height: 40vh;
+    }
+
+    .login-form {
+        width: 100%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        flex-direction: column;
+    }
+
+    .login-back {
+        color: white !important;
+    }
+
+    .login-image {
+        width: 100%;
+        height: 40vh;
+    }
+
+    .login-form {
+        width: 80%;
+        padding: 20px;
+        margin-left: 20px;
+    }
+}

@@ -1,0 +1,138 @@
+.h1-user {
+  margin: 0;
+  padding: 0;
+}
+
+.table-top-parent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.table-top-search {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header-user {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.header-user h1 {
+  margin: 0;
+}
+
+.ant-table-thead>tr>th,
+.ant-table-tbody>tr>td {
+  border-right: none !important;
+}
+
+.ant-table-tbody>tr>td {
+  border-bottom: 1px solid #ddd !important;
+}
+
+.table-divider {
+  margin-left: -35px;
+  margin-right: -35px;
+  width: calc(100% + 70px);
+}
+
+.ant-btn-primary {
+  background-color: #B33939 !important;
+  border-color: #B33939 !important;
+}
+
+
+.ant-btn-primary:hover {
+  background-color: #922727;
+  border-color: #922727;
+}
+
+.ant-btn-primary:focus {
+  background-color: #922727;
+  border-color: #922727;
+}
+
+.table-top-parent {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 576px) {
+  .table-top-parent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 576px) {
+  .h1-user {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  p {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+}
+
+/* Make table container horizontally scrollable on small screens */
+@media (max-width: 768px) {
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .ant-table {
+    width: 90vw;
+  }
+
+  .manage-users-layout {
+    margin-top: 80px;
+  }
+}
+
+/* Truncate long content in table cells */
+.ant-table-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px; /* Adjust as needed */
+}
+
+/* Overall page container */
+.layout {
+  min-height: 100vh;
+  background: #f5f5f5
+}
+
+/* Title styling */
+.h1-user {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+/* The container above table for search and add button */
+.table-top-parent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .table-top-parent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

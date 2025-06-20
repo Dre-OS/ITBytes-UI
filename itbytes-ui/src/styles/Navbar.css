@@ -3,7 +3,17 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 60px; /* Adjust height as needed */
-    background-color: #001529;
+    height: 80px; /* Adjust height as needed */
+    background-color: #2C485F;
     padding: 10px;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.navbar-content {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 80vw;
+    gap: 20px;
 }

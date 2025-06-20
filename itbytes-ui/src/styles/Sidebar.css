@@ -1,39 +1,42 @@
-/* .ant-layout-sider {
-  background-color: #711F1F !important;
+/* Sidebar background */
+.ant-layout-sider {
+  background-color: #2C485F !important;
 }
 
+/* Menu background */
 .ant-menu-dark {
-  background-color: #711F1F !important;
+  background-color: #2C485F !important;
 }
 
+/* Hover on menu item */
 .ant-menu-dark .ant-menu-item:hover {
-  background-color: #A03030 !important;
+  background-color: #3A5F7A !important; /* slightly lighter */
 }
 
+/* Selected menu item */
 .ant-menu-dark .ant-menu-item-selected {
-  background-color: #8A2D2D !important;
+  background-color: #244053 !important; /* slightly darker */
 }
 
-.ant-menu-dark .ant-menu-item>a {
+/* Link color */
+.ant-menu-dark .ant-menu-item > a {
   color: #FFFFFF !important;
 }
 
+/* Sidebar toggle trigger */
 .ant-layout-sider-trigger {
-  background-color: #A03030 !important;
+  background-color: #3A5F7A !important;
   color: #FFFFFF !important;
   border: none !important;
 }
 
-.ant-layout-sider-trigger:hover {
-  background-color: #8A2D2D !important;
-  color: #FFFFFF !important;
-}
-
+.ant-layout-sider-trigger:hover,
 .ant-layout-sider-trigger:active {
-  background-color: #8A2D2D !important;
+  background-color: #244053 !important;
   color: #FFFFFF !important;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .ant-layout-sider {
     position: fixed !important;
@@ -43,4 +46,4 @@
   .ant-layout-sider-collapsed {
     width: 80px !important;
   }
-} */
+}
