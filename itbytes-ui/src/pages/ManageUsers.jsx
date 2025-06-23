@@ -1,39 +1,19 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Layout,
-  Button,
-  Table,
-  Modal,
-  Form,
-  Input,
-  message,
-  Popconfirm,
-  Divider,
-  Spin,
-  Grid,
-} from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { Layout, Button, Table, Modal, Form, Input, message, Popconfirm, Divider, Spin, Tag } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined, CheckOutlined, CloseOutlined  } from "@ant-design/icons";
 import "../styles/ManageUsers.css";
 
 const { Content } = Layout;
-const { useBreakpoint } = Grid;
-const apiUrl = import.meta.env.VITE_USER_API_URL || "http://localhost:1337/users";
 
 function ManageUsers() {
-  const screens = useBreakpoint();
-
-  const [userList, setUserList] = useState([]);
-  const [filteredList, setFilteredList] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUsers();
@@ -41,119 +21,202 @@ function ManageUsers() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${apiUrl}`);
-      setUserList(response.data);
-      setFilteredList(response.data);
+      const response = await axios.get("http://localhost:5000/users");
+      setUsers(response.data);
+      console.log("Fetched Users:", response.data);
+      setFilteredUsers(response.data);
       setLoading(false);
     } catch (error) {
       message.error("Error fetching users");
     }
   };
 
-  const updateUser = async (values) => {
+  // if (loading) {
+  //   return (
+  //     <Layout style={{ minHeight: "100vh" }}>
+  //       <Content
+  //         style={{
+  //           display: "flex",
+  //           justifyContent: "center",
+  //           alignItems: "center",
+  //           height: "100vh",
+  //         }}
+  //       >
+  //         <Spin size="large" />
+  //       </Content>
+  //     </Layout>
+  //   );
+  // }
+
+
+  const handleSubmit = async (values) => {
     try {
-      const isUnique = await validateEmail(values.email);
-
-      if (!isUnique) {
-        message.error("Email already registered!");
-        return;
-      }
-      if (!currentUser) return;
-
-      if (values.password !== values.confirm) {
-        message.error("Passwords do not match");
-        return;
-      }
-
-      const updatedData = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        middleName: values.middleName,
-        email: values.email,
-        password: values.password,
+      const userData = {
+        firstname: values.firstname,
+        user_ln: values.lastname,
+        user_mn: values.middlename,
+        username: values.username,
+        password: values.password
       };
 
-      const response = await axios.put(`${apiUrl}/${currentUser._id}`, updatedData);
-      message.success(response.data.message || "User updated successfully");
+      let response;
+
+      if (values.password !== values.confirm) {
+        message.error("Oops! Password does not match.");
+        return;
+      }
+
+      if (editingUser) {
+        response = await axios.put(
+          `http://localhost:5000/users/${editingUser.user_id}`,
+          userData
+        );
+      } else {
+        response = await axios.post(
+          "http://localhost:5000/users",
+          userData
+        );
+      }
+
+      console.log("Server Response:", response.data);
+      message.success(response.data.message || "User saved successfully");
+
       await fetchUsers();
-      setIsModalVisible(false);
+      setIsModalOpen(false);
       form.resetFields();
     } catch (error) {
-      console.error("Error updating user:", error);
-      message.error(error.response?.data?.error || "Error updating user");
+      console.error("Error saving user:", error);
+      message.error(error.response?.data?.error || "Error saving user");
     }
   };
 
-  const deleteUser = async (id) => {
-    try {
-      await axios.delete(`${apiUrl}/${id}`);
-      message.success("User deleted successfully");
-      fetchUsers();
-    } catch (error) {
-      message.error("Error deleting user");
+  const handleDelete = async (user_id) => {
+    if (!user_id) {
+      console.error("Error: user_id is undefined");
+      message.error("Cannot delete user: Missing user ID");
+      return;
     }
+
+    console.log(`Attempting to delete user with ID: ${user_id}`);
+    await axios.delete(`http://localhost:5000/users/${user_id}`);
+    message.success("User deleted successfully");
+    fetchUsers();
   };
 
   const handleSearch = (value) => {
-    setSearchTerm(value);
-    const filtered = userList.filter(
+    setSearchText(value);
+    const filtered = users.filter(
       (user) =>
-        user.firstName.toLowerCase().includes(value.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(value.toLowerCase()) ||
-        user.email.toLowerCase().includes(value.toLowerCase())
+        user.user_fn.toLowerCase().includes(value.toLowerCase()) ||
+        user.user_ln.toLowerCase().includes(value.toLowerCase()) ||
+        user.user_name.toLowerCase().includes(value.toLowerCase())
     );
-    setFilteredList(filtered);
-  };
-
-  const validateEmail = async (email) => {
-    try {
-      const response = await axios.get(`${apiUrl}`);
-      const exists = response.data.some(
-        (user) => user.email === email && user._id !== currentUser?._id
-      );
-      return !exists;
-    } catch (error) {
-      console.error("Error validating email:", error);
-      return false;
-    }
+    setFilteredUsers(filtered);
   };
 
   const columns = [
     { title: "ID", dataIndex: "_id", key: "_id" },
-    { title: "First Name", dataIndex: "firstName", key: "firstName", width: 190 },
-    { title: "Last Name", dataIndex: "lastName", key: "lastName", width: 190 },
-    { title: "Middle Name", dataIndex: "middleName", key: "middleName", width: 190 },
-    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "First Name", dataIndex: "firstname", key: "firstname", width: 120 },
+    { title: "Last Name", dataIndex: "lastname", key: "lastname", width: 120 },
+    { title: "Middle Name", dataIndex: "middlename", key: "middlename", width: 130 },
+    { title: "E-mail", dataIndex: "email", key: "email", width: 150 },
     {
       title: "Password",
       dataIndex: "password",
       key: "password",
-      render: (password) => "•".repeat(password?.length),
+      render: (user_password) => "•".repeat(user_password?.length)
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => {
+        let color;
+        switch (role) {
+          case 'admin':
+            color = 'red';
+            break;
+          case 'sales':
+            color = 'blue';
+            break;
+          case 'inventory':
+            color = 'green';
+            break;
+          case 'business':
+            color = 'purple';
+            break;
+          case 'customer':
+            color = 'gold';
+            break;
+          default:
+            color = 'gray';
+        }
+
+        return <Tag color={color}>{role.charAt(0).toUpperCase() + role.slice(1)}</Tag>;
+      }
+    },
+    {
+      title: "Status",
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (isActive) => (
+        <Tag color={isActive ? "green" : "red"}>
+          {isActive ? "Active" : "Inactive"}
+        </Tag>
+      )
+    },
+    {
+      title: "Authorization",
+      dataIndex: "isAuth",
+      key: "isAuth",
+      render: (isAuth, record) => {
+        if (isAuth) {
+          return <Tag color="blue">Authorized</Tag>;
+        }
+
+        return (
+          <div style={{ display: "flex", gap: 8 }}>
+            <Button
+              type="default"
+              ghosts
+               style={{ borderColor: 'green', color: 'green' }}
+              onClick={() => handleAuthorize(record.user_id)}
+            >
+              <CheckOutlined />
+            </Button>
+            <Button
+              danger
+              onClick={() => handleReject(record.user_id)}
+            >
+              <CloseOutlined />
+            </Button>
+          </div>
+        );
+      }
     },
     {
       title: "",
       key: "actions",
       render: (_, record) => (
-        <div style={{ display: "flex", justifyContent: "right" }}>
+        <div style={{ display: "flex", width: "100%", justifyContent: "right" }}>
           <Button
             icon={<EditOutlined />}
             style={{ marginRight: 8, width: 60 }}
             onClick={() => {
-              setCurrentUser(record);
+              setEditingUser(record);
               form.setFieldsValue({
-                firstName: record.firstName,
-                lastName: record.lastName,
-                middleName: record.middleName,
-                email: record.email,
-                password: record.password,
-                confirm: record.password,
+                firstname: record.user_fn,
+                lastname: record.user_ln,
+                middlename: record.user_mn,
+                username: record.user_name,
+                password: record.user_password
               });
-              setIsModalVisible(true);
+              setIsModalOpen(true);
             }}
           />
           <Popconfirm
             title="Are you sure you want to delete this user?"
-            onConfirm={() => deleteUser(record._id)}
+            onConfirm={() => handleDelete(record.user_id)}
             okText="Yes"
             cancelText="No"
             placement="topRight"
@@ -161,242 +224,152 @@ function ManageUsers() {
             <Button icon={<DeleteOutlined />} danger style={{ width: 60 }} />
           </Popconfirm>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
-    if (loading) {
-    return (
-      <Layout style={{ minHeight: "100vh" }}>
-        <Content
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-          }}
-        >
-          <Spin className="custom-spinner" tip="Loading users..." size="large" />
-        </Content>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }} className="manage-users-layout">
-      <Layout style={{ background: "#f5f5f5" }}>
-        <Content style={{ overflow: "hidden", padding: screens.xs ? 16 : 35 }}>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Layout style={{ background: "#fefefe" }}>
+        <Content style={{ overflow: "hidden", padding: 35 }}>
           <h1 className="h1-user">User Management</h1>
-          <p>Handles user details and access control.</p>
+          <p>Handles user registration, and access control within the system.</p>
           <Divider className="table-divider" style={{ borderColor: "#ddd" }} />
-          <Layout style={{ backgroundColor: "#f5f5f5" }}>
-            <div
-              className="table-top-parent"
-              style={{
-                flexDirection: screens.xs ? "column" : "row",
-                gap: screens.xs ? 12 : 0,
-                alignItems: screens.xs ? "stretch" : "center",
-                marginTop: 0
-              }}
-            >
-              <Input.Search
-                placeholder="Search users..."
-                onChange={(e) => handleSearch(e.target.value)}
-                value={searchTerm}
-                allowClear
-                style={{ width: screens.xs ? "100%" : 300, marginBottom: screens.xs ? 8 : 0 }}
-              />
-
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                style={{
-                  backgroundColor: "#001529",
-                  borderColor: "#001529",
-                  width: screens.xs ? "100%" : "auto",
-                }}
-                onClick={() => {
-                  setCurrentUser(null);
-                  form.resetFields();
-                  setIsModalVisible(true);
-                }}
-              >
-                Add User
-              </Button>
+          <Layout style={{ backgroundColor: "#fefefe" }}>
+            <div className="table-top-parent">
+              <div className="header-user">
+                <Input.Search
+                  placeholder="Search users..."
+                  onChange={(e) => handleSearch(e.target.value)}
+                  value={searchText}
+                  style={{ width: 300 }}
+                  allowClear
+                />
+              </div>
+              <div className="table-top-search">
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  style={{
+                    height: "35px",
+                    backgroundColor: "#001529",
+                    borderColor: "#001529"
+                  }}
+                  onClick={() => {
+                    setEditingUser(null);
+                    form.resetFields();
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Add User
+                </Button>
+              </div>
             </div>
-
             <Table
               bordered
               columns={columns}
-              dataSource={filteredList}
-              rowKey="_id"
-              style={{ overflow: "hidden", width: "100%" }}
+              dataSource={filteredUsers}
+              rowKey="user_id"
+              style={{ marginTop: 20, overflow: "hidden", width: "100%" }}
               pagination={{ pageSize: 5 }}
-              scroll={{ x: "max-content" }}
-              rowClassName={(_, index) =>
+              rowClassName={(index) =>
                 index % 2 === 0 ? "table-row-light" : "table-row-dark"
               }
             />
           </Layout>
         </Content>
 
-        <Modal
-          open={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
-          footer={null}
-          width={screens.xs ? "90%" : 500}
-          centered
-          destroyOnHidden
-        >
-          <h2
-            style={{
-              margin: 0,
-              marginBottom: 8,
-              textAlign: "center",
-              fontWeight: "600",
-            }}
-          >
-            {currentUser ? "Edit User" : "Add User"}
+        <Modal open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null} width={500}>
+          <h2 style={{ marginBottom: "16px", textAlign: 'center' }}>
+            {editingUser ? "Edit User" : "Add User"}
           </h2>
-          <p
-            style={{
-              marginBottom: 20,
-              textAlign: "center",
-              color: "gray",
-              fontSize: 14,
-            }}
-          >
-            {currentUser
-              ? "Update user details here."
-              : "Fill out the form to add a new user."}
-          </p>
+          <p style={{ textAlign: 'center' }}>A pop-up form to quickly add new user details.</p>
 
           <Form
             form={form}
             layout="horizontal"
-            onFinish={async (values) => {
-              if (currentUser) {
-                await updateUser(values);
-              } else {
-                try {
-                  const isUnique = await validateEmail(values.email);
-                  if (!isUnique) {
-                    message.error("Email already registered!");
-                    return;
-                  }
-                  if (values.password !== values.confirm) {
-                    message.error("Passwords do not match");
-                    return;
-                  }
-                  const newUser = {
-                    firstName: values.firstName,
-                    lastName: values.lastName,
-                    middleName: values.middleName,
-                    email: values.email,
-                    password: values.password,
-                  };
-                  const response = await axios.post(`${apiUrl}`, newUser);
-                  message.success(response.data.message || "User added successfully");
-                  await fetchUsers();
-                  setIsModalVisible(false);
-                  form.resetFields();
-                } catch (error) {
-                  message.error(error.response?.data?.error || "Error adding user");
-                }
-              }
-            }}
-            labelCol={{ xs: { span: 24 }, sm: { flex: "140px" } }}
-            wrapperCol={{ xs: { span: 24 }, sm: { flex: 1 } }}
+            onFinish={handleSubmit}
+            labelCol={{ flex: '150px' }}
+            wrapperCol={{ flex: 1 }}
             labelAlign="left"
-            colon={false}
           >
             <Form.Item
-              name="firstName"
+              name="firstname"
               label="First Name"
-              rules={[
-                { required: true, message: "Please enter your first name!" },
-                {
-                  pattern: /^[A-Za-z\s]+$/,
-                  message: "Only letters and spaces are allowed",
-                },
-              ]}
-              style={{ marginBottom: 12 }}
+              rules={[{ required: true }]}
+              style={{ marginBottom: "12px" }}
             >
-              <Input placeholder="Enter first name" />
+              <Input placeholder="Enter first name"
+                onChange={(e) => {
+                  const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                  form.setFieldsValue({ firstname: lettersOnly });
+                }}
+              />
             </Form.Item>
             <Form.Item
-              name="lastName"
+              name="lastname"
               label="Last Name"
-              rules={[
-                { required: true, message: "Please enter your last name!" },
-                {
-                  pattern: /^[A-Za-z\s]+$/,
-                  message: "Only letters and spaces are allowed",
-                },
-              ]}
-              style={{ marginBottom: 12 }}
+              rules={[{ required: true }]}
+              style={{ marginBottom: "12px" }}
             >
-              <Input placeholder="Enter last name" />
+              <Input placeholder="Enter last name"
+                onChange={(e) => {
+                  const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                  form.setFieldsValue({ lastname: lettersOnly });
+                }}
+              />
             </Form.Item>
             <Form.Item
-              name="middleName"
+              name="middlename"
               label="Middle Name"
-              rules={[
-                {
-                  pattern: /^[A-Za-z\s]+$/,
-                  message: "Only letters and spaces are allowed",
-                },
-              ]}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: "12px" }}
             >
-              <Input placeholder="Enter middle name (optional)" />
+              <Input placeholder="Enter middle name(optional)"
+                onChange={(e) => {
+                  const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                  form.setFieldsValue({ middlename: lettersOnly });
+                }}
+              />
             </Form.Item>
-            <Divider style={{ marginBottom: 16 }} />
+            <Divider></Divider>
             <Form.Item
-              name="email"
-              label="Email"
-              rules={[
-                { required: true, type: "email", message: "Please enter a valid email!" },
-              ]}
-              style={{ marginBottom: 12 }}
+              name="username"
+              label="Username"
+              rules={[{ required: true }]}
+              style={{ marginBottom: "12px" }}
             >
-              <Input placeholder="Enter email address" />
+              <Input placeholder="Create a unique username"
+                onChange={(e) => {
+                  const alphanumericOnly = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+                  form.setFieldsValue({ username: alphanumericOnly });
+                }}
+              />
             </Form.Item>
             <Form.Item
               name="password"
               label="Password"
               rules={[{ required: true }]}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: "12px" }} // slightly more space before the button
             >
               <Input.Password placeholder="Create a secure password" />
             </Form.Item>
             <Form.Item
               name="confirm"
               label="Confirm Password"
-              dependencies={["password"]}
-              hasFeedback
-              rules={[
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error("Passwords do not match"));
-                  },
-                }),
-              ]}
+              rules={[{ required: false }]}
+              style={{ marginBottom: "24px" }} // slightly more space before the button
             >
               <Input.Password placeholder="Confirm password" />
             </Form.Item>
 
-            <Form.Item wrapperCol={{ span: 24 }} style={{ marginTop: 20, marginBottom: 0 }}>
+            <Form.Item wrapperCol={{ span: 24 }} style={{ marginBottom: 0 }}>
               <Button
                 type="primary"
                 htmlType="submit"
                 block
                 style={{ backgroundColor: "#001529", borderColor: "#001529" }}
               >
-                {currentUser ? "Update User" : "Add User"}
+                {editingUser ? "Update" : "Add"} User
               </Button>
             </Form.Item>
           </Form>

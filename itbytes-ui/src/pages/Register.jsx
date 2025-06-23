@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Register.css';
-import { Form, Input, Button, Divider, message } from "antd";
+import { Form, Input, Button, Divider, message, Select } from "antd";
 import { CloseCircleOutlined } from '@ant-design/icons';
 import logo from '../assets/logo_white.webp';
 
@@ -119,6 +119,18 @@ function Register() {
                         },]}
                     >
                         <Input placeholder="Middle Name" />
+                    </Form.Item>
+                    <Form.Item
+                        label="Role"
+                        name="role"
+                        rules={[{ required: true, message: 'Please select a role!' }]}
+                    >
+                        <Select placeholder="Select a role">
+                            <Select.Option value="customer">Customer</Select.Option>
+                            <Select.Option value="sales">Sales</Select.Option>
+                            <Select.Option value="inventory">Inventory</Select.Option>
+                            <Select.Option value="business">Business</Select.Option>
+                        </Select>
                     </Form.Item>
 
                     <Divider />

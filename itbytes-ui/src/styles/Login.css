@@ -73,8 +73,8 @@
 }
 
 .ant-btn-primary {
-    background-color: #2C485F;
-    border-color: #2C485F;
+    background-color: #2C485F !important;
+    border-color: #2C485F !important;
 }
 
 .ant-btn-primary:hover,

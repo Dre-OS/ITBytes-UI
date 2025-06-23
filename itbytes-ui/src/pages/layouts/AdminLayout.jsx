@@ -1,13 +1,29 @@
-import React, {useState} from 'react'
-import Sidebar from '../../components/Sidebar'
+import React, { useState } from 'react';
+import { Layout } from 'antd';
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../../components/Sidebar'; // assuming it's a custom component
 
-function AdminLayout() {
-    const [collapsed, setCollapsed] = useState(false);
+const { Sider, Content } = Layout;
+
+export default function AdminLayout() {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const siderWidth = collapsed ? 80 : 300;
+
   return (
-    <div>
-        <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-    </div>
-  )
-}
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-export default AdminLayout
+      <Layout
+        style={{
+          marginLeft: siderWidth,
+          transition: "margin-left 0.3s ease",
+        }}
+      >
+        <Content style={{ background: "#fff", minHeight: "100vh" }}>
+          <Outlet />
+        </Content>
+      </Layout>
+    </Layout>
+  );
+}
