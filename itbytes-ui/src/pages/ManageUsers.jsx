@@ -1,19 +1,42 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Layout, Button, Table, Modal, Form, Input, message, Popconfirm, Divider, Spin, Tag } from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined, CheckOutlined, CloseOutlined  } from "@ant-design/icons";
+import {
+  Layout,
+  Button,
+  Table,
+  Modal,
+  Form,
+  Input,
+  message,
+  Popconfirm,
+  Divider,
+  Tag
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CheckOutlined,
+  CloseOutlined
+} from "@ant-design/icons";
 import "../styles/ManageUsers.css";
 
 const { Content } = Layout;
 
-function ManageUsers() {
+const roleColors = {
+  admin: "red",
+  sales: "blue",
+  inventory: "green",
+  business: "purple",
+  customer: "gold"
+};
+
+const ManageUsers = () => {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUsers();
@@ -21,101 +44,66 @@ function ManageUsers() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/users");
-      setUsers(response.data);
-      console.log("Fetched Users:", response.data);
-      setFilteredUsers(response.data);
-      setLoading(false);
-    } catch (error) {
+      const { data } = await axios.get("http://localhost:5000/users");
+      setUsers(data);
+    } catch {
       message.error("Error fetching users");
     }
   };
 
-  // if (loading) {
-  //   return (
-  //     <Layout style={{ minHeight: "100vh" }}>
-  //       <Content
-  //         style={{
-  //           display: "flex",
-  //           justifyContent: "center",
-  //           alignItems: "center",
-  //           height: "100vh",
-  //         }}
-  //       >
-  //         <Spin size="large" />
-  //       </Content>
-  //     </Layout>
-  //   );
-  // }
-
-
   const handleSubmit = async (values) => {
+    if (values.password !== values.confirm) {
+      message.error("Oops! Password does not match.");
+      return;
+    }
+
+    const userData = {
+      firstname: values.firstname,
+      user_ln: values.lastname,
+      user_mn: values.middlename,
+      username: values.username,
+      password: values.password
+    };
+
     try {
-      const userData = {
-        firstname: values.firstname,
-        user_ln: values.lastname,
-        user_mn: values.middlename,
-        username: values.username,
-        password: values.password
-      };
-
-      let response;
-
-      if (values.password !== values.confirm) {
-        message.error("Oops! Password does not match.");
-        return;
-      }
-
-      if (editingUser) {
-        response = await axios.put(
-          `http://localhost:5000/users/${editingUser.user_id}`,
-          userData
-        );
-      } else {
-        response = await axios.post(
-          "http://localhost:5000/users",
-          userData
-        );
-      }
-
-      console.log("Server Response:", response.data);
-      message.success(response.data.message || "User saved successfully");
-
-      await fetchUsers();
+      const url = editingUser
+        ? `http://localhost:5000/users/${editingUser.user_id}`
+        : "http://localhost:5000/users";
+      const method = editingUser ? axios.put : axios.post;
+      const { data } = await method(url, userData);
+      message.success(data.message || "User saved successfully");
+      fetchUsers();
       setIsModalOpen(false);
       form.resetFields();
     } catch (error) {
-      console.error("Error saving user:", error);
       message.error(error.response?.data?.error || "Error saving user");
     }
   };
 
   const handleDelete = async (user_id) => {
-    if (!user_id) {
-      console.error("Error: user_id is undefined");
-      message.error("Cannot delete user: Missing user ID");
-      return;
+    try {
+      await axios.delete(`http://localhost:5000/users/${user_id}`);
+      message.success("User deleted successfully");
+      fetchUsers();
+    } catch {
+      message.error("Failed to delete user");
     }
-
-    console.log(`Attempting to delete user with ID: ${user_id}`);
-    await axios.delete(`http://localhost:5000/users/${user_id}`);
-    message.success("User deleted successfully");
-    fetchUsers();
   };
 
   const handleSearch = (value) => {
     setSearchText(value);
-    const filtered = users.filter(
-      (user) =>
-        user.user_fn.toLowerCase().includes(value.toLowerCase()) ||
-        user.user_ln.toLowerCase().includes(value.toLowerCase()) ||
-        user.user_name.toLowerCase().includes(value.toLowerCase())
+    const lower = value.toLowerCase();
+    setUsers((prev) =>
+      prev.filter(
+        (u) =>
+          u.user_fn?.toLowerCase().includes(lower) ||
+          u.user_ln?.toLowerCase().includes(lower) ||
+          u.user_name?.toLowerCase().includes(lower)
+      )
     );
-    setFilteredUsers(filtered);
   };
 
   const columns = [
-    { title: "ID", dataIndex: "_id", key: "_id" },
     { title: "First Name", dataIndex: "firstname", key: "firstname", width: 120 },
     { title: "Last Name", dataIndex: "lastname", key: "lastname", width: 120 },
     { title: "Middle Name", dataIndex: "middlename", key: "middlename", width: 130 },
@@ -124,72 +112,73 @@ function ManageUsers() {
       title: "Password",
       dataIndex: "password",
       key: "password",
-      render: (user_password) => "•".repeat(user_password?.length)
+      render: (pwd) => "\u2022".repeat(pwd?.length || 0)
     },
     {
       title: "Role",
       dataIndex: "role",
       key: "role",
-      render: (role) => {
-        let color;
-        switch (role) {
-          case 'admin':
-            color = 'red';
-            break;
-          case 'sales':
-            color = 'blue';
-            break;
-          case 'inventory':
-            color = 'green';
-            break;
-          case 'business':
-            color = 'purple';
-            break;
-          case 'customer':
-            color = 'gold';
-            break;
-          default:
-            color = 'gray';
-        }
-
-        return <Tag color={color}>{role.charAt(0).toUpperCase() + role.slice(1)}</Tag>;
-      }
-    },
-    {
-      title: "Status",
-      dataIndex: "isActive",
-      key: "isActive",
-      render: (isActive) => (
-        <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Active" : "Inactive"}
+      render: (role) => (
+        <Tag color={roleColors[role] || "gray"}>
+          {role.charAt(0).toUpperCase() + role.slice(1)}
         </Tag>
       )
     },
     {
-      title: "Authorization",
-      dataIndex: "isAuth",
-      key: "isAuth",
-      render: (isAuth, record) => {
-        if (isAuth) {
-          return <Tag color="blue">Authorized</Tag>;
+      title: "Status",
+      key: "status",
+      render: (_, record) => {
+        const tags = [];
+
+        // isActive tag
+        tags.push(
+          <Tag color={record.isActive ? "green" : "red"} key="active">
+            {record.isActive ? "Active" : "Inactive"}
+          </Tag>
+        );
+
+        // Authorization tag
+        switch (record.isAuth) {
+          case "authorized":
+            tags.push(<Tag color="blue" key="auth">Authorized</Tag>);
+            break;
+          case "rejected":
+            tags.push(<Tag color="red" key="auth">Rejected</Tag>);
+            break;
+          case "pending":
+          default:
+            tags.push(<Tag color="orange" key="auth">Pending</Tag>);
         }
+
+        return <>{tags}</>;
+      }
+    },
+    {
+      title: "Authorization",
+      key: "isAuth",
+      render: (_, record) => {
+        const { isAuth, user_id } = record;
 
         return (
           <div style={{ display: "flex", gap: 8 }}>
             <Button
-              type="default"
-              ghosts
-               style={{ borderColor: 'green', color: 'green' }}
-              onClick={() => handleAuthorize(record.user_id)}
-            >
-              <CheckOutlined />
-            </Button>
+              icon={<CheckOutlined />}
+              className="custom-disabled-button"
+              style={{
+                borderColor: "green",
+                color: "green",
+                width: 40
+              }}
+              onClick={() => handleAuthorize(user_id)}
+              disabled={isAuth === "authorized"}
+            />
             <Button
+              icon={<CloseOutlined />}
               danger
-              onClick={() => handleReject(record.user_id)}
-            >
-              <CloseOutlined />
-            </Button>
+              style={{ width: 40 }}
+              onClick={() => handleReject(user_id)}
+              disabled={isAuth === "rejected"}
+            />
           </div>
         );
       }
@@ -198,10 +187,10 @@ function ManageUsers() {
       title: "",
       key: "actions",
       render: (_, record) => (
-        <div style={{ display: "flex", width: "100%", justifyContent: "right" }}>
+        <div style={{ display: "flex", justifyContent: "right", gap: 8 }}>
           <Button
             icon={<EditOutlined />}
-            style={{ marginRight: 8, width: 60 }}
+            style={{ width: 50 }}
             onClick={() => {
               setEditingUser(record);
               form.setFieldsValue({
@@ -217,11 +206,8 @@ function ManageUsers() {
           <Popconfirm
             title="Are you sure you want to delete this user?"
             onConfirm={() => handleDelete(record.user_id)}
-            okText="Yes"
-            cancelText="No"
-            placement="topRight"
           >
-            <Button icon={<DeleteOutlined />} danger style={{ width: 60 }} />
+            <Button icon={<DeleteOutlined />} danger style={{ width: 50 }} />
           </Popconfirm>
         </div>
       )
@@ -230,153 +216,90 @@ function ManageUsers() {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Layout style={{ background: "#fefefe" }}>
-        <Content style={{ overflow: "hidden", padding: 35 }}>
-          <h1 className="h1-user">User Management</h1>
-          <p>Handles user registration, and access control within the system.</p>
-          <Divider className="table-divider" style={{ borderColor: "#ddd" }} />
-          <Layout style={{ backgroundColor: "#fefefe" }}>
-            <div className="table-top-parent">
-              <div className="header-user">
-                <Input.Search
-                  placeholder="Search users..."
-                  onChange={(e) => handleSearch(e.target.value)}
-                  value={searchText}
-                  style={{ width: 300 }}
-                  allowClear
-                />
-              </div>
-              <div className="table-top-search">
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  style={{
-                    height: "35px",
-                    backgroundColor: "#001529",
-                    borderColor: "#001529"
-                  }}
-                  onClick={() => {
-                    setEditingUser(null);
-                    form.resetFields();
-                    setIsModalOpen(true);
-                  }}
-                >
-                  Add User
-                </Button>
-              </div>
-            </div>
-            <Table
-              bordered
-              columns={columns}
-              dataSource={filteredUsers}
-              rowKey="user_id"
-              style={{ marginTop: 20, overflow: "hidden", width: "100%" }}
-              pagination={{ pageSize: 5 }}
-              rowClassName={(index) =>
-                index % 2 === 0 ? "table-row-light" : "table-row-dark"
-              }
-            />
-          </Layout>
-        </Content>
-
+      <Content style={{ padding: 35 }}>
+        <h1>User Management</h1>
+        <p>Handles user registration and access control.</p>
+        <Divider />
+        <div className="table-top-parent">
+          <Input.Search
+            placeholder="Search users..."
+            value={searchText}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: 300 }}
+            allowClear
+          />
+          <Button
+            icon={<PlusOutlined />}
+            type="primary"
+            onClick={() => {
+              setEditingUser(null);
+              form.resetFields();
+              setIsModalOpen(true);
+            }}
+          >
+            Add User
+          </Button>
+        </div>
+        <Table
+          bordered
+          columns={columns}
+          dataSource={users}
+          rowKey="user_id"
+          pagination={{ pageSize: 5 }}
+          style={{ marginTop: 20 }}
+        />
         <Modal open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null} width={500}>
-          <h2 style={{ marginBottom: "16px", textAlign: 'center' }}>
-            {editingUser ? "Edit User" : "Add User"}
-          </h2>
-          <p style={{ textAlign: 'center' }}>A pop-up form to quickly add new user details.</p>
-
+          <h2 style={{ textAlign: "center" }}>{editingUser ? "Edit" : "Add"} User</h2>
+          <p style={{ textAlign: "center" }}>Fill out the form below.</p>
           <Form
             form={form}
             layout="horizontal"
             onFinish={handleSubmit}
-            labelCol={{ flex: '150px' }}
+            labelCol={{ flex: "150px" }}
             wrapperCol={{ flex: 1 }}
             labelAlign="left"
           >
-            <Form.Item
-              name="firstname"
-              label="First Name"
-              rules={[{ required: true }]}
-              style={{ marginBottom: "12px" }}
-            >
-              <Input placeholder="Enter first name"
-                onChange={(e) => {
-                  const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                  form.setFieldsValue({ firstname: lettersOnly });
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="lastname"
-              label="Last Name"
-              rules={[{ required: true }]}
-              style={{ marginBottom: "12px" }}
-            >
-              <Input placeholder="Enter last name"
-                onChange={(e) => {
-                  const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                  form.setFieldsValue({ lastname: lettersOnly });
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="middlename"
-              label="Middle Name"
-              style={{ marginBottom: "12px" }}
-            >
-              <Input placeholder="Enter middle name(optional)"
-                onChange={(e) => {
-                  const lettersOnly = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                  form.setFieldsValue({ middlename: lettersOnly });
-                }}
-              />
-            </Form.Item>
-            <Divider></Divider>
-            <Form.Item
-              name="username"
-              label="Username"
-              rules={[{ required: true }]}
-              style={{ marginBottom: "12px" }}
-            >
-              <Input placeholder="Create a unique username"
-                onChange={(e) => {
-                  const alphanumericOnly = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
-                  form.setFieldsValue({ username: alphanumericOnly });
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[{ required: true }]}
-              style={{ marginBottom: "12px" }} // slightly more space before the button
-            >
-              <Input.Password placeholder="Create a secure password" />
-            </Form.Item>
-            <Form.Item
-              name="confirm"
-              label="Confirm Password"
-              rules={[{ required: false }]}
-              style={{ marginBottom: "24px" }} // slightly more space before the button
-            >
-              <Input.Password placeholder="Confirm password" />
-            </Form.Item>
-
-            <Form.Item wrapperCol={{ span: 24 }} style={{ marginBottom: 0 }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                block
-                style={{ backgroundColor: "#001529", borderColor: "#001529" }}
+            {["firstname", "lastname", "middlename", "username"].map((field) => (
+              <Form.Item
+                key={field}
+                name={field}
+                label={field.charAt(0).toUpperCase() + field.slice(1).replace("name", " Name")}
+                rules={field !== "middlename" ? [{ required: true }] : []}
+                style={{ marginBottom: 12 }}
               >
+                <Input
+                  placeholder={`Enter ${field}`}
+                  onChange={(e) => {
+                    const val = field === "username"
+                      ? e.target.value.replace(/[^a-zA-Z0-9]/g, "")
+                      : e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                    form.setFieldsValue({ [field]: val });
+                  }}
+                />
+              </Form.Item>
+            ))}
+            <Divider />
+            {["password", "confirm"].map((field) => (
+              <Form.Item
+                key={field}
+                name={field}
+                label={field === "confirm" ? "Confirm Password" : "Password"}
+                rules={[{ required: true }]}
+                style={{ marginBottom: 12 }}
+              >
+                <Input.Password placeholder={field === "confirm" ? "Confirm password" : "Enter password"} />
+              </Form.Item>
+            ))}
+            <Form.Item wrapperCol={{ span: 24 }}>
+              <Button type="primary" htmlType="submit" block>
                 {editingUser ? "Update" : "Add"} User
               </Button>
             </Form.Item>
           </Form>
         </Modal>
-      </Layout>
+      </Content>
     </Layout>
   );
-}
+};
 
 export default ManageUsers;
