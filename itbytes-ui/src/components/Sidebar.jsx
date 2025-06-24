@@ -1,12 +1,12 @@
 import { Layout, Menu } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import {
-  MenuOutlined,
+  ShoppingCartOutlined,
   LogoutOutlined,
   UserOutlined,
   DashboardOutlined,
   SettingOutlined,
-  ShopOutlined,
+  DollarOutlined,
   InboxOutlined,
 } from "@ant-design/icons";
 import '../styles/Sidebar.css';
@@ -37,13 +37,13 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   const adminMenu = [
     { key: "/dashboard/manage-users", icon: <UserOutlined />, label: <Link to="/dashboard/manage-users">Manage Users</Link> },
     { key: "/dashboard/manage-inventory", icon: <InboxOutlined />, label: <Link to="/dashboard/manage-inventory">Manage Inventory</Link> },
-    { key: "/dashboard/manage-orders", icon: <MenuOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
-    { key: "/dashboard/manage-sales", icon: <ShopOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
+    { key: "/dashboard/manage-orders", icon: <ShoppingCartOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
+    { key: "/dashboard/manage-sales", icon: <DollarOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
   ];
 
   const salesMenu = [
-    { key: "/dashboard/manage-orders", icon: <MenuOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
-    { key: "/dashboard/manage-sales", icon: <ShopOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
+    { key: "/dashboard/manage-orders", icon: <ShoppingCartOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
+    { key: "/dashboard/manage-sales", icon: <DollarOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
   ];
 
   const inventoryMenu = [
