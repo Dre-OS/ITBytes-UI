@@ -45,6 +45,9 @@ function Login() {
     <div className="login-container">
       <div className="login-image">
         <img src={logo} alt="" className="login-image-logo" />
+        <div style={{ textAlign: 'center', width: '60%', marginTop: '-30px' }}>
+          <p style={{ fontSize: 13}}>A user-friendly online store for IT products and CCTV systems, offering seamless browsing, ordering, and secure checkout for customers.</p>
+        </div>
       </div>
       <div className="login-form">
         <div className='login-back'>
@@ -55,11 +58,11 @@ function Login() {
         </div>
         <Form
           layout="vertical"
-          style={{ width: '100%', maxWidth: '400px' }}
+          style={{ width: '100%', maxWidth: '500px' }}
           onFinish={handleLogin}
         >
-          <h1>Welcome Back</h1>
-          <p>Please enter your email and password to continue.</p>
+          <h1 style={{ textAlign: "left"}}>Welcome Back</h1>
+          <p style={{ textAlign: "left"}}>Please enter your email and password to continue.</p>
           <Form.Item
             name="email"
             rules={[{ required: true, message: 'Please enter your email!' }]}
@@ -78,7 +81,7 @@ function Login() {
               className="custom-button"
               type="primary"
               htmlType="submit"
-              style={{ width: '100%', height: '40px', borderRadius: '10px', backgroundColor: '#2C485F' }}
+              style={{ width: '60%', height: '40px', borderRadius: '10px', backgroundColor: '#2C485F' }}
               loading={loading}
             >
               Login
