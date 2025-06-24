@@ -11,7 +11,8 @@ import {
   Popconfirm,
   Divider,
   Tag,
-  Select
+  Select,
+  Upload
 } from "antd";
 import {
   PlusOutlined,
@@ -39,6 +40,14 @@ const ManageInventory = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [form] = Form.useForm();
 
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+
   useEffect(() => {
     fetchItems();
   }, []);
@@ -65,6 +74,7 @@ const ManageInventory = () => {
       tags: values.tags,
       quantity: values.quantity,
       price: values.price,
+      image: values.image?.[0]?.base64 || ""
     };
 
     try {
@@ -107,6 +117,19 @@ const ManageInventory = () => {
 
   const columns = [
     { title: "Item ID", dataIndex: "_id", key: "_id", hidden: true },
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      width: 100,
+      render: (img) => (
+        <img
+          src={img}
+          alt="product"
+          style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 4 }}
+        />
+      )
+    },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
     { title: "Description", dataIndex: "description", key: "description", width: 180 },
     {
@@ -117,10 +140,10 @@ const ManageInventory = () => {
       render: (tags) =>
         Array.isArray(tags)
           ? tags.map((tag) => (
-              <Tag color="blue" key={tag}>
-                {tag}
-              </Tag>
-            ))
+            <Tag color="blue" key={tag}>
+              {tag}
+            </Tag>
+          ))
           : tags
     },
     { title: "Quantity", dataIndex: "quantity", key: "quantity", width: 100 },
@@ -144,9 +167,22 @@ const ManageInventory = () => {
               form.setFieldsValue({
                 name: record.name,
                 description: record.description,
-                tags: Array.isArray(record.tags) ? record.tags : (record.tags ? record.tags.split(",").map(t => t.trim()) : []),
+                tags: Array.isArray(record.tags)
+                  ? record.tags
+                  : record.tags?.split(",").map((t) => t.trim()),
                 quantity: record.quantity,
-                status: record.status
+                price: record.price,
+                image: record.image
+                  ? [
+                    {
+                      uid: "-1",
+                      name: "image.png",
+                      status: "done",
+                      url: record.image,
+                      base64: record.image,
+                    },
+                  ]
+                  : [],
               });
               setIsModalOpen(true);
             }}
@@ -216,12 +252,40 @@ const ManageInventory = () => {
               <Input placeholder="Enter item name" />
             </Form.Item>
             <Form.Item
+              name="image"
+              label="Product Image"
+              valuePropName="fileList"
+              getValueFromEvent={(e) => {
+                if (Array.isArray(e)) return e;
+                return e?.fileList;
+              }}
+              rules={[{ required: true, message: "Please upload an image!" }]}
+            >
+              <Upload
+                listType="picture-card"
+                showUploadList={{ showRemoveIcon: true }}
+                accept="image/*"
+                beforeUpload={async (file) => {
+                  const base64 = await getBase64(file);
+                  form.setFieldsValue({ image: [{ ...file, base64 }] });
+                  return false; // Prevent upload
+                }}
+              >
+                {form.getFieldValue("image")?.length >= 1 ? null : "+ Upload"}
+              </Upload>
+            </Form.Item>
+            <Form.Item
               name="description"
               label="Description"
               rules={[{ required: true, message: "Please enter description!" }]}
               style={{ marginBottom: 12 }}
             >
-              <Input placeholder="Enter description" />
+              <Input.TextArea
+                placeholder="Enter description"
+                rows={3}
+                showCount
+                maxLength={200}
+              />
             </Form.Item>
             <Form.Item
               name="tags"
