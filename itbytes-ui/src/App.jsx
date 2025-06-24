@@ -19,7 +19,11 @@ import Register from "./pages/Register";
 
 
 const PrivateRoute = () => {
-  sessionStorage.setItem("isAuthenticated", "true"); // For testing purposes, remove in production
+  const role = sessionStorage.getItem("role");
+  sessionStorage.setItem("isAuthenticated", true);
+  // if (role == "customer") {
+  //   return <Navigate to="/" />;
+  // }
   const token = sessionStorage.getItem("isAuthenticated");
   return token ? <Outlet /> : <Navigate to="/" />;
 };
