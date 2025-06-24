@@ -6,16 +6,16 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "start": "vite",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.6.1",
+    "@ant-design/icons": "^6.0.0",
     "antd": "^5.26.1",
     "axios": "^1.10.0",
-    "dotenv": "^16.5.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^7.6.2"
   },
   "devDependencies": {
