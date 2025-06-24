@@ -35,7 +35,7 @@ export default function App() {
 
 
         <Route element={<PrivateRoute />}>
-          <Route path="/admin" element={<Admin />}>
+          <Route path="/dashboard" element={<Admin />}>
             <Route index element={<Dashboard />} />
             <Route path="manage-inventory" element={<ManageInventory />} />
             <Route path="manage-orders" element={<ManageOrders />} />
