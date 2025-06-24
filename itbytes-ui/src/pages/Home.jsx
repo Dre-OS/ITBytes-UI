@@ -1,11 +1,45 @@
 import React from 'react'
-import { Button, Card, Col, Layout, Row, Typography } from "antd";
+import { Button, Card, Col, Layout, Row, Typography, Carousel } from "antd";
 import '../styles/Home.css';
 const { Title, Paragraph } = Typography;
 const { Content, Footer } = Layout;
-import { ArrowRightOutlined } from '@ant-design/icons';
+import {
+    ArrowRightOutlined,
+    LockOutlined,
+    ThunderboltOutlined,
+    CheckCircleOutlined,
+    CloudOutlined,
+} from '@ant-design/icons';
+import hero1 from '../assets/hero1.png';
+import hero2 from '../assets/hero2.png';
+import hero3 from '../assets/hero3.png';
+import hero4 from '../assets/hero4.png';
+import hero5 from '../assets/hero5.png';
 
 function Home() {
+    const features = [
+        {
+            icon: <LockOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            title: 'Secure Checkout',
+            description: 'All payments are protected with end-to-end encryption.',
+        },
+        {
+            icon: <ThunderboltOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            title: 'Fast Delivery',
+            description: 'Get your gadgets delivered within 1-3 business days.',
+        },
+        {
+            icon: <CheckCircleOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            title: 'Quality Assured',
+            description: 'We only sell authentic, high-quality electronics.',
+        },
+        {
+            icon: <CloudOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            title: 'Easy Returns',
+            description: 'Hassle-free returns within 7 days of purchase.',
+        }
+
+    ];
 
     const categories = [
         {
@@ -38,25 +72,56 @@ function Home() {
     return (
         <Layout style={{ background: "#fff", width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
             {/* Hero Section */}
-            <Content style={{
-                backgroundImage: 'url("https://images.pexels.com/photos/207589/pexels-photo-207589.jpeg")',
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                height: "300px",
-                width: "100%",
-                borderRadius: "10px",
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                backgroundBlendMode: "darken",
-                padding: "80px 20px", textAlign: "center", color: "#fff"
-            }}>
-                <Title style={{ color: "#fff" }} level={1}>Discover Your Style</Title>
-                <Paragraph style={{ fontSize: "18px", maxWidth: 600, margin: "auto", color: '#fff' }}>
-                    Shop the latest trends in fashion, electronics, and more!
-                </Paragraph>
-                <Button size="large" style={{ marginTop: 20, backgroundColor: "#fff", color: "#2C485F", border: "none" }}>
-                    Shop Now
-                </Button>
+            <Content style={{ width: '100%', marginTop: 20 }}>
+                <Carousel autoplay dots arrows>
+                    {[
+                        hero1,
+                        hero2,
+                        hero3,
+                        hero4,
+                        hero5
+                    ].map((url, index) => (
+                        <div key={index}>
+                            <img
+                                src={url}
+                                alt={`Slide ${index + 1}`}
+                                style={{
+                                    width: '100%',
+                                    height: '300px',
+                                    objectFit: 'cover',
+                                    borderRadius: '10px'
+                                }}
+                            />
+                        </div>
+                    ))}
+                </Carousel>
             </Content>
+
+            {/* Features Section */}
+            <div style={{ padding: '40px 5%', width: '100%' }}>
+                <Row gutter={[30, 30]} justify="space-between" align="middle">
+                    {features.map((feature, index) => (
+                        <Col xs={24} sm={12} md={6} key={index}>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    minHeight: '80px',
+                                }}
+                            >
+                                {feature.icon}
+                                <div>
+                                    <Title level={5} style={{ margin: 0, fontSize: '14px' }}>{feature.title}</Title>
+                                    <Paragraph style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+                                        {feature.description}
+                                    </Paragraph>
+                                </div>
+                            </div>
+                        </Col>
+                    ))}
+                </Row>
+            </div>
 
             {/* Categories */}
             <Content style={{ padding: "30px 0px", width: '100%', margin: "auto" }}>
