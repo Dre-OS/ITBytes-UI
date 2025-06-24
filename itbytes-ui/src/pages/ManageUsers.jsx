@@ -10,7 +10,8 @@ import {
   message,
   Popconfirm,
   Divider,
-  Tag
+  Tag,
+  Select
 } from "antd";
 import {
   PlusOutlined,
@@ -44,7 +45,8 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/users");
+      const { data } = await axios.get("http://192.168.9.5:3000/api/users");
+      console.log("Fetched Users:", data);
       setUsers(data);
     } catch {
       message.error("Error fetching users");
@@ -59,16 +61,17 @@ const ManageUsers = () => {
 
     const userData = {
       firstname: values.firstname,
-      user_ln: values.lastname,
-      user_mn: values.middlename,
-      username: values.username,
+      lastname: values.lastname,
+      middlename: values.middlename,
+      email: values.email,
+      role: values.role,
       password: values.password
     };
 
     try {
       const url = editingUser
-        ? `http://localhost:5000/users/${editingUser.user_id}`
-        : "http://localhost:5000/users";
+        ? `http://192.168.9.5:3000/api/users/${editingUser._id}`
+        : "http://192.168.9.5:3000/api/users";
       const method = editingUser ? axios.put : axios.post;
       const { data } = await method(url, userData);
       message.success(data.message || "User saved successfully");
@@ -80,10 +83,25 @@ const ManageUsers = () => {
     }
   };
 
-  const handleDelete = async (user_id) => {
+  const handleDelete = async (_id) => {
     try {
-      await axios.delete(`http://localhost:5000/users/${user_id}`);
+      console.log("Deleting user with ID:", _id);
+      await axios.delete(`http://192.168.9.5:3000/api/users/${_id}`, authorization);
       message.success("User deleted successfully");
+      fetchUsers();
+    } catch {
+      message.error("Failed to delete user");
+    }
+  };
+
+  const handleAuthorize = async (_id, status) => {
+    try {
+      const authorization = {
+        isAuth: status,
+      }
+      console.log("Updating user authroization with ID:", _id);
+      console.log("Authorization status:", status);
+      await axios.put(`http://192.168.9.5:3000/api/users/auth/${_id}`, authorization);
       fetchUsers();
     } catch {
       message.error("Failed to delete user");
@@ -104,6 +122,7 @@ const ManageUsers = () => {
   };
 
   const columns = [
+    { title: "User ID", dataIndex: "_id", key: "_id", hidden: true },
     { title: "First Name", dataIndex: "firstname", key: "firstname", width: 120 },
     { title: "Last Name", dataIndex: "lastname", key: "lastname", width: 120 },
     { title: "Middle Name", dataIndex: "middlename", key: "middlename", width: 130 },
@@ -130,17 +149,17 @@ const ManageUsers = () => {
       render: (_, record) => {
         const tags = [];
 
-        // isActive tag
+        // isDeleted tag
         tags.push(
-          <Tag color={record.isActive ? "green" : "red"} key="active">
-            {record.isActive ? "Active" : "Inactive"}
+          <Tag color={record.isDeleted ? "red" : "green"} key="active">
+            {record.isDeleted ? "Inactive" : "Active"}
           </Tag>
         );
 
         // Authorization tag
         switch (record.isAuth) {
-          case "authorized":
-            tags.push(<Tag color="blue" key="auth">Authorized</Tag>);
+          case "approved":
+            tags.push(<Tag color="blue" key="auth">Approved</Tag>);
             break;
           case "rejected":
             tags.push(<Tag color="red" key="auth">Rejected</Tag>);
@@ -157,28 +176,37 @@ const ManageUsers = () => {
       title: "Authorization",
       key: "isAuth",
       render: (_, record) => {
-        const { isAuth, user_id } = record;
+        const { isAuth, _id } = record;
 
         return (
           <div style={{ display: "flex", gap: 8 }}>
-            <Button
-              icon={<CheckOutlined />}
-              className="custom-disabled-button"
-              style={{
-                borderColor: "green",
-                color: "green",
-                width: 40
-              }}
-              onClick={() => handleAuthorize(user_id)}
-              disabled={isAuth === "authorized"}
-            />
-            <Button
-              icon={<CloseOutlined />}
-              danger
-              style={{ width: 40 }}
-              onClick={() => handleReject(user_id)}
-              disabled={isAuth === "rejected"}
-            />
+            <Popconfirm
+              title="Approve this user?"
+              onConfirm={() => handleAuthorize(_id, "approved")}
+            >
+              <Button
+                icon={<CheckOutlined />}
+                className="custom-disabled-button"
+                style={{
+                  borderColor: "green",
+                  color: "green",
+                  width: 40
+                }}
+                disabled={isAuth === "approved"}
+              />
+            </Popconfirm>
+
+            <Popconfirm
+              title="Reject this user?"
+              onConfirm={() => handleAuthorize(_id, "rejected")}
+            >
+              <Button
+                icon={<CloseOutlined />}
+                danger
+                style={{ width: 40 }}
+                disabled={isAuth === "rejected"}
+              />
+            </Popconfirm>
           </div>
         );
       }
@@ -194,10 +222,11 @@ const ManageUsers = () => {
             onClick={() => {
               setEditingUser(record);
               form.setFieldsValue({
-                firstname: record.user_fn,
-                lastname: record.user_ln,
-                middlename: record.user_mn,
-                username: record.user_name,
+                firstname: record.firstname,
+                lastname: record.lastname,
+                middlename: record.middlename,
+                email: record.email,
+                role: record.role,
                 password: record.user_password
               });
               setIsModalOpen(true);
@@ -205,7 +234,7 @@ const ManageUsers = () => {
           />
           <Popconfirm
             title="Are you sure you want to delete this user?"
-            onConfirm={() => handleDelete(record.user_id)}
+            onConfirm={() => handleDelete(record._id)}
           >
             <Button icon={<DeleteOutlined />} danger style={{ width: 50 }} />
           </Popconfirm>
@@ -216,7 +245,7 @@ const ManageUsers = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Content style={{ padding: 35 }}>
+      <Content style={{ padding: 35, background: "#fff" }}>
         <h1>User Management</h1>
         <p>Handles user registration and access control.</p>
         <Divider />
@@ -259,7 +288,7 @@ const ManageUsers = () => {
             wrapperCol={{ flex: 1 }}
             labelAlign="left"
           >
-            {["firstname", "lastname", "middlename", "username"].map((field) => (
+            {["firstname", "lastname", "middlename"].map((field) => (
               <Form.Item
                 key={field}
                 name={field}
@@ -278,7 +307,30 @@ const ManageUsers = () => {
                 />
               </Form.Item>
             ))}
+            <Form.Item
+              label="Role"
+              name="role"
+              rules={[{ required: true, message: 'Please select a role!' }]}
+              style={{ marginBottom: 12 }}
+            >
+              <Select placeholder="Select a role">
+                <Select.Option value="customer">Customer</Select.Option>
+                <Select.Option value="sales">Sales</Select.Option>
+                <Select.Option value="inventory">Inventory</Select.Option>
+                <Select.Option value="business">Business</Select.Option>
+                <Select.Option value="admin">Admin</Select.Option>
+              </Select>
+            </Form.Item>
             <Divider />
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[{ required: true, message: "Please enter your Email!" },
+              { type: 'email', message: "Please enter a valid Email!" }]}
+              style={{ marginBottom: 12 }}
+            >
+              <Input placeholder="Email" />
+            </Form.Item>
             {["password", "confirm"].map((field) => (
               <Form.Item
                 key={field}
