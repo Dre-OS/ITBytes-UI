@@ -73,6 +73,9 @@ function Register() {
         <div className="register-container" style={{ fontFamily: 'Poppins' }}>
             <div className='register-image'>
                 <img src={logo} alt="" className='register-image-logo' />
+                <div style={{ textAlign: 'center', width: '60%', marginTop: '-30px' }}>
+                    <p style={{ fontSize: 13 }}>A user-friendly online store for IT products and CCTV systems, offering seamless browsing, ordering, and secure checkout for customers.</p>
+                </div>
             </div>
             <div className='register-form'>
 
@@ -85,14 +88,14 @@ function Register() {
                 <Form
                     {...layout}
                     layout="horizontal"
-                    style={{ width: '100%', maxWidth: '400px' }}
+                    style={{ width: '100%', maxWidth: '500px' }}
                     form={form}
                     onFinish={onFinish}
                     labelAlign="left"
                     ref={formRef}
                 >
-                    <h1>Create Your Account</h1>
-                    <p>Join us and get access to exclusive features</p>
+                    <h1 style={{textAlign: "left"}}>Create Your Account</h1>
+                    <p style={{textAlign: "left"}}>Join us and get access to exclusive features</p>
 
                     <Form.Item
                         label="First Name"
@@ -103,6 +106,7 @@ function Register() {
                             message: 'Only letters and spaces are allowed',
                         },
                         ]}
+                        style={{ marginBottom: '12px' }}
                     >
                         <Input placeholder="First Name" />
                     </Form.Item>
@@ -113,6 +117,7 @@ function Register() {
                             pattern: /^[A-Za-z\s]+$/,
                             message: 'Only letters and spaces are allowed',
                         },]}
+                        style={{ marginBottom: '12px' }}
                     >
                         <Input placeholder="Last Name"
                             rules={[
@@ -130,6 +135,7 @@ function Register() {
                             pattern: /^[A-Za-z\s]+$/,
                             message: 'Only letters and spaces are allowed',
                         },]}
+                        style={{ marginBottom: '12px' }}
                     >
                         <Input placeholder="Middle Name" />
                     </Form.Item>
@@ -137,6 +143,7 @@ function Register() {
                         label="Role"
                         name="role"
                         rules={[{ required: true, message: 'Please select a role!' }]}
+                        style={{ marginBottom: '12px' }}
                     >
                         <Select placeholder="Select a role">
                             <Select.Option value="customer">Customer</Select.Option>
@@ -153,6 +160,7 @@ function Register() {
                         name="email"
                         rules={[{ required: true, message: "Please enter your Email!" },
                         { type: 'email', message: "Please enter a valid Email!" }]}
+                        style={{ marginBottom: '12px' }}
                     >
                         <Input placeholder="Email" />
                     </Form.Item>
@@ -161,6 +169,7 @@ function Register() {
                         className="password-field"
                         name="password"
                         rules={[{ required: true, message: "Please enter your password!" }]}
+                        style={{ marginBottom: '12px' }}
                     >
                         <Input.Password placeholder="Password" />
                     </Form.Item>
@@ -180,6 +189,7 @@ function Register() {
                                 },
                             }),
                         ]}
+                        style={{ marginBottom: '12px' }}
                     >
                         <Input.Password placeholder="Confirm Password" />
                     </Form.Item>
@@ -188,7 +198,7 @@ function Register() {
                         className="custom-button"
                         type="primary"
                         htmlType="submit"
-                        style={{ width: "100%", height: "40px", borderRadius: "10px", backgroundColor: '#2C485F' }}
+                        style={{ width: "60%", height: "40px", borderRadius: "10px", backgroundColor: '#2C485F' }}
                         loading={loading}
                     >
                         Register
