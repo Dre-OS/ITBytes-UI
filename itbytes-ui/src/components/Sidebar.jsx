@@ -31,23 +31,23 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   };
 
   const baseMenu = [
-    { key: "/admin", icon: <DashboardOutlined />, label: <Link to="/admin">Dashboard</Link> },
+    { key: "/dashboard", icon: <DashboardOutlined />, label: <Link to="/dashboard">Dashboard</Link> },
   ];
 
   const adminMenu = [
-    { key: "/admin/manage-users", icon: <UserOutlined />, label: <Link to="/admin/manage-users">Manage Users</Link> },
-    { key: "/admin/manage-orders", icon: <MenuOutlined />, label: <Link to="/admin/manage-orders">Manage Orders</Link> },
-    { key: "/admin/manage-sales", icon: <ShopOutlined />, label: <Link to="/admin/manage-sales">Manage Sales</Link> },
-    { key: "/admin/settings", icon: <SettingOutlined />, label: <Link to="/admin/settings">Settings</Link> },
+    { key: "/dashboard/manage-users", icon: <UserOutlined />, label: <Link to="/dashboard/manage-users">Manage Users</Link> },
+    { key: "/dashboard/manage-inventory", icon: <InboxOutlined />, label: <Link to="/dashboard/manage-inventory">Manage Inventory</Link> },
+    { key: "/dashboard/manage-orders", icon: <MenuOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
+    { key: "/dashboard/manage-sales", icon: <ShopOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
   ];
 
   const salesMenu = [
-    { key: "/admin/manage-orders", icon: <MenuOutlined />, label: <Link to="/admin/manage-orders">Manage Orders</Link> },
-    { key: "/admin/manage-sales", icon: <ShopOutlined />, label: <Link to="/admin/manage-sales">Manage Sales</Link> },
+    { key: "/dashboard/manage-orders", icon: <MenuOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
+    { key: "/dashboard/manage-sales", icon: <ShopOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
   ];
 
   const inventoryMenu = [
-    { key: "/admin/inventory", icon: <InboxOutlined />, label: <Link to="/admin/inventory">Manage Inventory</Link> },
+    { key: "/dashboard/manage-inventory", icon: <InboxOutlined />, label: <Link to="/dashboard/manage-inventory">Manage Inventory</Link> },
   ];
 
   let roleBasedItems = [];
@@ -63,6 +63,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   const menuItems = [
     ...baseMenu,
     ...roleBasedItems,
+    { key: "settings", icon: <SettingOutlined />, label: <Link to="/dashboard/settings">Settings</Link> },
     { type: "divider" },
     { key: "logout", icon: <LogoutOutlined />, label: <Link to="/login" onClick={handleLogout}>Logout</Link> },
   ];
