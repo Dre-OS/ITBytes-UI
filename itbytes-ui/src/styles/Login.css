@@ -10,7 +10,7 @@
     background-position: center;
     background-color: rgba(0, 0, 0, 0.5);
     background-blend-mode: darken;
-    width: 60%;
+    width: 45%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,8 +34,9 @@
 .login-form {
     display: flex;
     justify-content: center;
-    align-items: center;
-    width: 50%;
+    margin-left: 100px;
+    align-items: left;
+    width: 40%;
     flex-direction: column;
 }
 

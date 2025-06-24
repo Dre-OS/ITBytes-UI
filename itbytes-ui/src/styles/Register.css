@@ -10,7 +10,7 @@
     background-position: center;
     background-color: rgba(0, 0, 0, 0.5);
     background-blend-mode: darken;
-    width: 60%;
+    width: 45%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,9 +34,10 @@
 .register-form {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: left;
     flex-direction: column;
-    width: 50%;
+    width: 40%;
+    margin-left: 100px;
 }
 
 .register-form h1 {
