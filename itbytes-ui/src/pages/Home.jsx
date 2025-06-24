@@ -158,7 +158,13 @@ function Home() {
                         <Col xs={24} sm={12} md={4} key={id}>
                             <Card
                                 hoverable
-                                cover={<div style={{ height: 150, background: "#d9d9d9" }} />}
+                                cover={
+                                    <img
+                                        src="https://www.svgrepo.com/show/508699/landscape-placeholder.svg"
+                                        alt=""
+                                        style={{ height: 150, objectFit: "cover", background: "#d9d9d9" }}
+                                    />
+                                }
                             >
                                 <Card.Meta title={`Product ${id}`} description="$99.99" />
                             </Card>
