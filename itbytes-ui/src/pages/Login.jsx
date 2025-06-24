@@ -5,7 +5,7 @@ import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, MailOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import logo from '../assets/logo_white.webp';
 
-const apiUrl = 'http://192.168.9.5:3000/';
+const apiUrl = 'http://192.168.9.5:3000/api/users';
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -21,10 +21,15 @@ function Login() {
       const user = users.find((user) => user.email === values.email && user.password === values.password);
 
       if (user) {
+
+        if (user.isDeleted || user.isAuth === 'rejected' || user.isAuth === 'pending') {
+          message.error('Your account has not yet been approved. Please contact support.');
+          return;
+        }
         sessionStorage.setItem('isAuthenticated', true);
         sessionStorage.setItem('role', user.role);
         message.success('Login successful!');
-        navigate('/admin');
+        navigate('/dashboard');
       } else {
         message.error('Invalid email or password!');
       }
