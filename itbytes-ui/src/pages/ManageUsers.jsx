@@ -46,7 +46,6 @@ const ManageUsers = () => {
   const fetchUsers = async () => {
     try {
       const { data } = await axios.get("http://192.168.9.5:3000/api/users");
-      console.log("Fetched Users:", data);
       setUsers(data);
     } catch {
       message.error("Error fetching users");
@@ -85,8 +84,7 @@ const ManageUsers = () => {
 
   const handleDelete = async (_id) => {
     try {
-      console.log("Deleting user with ID:", _id);
-      await axios.delete(`http://192.168.9.5:3000/api/users/${_id}`, authorization);
+      await axios.delete(`http://192.168.9.5:3000/api/users/${_id}`);
       message.success("User deleted successfully");
       fetchUsers();
     } catch {
@@ -96,15 +94,11 @@ const ManageUsers = () => {
 
   const handleAuthorize = async (_id, status) => {
     try {
-      const authorization = {
-        isAuth: status,
-      }
-      console.log("Updating user authroization with ID:", _id);
-      console.log("Authorization status:", status);
+      const authorization = { isAuth: status };
       await axios.put(`http://192.168.9.5:3000/api/users/auth/${_id}`, authorization);
       fetchUsers();
     } catch {
-      message.error("Failed to delete user");
+      message.error("Failed to update authorization");
     }
   };
 
@@ -126,7 +120,7 @@ const ManageUsers = () => {
     { title: "First Name", dataIndex: "firstname", key: "firstname", width: 120 },
     { title: "Last Name", dataIndex: "lastname", key: "lastname", width: 120 },
     { title: "Middle Name", dataIndex: "middlename", key: "middlename", width: 130 },
-    { title: "E-mail", dataIndex: "email", key: "email", width: 150 },
+    { title: "E-mail", dataIndex: "email", key: "email", width: 200, ellipsis: true },
     {
       title: "Password",
       dataIndex: "password",
@@ -147,16 +141,12 @@ const ManageUsers = () => {
       title: "Status",
       key: "status",
       render: (_, record) => {
-        const tags = [];
-
-        // isDeleted tag
-        tags.push(
+        const tags = [
           <Tag color={record.isDeleted ? "red" : "green"} key="active">
             {record.isDeleted ? "Inactive" : "Active"}
           </Tag>
-        );
+        ];
 
-        // Authorization tag
         switch (record.isAuth) {
           case "approved":
             tags.push(<Tag color="blue" key="auth">Approved</Tag>);
@@ -164,7 +154,6 @@ const ManageUsers = () => {
           case "rejected":
             tags.push(<Tag color="red" key="auth">Rejected</Tag>);
             break;
-          case "pending":
           default:
             tags.push(<Tag color="orange" key="auth">Pending</Tag>);
         }
@@ -175,41 +164,26 @@ const ManageUsers = () => {
     {
       title: "Authorization",
       key: "isAuth",
-      render: (_, record) => {
-        const { isAuth, _id } = record;
-
-        return (
-          <div style={{ display: "flex", gap: 8 }}>
-            <Popconfirm
-              title="Approve this user?"
-              onConfirm={() => handleAuthorize(_id, "approved")}
-            >
-              <Button
-                icon={<CheckOutlined />}
-                className="custom-disabled-button"
-                style={{
-                  borderColor: "green",
-                  color: "green",
-                  width: 40
-                }}
-                disabled={isAuth === "approved"}
-              />
-            </Popconfirm>
-
-            <Popconfirm
-              title="Reject this user?"
-              onConfirm={() => handleAuthorize(_id, "rejected")}
-            >
-              <Button
-                icon={<CloseOutlined />}
-                danger
-                style={{ width: 40 }}
-                disabled={isAuth === "rejected"}
-              />
-            </Popconfirm>
-          </div>
-        );
-      }
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <Popconfirm title="Approve this user?" onConfirm={() => handleAuthorize(record._id, "approved")}>
+            <Button
+              icon={<CheckOutlined />}
+              className="custom-disabled-button"
+              style={{ borderColor: "green", color: "green", width: 40 }}
+              disabled={record.isAuth === "approved"}
+            />
+          </Popconfirm>
+          <Popconfirm title="Reject this user?" onConfirm={() => handleAuthorize(record._id, "rejected")}>
+            <Button
+              icon={<CloseOutlined />}
+              danger
+              style={{ width: 40 }}
+              disabled={record.isAuth === "rejected"}
+            />
+          </Popconfirm>
+        </div>
+      )
     },
     {
       title: "",
@@ -232,10 +206,7 @@ const ManageUsers = () => {
               setIsModalOpen(true);
             }}
           />
-          <Popconfirm
-            title="Are you sure you want to delete this user?"
-            onConfirm={() => handleDelete(record._id)}
-          >
+          <Popconfirm title="Are you sure you want to delete this user?" onConfirm={() => handleDelete(record._id)}>
             <Button icon={<DeleteOutlined />} danger style={{ width: 50 }} />
           </Popconfirm>
         </div>
@@ -250,34 +221,45 @@ const ManageUsers = () => {
         <p>Handles user registration and access control.</p>
         <Divider />
         <div className="table-top-parent">
-          <Input.Search
-            placeholder="Search users..."
-            value={searchText}
-            onChange={(e) => handleSearch(e.target.value)}
-            style={{ width: 300 }}
-            allowClear
-          />
-          <Button
-            icon={<PlusOutlined />}
-            type="primary"
-            onClick={() => {
-              setEditingUser(null);
-              form.resetFields();
-              setIsModalOpen(true);
-            }}
-          >
-            Add User
-          </Button>
+          <div className="table-top-left">
+            <Input.Search
+              placeholder="Search users..."
+              value={searchText}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="table-search"
+              allowClear
+            />
+          </div>
+          <div className="table-top-right">
+            <Button
+              icon={<PlusOutlined />}
+              type="primary"
+              onClick={() => {
+                setEditingUser(null);
+                form.resetFields();
+                setIsModalOpen(true);
+              }}
+            >
+              Add User
+            </Button>
+          </div>
         </div>
         <Table
           bordered
           columns={columns}
           dataSource={users}
-          rowKey="user_id"
+          rowKey="_id"
           pagination={{ pageSize: 5 }}
+          scroll={{ x: 'max-content' }}
           style={{ marginTop: 20 }}
         />
-        <Modal open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null} width={500}>
+        <Modal
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+          width="100%"
+          style={{ maxWidth: 500 }}
+        >
           <h2 style={{ textAlign: "center" }}>{editingUser ? "Edit" : "Add"} User</h2>
           <p style={{ textAlign: "center" }}>Fill out the form below.</p>
           <Form
@@ -299,9 +281,7 @@ const ManageUsers = () => {
                 <Input
                   placeholder={`Enter ${field}`}
                   onChange={(e) => {
-                    const val = field === "username"
-                      ? e.target.value.replace(/[^a-zA-Z0-9]/g, "")
-                      : e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                    const val = e.target.value.replace(/[^a-zA-Z\s]/g, "");
                     form.setFieldsValue({ [field]: val });
                   }}
                 />
@@ -310,7 +290,7 @@ const ManageUsers = () => {
             <Form.Item
               label="Role"
               name="role"
-              rules={[{ required: true, message: 'Please select a role!' }]}
+              rules={[{ required: true, message: "Please select a role!" }]}
               style={{ marginBottom: 12 }}
             >
               <Select placeholder="Select a role">
@@ -325,8 +305,10 @@ const ManageUsers = () => {
             <Form.Item
               label="Email"
               name="email"
-              rules={[{ required: true, message: "Please enter your Email!" },
-              { type: 'email', message: "Please enter a valid Email!" }]}
+              rules={[
+                { required: true, message: "Please enter your Email!" },
+                { type: "email", message: "Please enter a valid Email!" }
+              ]}
               style={{ marginBottom: 12 }}
             >
               <Input placeholder="Email" />
@@ -342,7 +324,7 @@ const ManageUsers = () => {
                 <Input.Password placeholder={field === "confirm" ? "Confirm password" : "Enter password"} />
               </Form.Item>
             ))}
-            <Form.Item wrapperCol={{ span: 24 }}>
+            <Form.Item>
               <Button type="primary" htmlType="submit" block>
                 {editingUser ? "Update" : "Add"} User
               </Button>

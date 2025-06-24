@@ -247,7 +247,7 @@ const ManageInventory = () => {
               name="name"
               label="Name"
               rules={[{ required: true, message: "Please enter item name!" }]}
-              style={{ marginBottom: 12 }}
+        
             >
               <Input placeholder="Enter item name" />
             </Form.Item>
