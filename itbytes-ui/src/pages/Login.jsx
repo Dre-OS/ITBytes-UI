@@ -5,7 +5,7 @@ import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, MailOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import logo from '../assets/logo_white.webp';
 
-const apiUrl = 'http://192.168.9.5:3000/api/users';
+const apiUrl = import.meta.env.VITE_USER_API_URL;
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -26,8 +26,15 @@ function Login() {
           message.error('Your account has not yet been approved. Please contact support.');
           return;
         }
+
         sessionStorage.setItem('isAuthenticated', true);
+        sessionStorage.setItem('firstname', user.firstname);
         sessionStorage.setItem('role', user.role);
+        if (user.role == 'customer') {
+          navigate('/'); // Redirect customers to home page
+          return;
+        }
+
         message.success('Login successful!');
         navigate('/dashboard');
       } else {
@@ -46,7 +53,7 @@ function Login() {
       <div className="login-image">
         <img src={logo} alt="" className="login-image-logo" />
         <div style={{ textAlign: 'center', width: '60%', marginTop: '-30px' }}>
-          <p style={{ fontSize: 13}}>A user-friendly online store for IT products and CCTV systems, offering seamless browsing, ordering, and secure checkout for customers.</p>
+          <p style={{ fontSize: 13 }}>A user-friendly online store for IT products and CCTV systems, offering seamless browsing, ordering, and secure checkout for customers.</p>
         </div>
       </div>
       <div className="login-form">
@@ -61,8 +68,8 @@ function Login() {
           style={{ width: '100%', maxWidth: '500px' }}
           onFinish={handleLogin}
         >
-          <h1 style={{ textAlign: "left"}}>Welcome Back</h1>
-          <p style={{ textAlign: "left"}}>Please enter your email and password to continue.</p>
+          <h1 style={{ textAlign: "left" }}>Welcome Back</h1>
+          <p style={{ textAlign: "left" }}>Please enter your email and password to continue.</p>
           <Form.Item
             name="email"
             rules={[{ required: true, message: 'Please enter your email!' }]}
