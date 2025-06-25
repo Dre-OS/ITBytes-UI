@@ -6,8 +6,7 @@ import { Form, Input, Button, Divider, message, Select } from "antd";
 import { CloseCircleOutlined } from '@ant-design/icons';
 import logo from '../assets/logo_white.webp';
 
-// const apiUrl = import.meta.env.VITE_USER_API_URL || 'http://localhost:1337/users';
-const apiUrl = 'http://192.168.9.5:3000/api/users';
+const apiUrl = import.meta.env.VITE_USER_API_URL;
 
 function Register() {
     const [loading, setLoading] = useState(false);
