@@ -38,6 +38,7 @@ const ManageUsers = () => {
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -46,12 +47,14 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get("http://192.168.9.5:3000/api/users");
-      setUsers(data);
+      const { data } = await axios.get(`${apiUrl}`);
+      setAllUsers(data); // store original
+      setUsers(data);    // display filtered
     } catch {
       message.error("Error fetching users");
     }
   };
+
 
   const handleSubmit = async (values) => {
     if (values.password !== values.confirm) {
@@ -106,14 +109,23 @@ const ManageUsers = () => {
   const handleSearch = (value) => {
     setSearchText(value);
     const lower = value.toLowerCase();
-    setUsers((prev) =>
-      prev.filter(
-        (u) =>
-          u.user_fn?.toLowerCase().includes(lower) ||
-          u.user_ln?.toLowerCase().includes(lower) ||
-          u.user_name?.toLowerCase().includes(lower)
-      )
+
+    if (!value) {
+      // if search is cleared, reset to full list
+      setUsers(allUsers);
+      return;
+    }
+
+    const filtered = allUsers.filter(
+      (u) =>
+        u.firstname?.toLowerCase().includes(lower) ||
+        u.lastname?.toLowerCase().includes(lower) ||
+        u.email?.toLowerCase().includes(lower) ||
+        u.middlename?.toLowerCase().includes(lower) ||
+        u.role?.toLowerCase().includes(lower)
     );
+
+    setUsers(filtered);
   };
 
   const columns = [
