@@ -144,7 +144,7 @@ const ManageInventory = () => {
       )
     },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
-    { title: "Description", dataIndex: "description", key: "description", width: 180 },
+    { title: "Description", dataIndex: "description", key: "description", maxWidth: 180 },
     { title: "Category", dataIndex: "category", key: "category", width: 120 },
     {
       title: "Tags",
