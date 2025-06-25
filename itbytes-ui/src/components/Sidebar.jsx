@@ -28,6 +28,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
     sessionStorage.removeItem("isAuthenticated");
     sessionStorage.removeItem("email");
     sessionStorage.removeItem("role");
+    localStorage.clear();
   };
 
   const baseMenu = [
