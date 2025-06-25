@@ -23,6 +23,7 @@ import {
 import "../styles/ManageUsers.css";
 
 const { Content } = Layout;
+const apiUrl = import.meta.env.VITE_USER_API_URL;
 
 const roleColors = {
   admin: "red",
@@ -69,8 +70,8 @@ const ManageUsers = () => {
 
     try {
       const url = editingUser
-        ? `http://192.168.9.5:3000/api/users/${editingUser._id}`
-        : "http://192.168.9.5:3000/api/users";
+        ? `${apiUrl}/${editingUser._id}`
+        : `${apiUrl}`;
       const method = editingUser ? axios.put : axios.post;
       const { data } = await method(url, userData);
       message.success(data.message || "User saved successfully");
@@ -84,7 +85,7 @@ const ManageUsers = () => {
 
   const handleDelete = async (_id) => {
     try {
-      await axios.delete(`http://192.168.9.5:3000/api/users/${_id}`);
+      await axios.delete(`${apiUrl}/${_id}`);
       message.success("User deleted successfully");
       fetchUsers();
     } catch {
@@ -95,7 +96,7 @@ const ManageUsers = () => {
   const handleAuthorize = async (_id, status) => {
     try {
       const authorization = { isAuth: status };
-      await axios.put(`http://192.168.9.5:3000/api/users/auth/${_id}`, authorization);
+      await axios.put(`${apiUrl}/auth/${_id}`, authorization);
       fetchUsers();
     } catch {
       message.error("Failed to update authorization");
