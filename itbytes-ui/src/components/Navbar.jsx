@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Avatar, Input, Dropdown } from 'antd';
+import { Menu, Avatar, Input, Dropdown, Badge } from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import '../styles/Navbar.css';
 import logo from '../assets/logo_colored.png';
+import { useCart } from "../contexts/CartContext"; // adjust path if needed
 
 const { Search } = Input;
 
@@ -11,16 +12,23 @@ const Navbar = () => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [firstName, setFirstName] = useState("");
+    const [role, setRole] = useState("");
+    const { cart } = useCart();
+
+    const uniqueItems = cart.length;
 
     useEffect(() => {
         const auth = sessionStorage.getItem("isAuthenticated") === "true";
         const fname = sessionStorage.getItem("firstname") || "User";
+        const userRole = sessionStorage.getItem("role") || "customer";
         setIsAuthenticated(auth);
         setFirstName(fname);
+        setRole(userRole);
     }, []);
 
     const handleLogout = () => {
         sessionStorage.clear();
+        localStorage.clear();
         setIsAuthenticated(false);
         navigate("/login");
     };
@@ -28,7 +36,7 @@ const Navbar = () => {
     const userMenu = (
         <Menu>
             <Menu.Item key="name" disabled>
-                <strong>{firstName}</strong>
+                <p>{role.charAt(0).toUpperCase() + role.slice(1)}</p>
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="logout" onClick={handleLogout}>
@@ -69,9 +77,11 @@ const Navbar = () => {
 
             {/* Right: Cart + Avatar or Sign In */}
             <div className='navbar-content-right'>
-                <div className='navbar-icon'>
-                    <ShoppingCartOutlined style={{ fontSize: 24, color: '#2C485F' }} />
-                    <p style={{ color: "#2C485F" }}>Cart</p>
+                <div className="navbar-icon" onClick={() => navigate('/cart')}>
+                    <Badge count={uniqueItems} size="default" offset={[4, -4]} color="#2C485F">
+                        <ShoppingCartOutlined style={{ fontSize: 24, color: '#2C485F' }} />
+                    </Badge>
+                    <p style={{ color: "#2C485F", margin: 0 }}>Cart</p>
                 </div>
                 <div style={{ width: '1px', height: '30px', backgroundColor: '#2C485F', opacity: 0.2 }} />
                 {isAuthenticated ? (
