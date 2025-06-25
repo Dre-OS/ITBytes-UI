@@ -24,6 +24,7 @@ import {
 import "../styles/ManageUsers.css";
 
 const { Content } = Layout;
+const apiUrl = import.meta.env.VITE_INVENTORY_API_URL;
 
 const roleColors = {
   admin: "red",
@@ -35,6 +36,8 @@ const roleColors = {
 // ...existing code...
 const ManageInventory = () => {
   const [items, setItems] = useState([]);
+  const [base64Image, setBase64Image] = useState("");
+  const [filteredItems, setFilteredItems] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -54,9 +57,10 @@ const ManageInventory = () => {
 
   const fetchItems = async () => {
     try {
-      const { data } = await axios.get("http://192.168.9.3:3000/api/admin/inventory/products");
+      const { data } = await axios.get(`${apiUrl}`);
       console.log("Fetched Items:", data);
       setItems(data);
+      setFilteredItems(data);
     } catch {
       message.error("Error fetching inventory");
     }
@@ -71,21 +75,24 @@ const ManageInventory = () => {
     const itemData = {
       name: values.name,
       description: values.description,
+      category: values.category,
       tags: values.tags,
       quantity: values.quantity,
       price: values.price,
-      image: values.image?.[0]?.base64 || ""
+      image: base64Image || editingItem?.image || "", // ✅ safe fallback
     };
 
+    console.log("Item Data:", itemData);
     try {
       const url = editingItem
-        ? `http://192.168.9.5:3000/api/inventory/${editingItem._id}`
-        : "http://192.168.9.3:3000/api/admin/inventory/products";
+        ? `${apiUrl}/${editingItem._id}`
+        : `${apiUrl}`;
       const method = editingItem ? axios.put : axios.post;
       const { data } = await method(url, itemData);
       message.success(data.message || "Item saved successfully");
       fetchItems();
       setIsModalOpen(false);
+      setBase64Image("");
       form.resetFields();
     } catch (error) {
       message.error(error.response?.data?.error || "Error saving item");
@@ -94,7 +101,7 @@ const ManageInventory = () => {
 
   const handleDelete = async (_id) => {
     try {
-      await axios.delete(`http://192.168.9.5:3000/api/inventory/${_id}`);
+      await axios.delete(`${apiUrl}/${_id}`);
       message.success("Item deleted successfully");
       fetchItems();
     } catch {
@@ -105,14 +112,16 @@ const ManageInventory = () => {
   const handleSearch = (value) => {
     setSearchText(value);
     const lower = value.toLowerCase();
-    setItems((prev) =>
-      prev.filter(
-        (i) =>
-          i.name?.toLowerCase().includes(lower) ||
-          i.description?.toLowerCase().includes(lower) ||
-          i.tags?.toLowerCase().includes(lower)
-      )
+
+    const filtered = items.filter((item) =>
+      item.name?.toLowerCase().includes(lower) ||
+      item.description?.toLowerCase().includes(lower) ||
+      (Array.isArray(item.tags)
+        ? item.tags.some((tag) => tag.toLowerCase().includes(lower))
+        : item.tags?.toLowerCase().includes(lower))
     );
+
+    setFilteredItems(filtered);
   };
 
   const columns = [
@@ -127,11 +136,16 @@ const ManageInventory = () => {
           src={img}
           alt="product"
           style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 4 }}
+          onError={(e) => {
+            e.target.onerror = null; // Prevent infinite loop
+            e.target.src = "https://www.svgrepo.com/show/508699/landscape-placeholder.svg"; // Fallback image
+          }}
         />
       )
     },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
     { title: "Description", dataIndex: "description", key: "description", width: 180 },
+    { title: "Category", dataIndex: "category", key: "category", width: 120 },
     {
       title: "Tags",
       dataIndex: "tags",
@@ -167,6 +181,7 @@ const ManageInventory = () => {
               form.setFieldsValue({
                 name: record.name,
                 description: record.description,
+                category: record.category,
                 tags: Array.isArray(record.tags)
                   ? record.tags
                   : record.tags?.split(",").map((t) => t.trim()),
@@ -227,7 +242,7 @@ const ManageInventory = () => {
         <Table
           bordered
           columns={columns}
-          dataSource={items}
+          dataSource={filteredItems}
           rowKey="_id"
           pagination={{ pageSize: 5 }}
           style={{ marginTop: 20 }}
@@ -247,7 +262,7 @@ const ManageInventory = () => {
               name="name"
               label="Name"
               rules={[{ required: true, message: "Please enter item name!" }]}
-        
+
             >
               <Input placeholder="Enter item name" />
             </Form.Item>
@@ -259,7 +274,7 @@ const ManageInventory = () => {
                 if (Array.isArray(e)) return e;
                 return e?.fileList;
               }}
-              rules={[{ required: true, message: "Please upload an image!" }]}
+              rules={[{ required: false }]}
             >
               <Upload
                 listType="picture-card"
@@ -267,8 +282,9 @@ const ManageInventory = () => {
                 accept="image/*"
                 beforeUpload={async (file) => {
                   const base64 = await getBase64(file);
-                  form.setFieldsValue({ image: [{ ...file, base64 }] });
-                  return false; // Prevent upload
+                  setBase64Image(base64);
+                  form.setFieldsValue({ image: [file] });
+                  return false; // Prevent automatic upload
                 }}
               >
                 {form.getFieldValue("image")?.length >= 1 ? null : "+ Upload"}
@@ -277,7 +293,7 @@ const ManageInventory = () => {
             <Form.Item
               name="description"
               label="Description"
-              rules={[{ required: true, message: "Please enter description!" }]}
+              rules={[{ required: false}]}
               style={{ marginBottom: 12 }}
             >
               <Input.TextArea
@@ -288,21 +304,41 @@ const ManageInventory = () => {
               />
             </Form.Item>
             <Form.Item
-              name="tags"
+              name="category"
               label="Category"
-              rules={[{ required: true, message: "Please select category!" }]}
+              rules={[{ required: true, message: "Please select a category!" }]}
+              style={{ marginBottom: 12 }}
+            >
+              <Select placeholder="Select category">
+                <Select.Option value="CCTV">CCTV</Select.Option>
+                <Select.Option value="Printer">Printer</Select.Option>
+                <Select.Option value="Smartphones">Smartphones</Select.Option>
+                <Select.Option value="Computer">Computer</Select.Option>
+                <Select.Option value="Electronics">Electronics</Select.Option>
+                <Select.Option value="Monitors">Monitors</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="tags"
+              label="Tags"
+              rules={[{ required: false }]}
               style={{ marginBottom: 12 }}
             >
               <Select
-                mode="multiple"
-                placeholder="Select categories"
+                mode="tags"
+                placeholder="Enter or select tags"
+                tokenSeparators={[',']}
                 options={[
-                  { label: "CCTV", value: "CCTV" },
-                  { label: "Printer", value: "Printer" },
-                  { label: "Smartphones", value: "Smartphones" },
-                  { label: "Computer", value: "Computer" },
-                  { label: "Electronics", value: "Electronics" },
-                  { label: "Monitors", value: "Monitors" }
+                  { label: "New Arrival", value: "New Arrival" },
+                  { label: "Best Seller", value: "Best Seller" },
+                  { label: "Gaming PC", value: "Gaming PC" },
+                  { label: "Office Use", value: "Office Use" },
+                  { label: "Refurbished", value: "Refurbished" },
+                  { label: "Wireless", value: "Wireless" },
+                  { label: "Fast Charging", value: "Fast Charging" },
+                  { label: "Night Vision", value: "Night Vision" },
+                  { label: "HD Camera", value: "HD Camera" },
+                  { label: "Monitor", value: "Monitor" }
                 ]}
               />
             </Form.Item>
@@ -320,7 +356,7 @@ const ManageInventory = () => {
               rules={[{ required: true, message: "Please enter price!" }]}
               style={{ marginBottom: 12 }}
             >
-              <Input type="number" placeholder="Enter price" min={0} step="0.01" />
+              <Input type="number" placeholder="Enter price" min={1} step="0.01" />
             </Form.Item>
             <Form.Item wrapperCol={{ span: 24 }}>
               <Button type="primary" htmlType="submit" block>
