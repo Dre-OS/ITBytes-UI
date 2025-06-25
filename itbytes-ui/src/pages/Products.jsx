@@ -4,13 +4,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
+const apiUrl = import.meta.env.VITE_INVENTORY_API_URL || "http://localhost:5000/api/products";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 useEffect(() => {
-  axios.get("http://localhost:5000/api/products")
+  axios.get(`${apiUrl}`)
     .then((res) => {
       console.log("Raw response:", res);    
       console.log("res.data:", res.data);      
@@ -31,7 +32,7 @@ useEffect(() => {
       ) : (
         <Row gutter={[24, 24]}>
           {products.map((product) => (
-            <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
+            <Col key={product.id} xs={24} sm={12} md={8} lg={5}>
               <Card
                 hoverable
                 cover={
@@ -39,6 +40,10 @@ useEffect(() => {
                     alt={product.name}
                     src={product.image}
                     style={{ height: 200, objectFit: "cover" }}
+                    onError={(e) => {
+                      e.target.onerror = null; // Prevent infinite loop
+                      e.target.src = "https://www.svgrepo.com/show/508699/landscape-placeholder.svg"; // Placeholder image
+                    }}
                   />
                 }
               >
