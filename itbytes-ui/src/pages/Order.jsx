@@ -61,9 +61,14 @@ const Order = () => {
             bordered
             extra={
               !order.isPaid && (
-                <Button type="primary" onClick={() => handlePayment(order._id)}>
-                  Pay for Order
-                </Button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <Button type="default" onClick={() => handlePayment(order._id)}>
+                    Cancel Order
+                  </Button>
+                  <Button type="primary" onClick={() => handlePayment(order._id)}>
+                    Pay for Order
+                  </Button>
+                </div>
               )
             }
           >
