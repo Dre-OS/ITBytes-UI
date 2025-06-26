@@ -20,7 +20,7 @@ export default function AdminLayout() {
           transition: "margin-left 0.3s ease",
         }}
       >
-        <Content style={{ background: "#fff", minHeight: "100vh" }}>
+        <Content style={{ background: "#fefefe", minHeight: "100vh" }}>
           <Outlet />
         </Content>
       </Layout>
