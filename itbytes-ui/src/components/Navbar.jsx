@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Avatar, Input, Dropdown, Badge, Modal } from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { UserOutlined, ShoppingCartOutlined, HomeOutlined, ProductOutlined, ShoppingOutlined } from '@ant-design/icons';
 import '../styles/Navbar.css';
 import logo from '../assets/logo_colored.png';
 import { useCart } from "../contexts/CartContext"; // adjust path if needed
@@ -77,9 +77,9 @@ const Navbar = () => {
             <div className="navbar-content">
                 <img src={logo} alt="Logo" className="logo" style={{ height: '50px' }} />
                 <div className="nav-links">
-                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Home</NavLink>
-                    <NavLink to="/products" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Products</NavLink>
-                    <NavLink to="/orders" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Orders</NavLink>
+                    <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}> <HomeOutlined /> &nbsp; Home</NavLink>
+                    <NavLink to="/products" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}> <ProductOutlined /> &nbsp; Products</NavLink>
+                    <NavLink to="/orders" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}> <ShoppingOutlined /> &nbsp; Orders</NavLink>
                 </div>
             </div>
 
