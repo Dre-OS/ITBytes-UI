@@ -167,7 +167,7 @@ const Products = () => {
                           }}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "https://www.svgrepo.com/show/508699/landscape-placeholder.svg";
+                            e.target.src = "https://static.vecteezy.com/system/resources/thumbnails/008/695/917/small_2x/no-image-available-icon-simple-two-colors-template-for-no-image-or-picture-coming-soon-and-placeholder-illustration-isolated-on-white-background-vector.jpg";
                           }}
                         />
                       </div>
