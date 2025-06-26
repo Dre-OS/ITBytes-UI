@@ -41,6 +41,7 @@ const ManageInventory = () => {
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [form] = Form.useForm();
 
   const getBase64 = (file) =>
@@ -112,18 +113,29 @@ const ManageInventory = () => {
 
   const handleSearch = (value) => {
     setSearchText(value);
-    const lower = value.toLowerCase();
+    applyFilters(value, selectedCategory);
+  };
 
-    const filtered = items.filter((item) =>
-      item.name?.toLowerCase().includes(lower) ||
-      item.description?.toLowerCase().includes(lower) ||
-      (Array.isArray(item.tags)
-        ? item.tags.some((tag) => tag.toLowerCase().includes(lower))
-        : item.tags?.toLowerCase().includes(lower))
-    );
+  const applyFilters = (search, category) => {
+    const lower = search.toLowerCase();
+
+    const filtered = items.filter((item) => {
+      const matchesSearch =
+        !search ||
+        item.name?.toLowerCase().includes(lower) ||
+        item.description?.toLowerCase().includes(lower) ||
+        (Array.isArray(item.tags)
+          ? item.tags.some((tag) => tag.toLowerCase().includes(lower))
+          : item.tags?.toLowerCase().includes(lower));
+
+      const matchesCategory = !category || item.category === category;
+
+      return matchesSearch && matchesCategory;
+    });
 
     setFilteredItems(filtered);
   };
+
 
   const columns = [
     { title: "Item ID", dataIndex: "_id", key: "_id", hidden: true },
@@ -146,7 +158,10 @@ const ManageInventory = () => {
     },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
     { title: "Description", dataIndex: "description", key: "description", maxWidth: 180 },
-    { title: "Category", dataIndex: "category", key: "category", width: 120 },
+    {
+      title: "Category", dataIndex: "category", key: "category", width: 120,
+      render: (category) => <Tag color="default">{category}</Tag>
+    },
     {
       title: "Tags",
       dataIndex: "tags",
@@ -216,18 +231,36 @@ const ManageInventory = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Content style={{ padding: 35, background: "#fff" }}>
-        <h1>Inventory Management</h1>
+      <Content style={{ padding: "10px 35px", background: "#F5F5F5" }}>
+        <h1 style={{ marginBottom: -5 }}>Inventory Management</h1>
         <p>Manages stock levels, item tracking, and managing products</p>
-        <Divider />
-        <div className="table-top-parent">
-          <Input.Search
-            placeholder="Search inventory..."
-            value={searchText}
-            onChange={(e) => handleSearch(e.target.value)}
-            style={{ width: 300 }}
-            allowClear
-          />
+        <div className="table-top-parent" style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+          <div class name="table-top-left" style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <Input.Search
+              placeholder="Search inventory..."
+              value={searchText}
+              onChange={(e) => handleSearch(e.target.value)}
+              style={{ width: 300 }}
+              allowClear
+            />
+            <Select
+              placeholder="Filter by Category"
+              style={{ width: 200 }}
+              allowClear
+              value={selectedCategory}
+              onChange={(value) => {
+                setSelectedCategory(value);
+                applyFilters(searchText, value);
+              }}
+            >
+              <Select.Option value="CCTV">CCTV</Select.Option>
+              <Select.Option value="Printer">Printer</Select.Option>
+              <Select.Option value="Smartphones">Smartphones</Select.Option>
+              <Select.Option value="Computer">Computer</Select.Option>
+              <Select.Option value="Electronics">Electronics</Select.Option>
+              <Select.Option value="Monitors">Monitors</Select.Option>
+            </Select>
+          </div>
           <Button
             icon={<PlusOutlined />}
             type="primary"
@@ -245,6 +278,7 @@ const ManageInventory = () => {
           columns={columns}
           dataSource={filteredItems}
           rowKey="_id"
+          scroll={{ x: 'max-content' }}
           pagination={{ pageSize: 5 }}
           style={{ marginTop: 20 }}
         />
@@ -294,7 +328,7 @@ const ManageInventory = () => {
             <Form.Item
               name="description"
               label="Description"
-              rules={[{ required: false}]}
+              rules={[{ required: false }]}
               style={{ marginBottom: 12 }}
             >
               <Input.TextArea
