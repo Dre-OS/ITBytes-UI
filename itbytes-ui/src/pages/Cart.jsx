@@ -1,11 +1,45 @@
 import React from "react";
 import { useCart } from "../contexts/CartContext";
-import { List, Button, Typography } from "antd";
+import { List, Button, Typography, message, InputNumber, Modal } from "antd";
+import axios from "axios";
 
 const { Title } = Typography;
+const apiUrl = import.meta.env.VITE_ORDER_API_URL;
 
 const Cart = () => {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
+
+  const handleOrder = async () => {
+    try {
+      const order = {
+        customerId: sessionStorage.getItem("userID"),
+        orders: cart,
+      };
+      await axios.post(`${apiUrl}/out`, order);
+      message.success("Order placed successfully!");
+      clearCart();
+    } catch {
+      message.error("Error placing order. Please try again.");
+    }
+  };
+
+  const handleCheckout = async () => {
+    const grandTotal = cart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+
+    Modal.confirm({
+      title: "Confirm Checkout",
+      content: `Proceed to checkout? Total: ₱${grandTotal.toLocaleString()}`,
+      okText: "Checkout",
+      okType: "primary",
+      cancelText: "Cancel",
+      onOk: () => {
+        handleOrder();
+      }
+    });
+  };
 
   return (
     <div style={{ maxWidth: "90%", margin: "auto" }}>
@@ -16,7 +50,13 @@ const Cart = () => {
         renderItem={(item) => (
           <List.Item
             actions={[
-              <Button danger onClick={() => removeFromCart(item._id)}>Remove</Button>
+              <InputNumber
+                min={1}
+                max={item.maxQuantity || 100}
+                value={item.quantity}
+                onChange={(val) => updateQuantity(item.itemId, val)}
+              />,
+              <Button danger onClick={() => removeFromCart(item.itemId)}>Remove</Button>
             ]}
           >
             <List.Item.Meta
@@ -28,9 +68,14 @@ const Cart = () => {
         )}
       />
       {cart.length > 0 && (
-        <Button type="primary" danger style={{ marginTop: 20 }} onClick={clearCart}>
-          Clear Cart
-        </Button>
+        <div>
+          <Button type="primary" onClick={clearCart} style={{ marginTop: 16 }}>
+            Clear Cart
+          </Button>
+          <Button type="primary" style={{ marginLeft: 8 }} onClick={handleCheckout}>
+            Checkout
+          </Button>
+        </div>
       )}
     </div>
   );
