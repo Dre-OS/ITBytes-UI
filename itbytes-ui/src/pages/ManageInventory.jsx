@@ -85,7 +85,7 @@ const ManageInventory = () => {
     console.log("Item Data:", itemData);
     try {
       const url = editingItem
-        ? `${apiUrl}/${editingItem._id}`
+        ? `${apiUrl}/${editingItem.id}`
         : `${apiUrl}`;
       const method = editingItem ? axios.put : axios.post;
       const { data } = await method(url, itemData);
@@ -102,6 +102,7 @@ const ManageInventory = () => {
   const handleDelete = async (_id) => {
     try {
       await axios.delete(`${apiUrl}/${_id}`);
+      console.log("Deleted Item ID:", _id);
       message.success("Item deleted successfully");
       fetchItems();
     } catch {
@@ -204,7 +205,7 @@ const ManageInventory = () => {
           />
           <Popconfirm
             title="Are you sure you want to delete this item?"
-            onConfirm={() => handleDelete(record._id)}
+            onConfirm={() => handleDelete(record.id)}
           >
             <Button icon={<DeleteOutlined />} danger style={{ width: 50 }} />
           </Popconfirm>
