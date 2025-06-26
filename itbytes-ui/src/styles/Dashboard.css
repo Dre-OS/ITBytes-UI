@@ -1,0 +1,11 @@
+/* Apply Poppins font to Ant Design Tabs */
+.ant-tabs,
+.ant-tabs-tab,
+.ant-tabs-tab-btn {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Optional: make active tab bold */
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  font-weight: 600;
+}
