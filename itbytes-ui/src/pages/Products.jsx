@@ -9,7 +9,8 @@ import {
   Spin,
   Input,
   Checkbox,
-  InputNumber
+  InputNumber,
+  Tag
 } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +42,14 @@ const Products = () => {
       });
   }, []);
 
-  const uniqueCategories = [...new Set(products.map(p => p.category))];
+  const uniqueCategories = [
+    "CCTV",
+    "Printer",
+    "Smartphones",
+    "Computer",
+    "Electronics",
+    "Monitors"
+  ];
 
   const applyFilters = () => {
     let filtered = [...products];
@@ -78,7 +86,9 @@ const Products = () => {
       <Title level={3} style={{ marginBottom: "30px" }}>All Products</Title>
 
       {loading ? (
-        <Spin size="large" />
+        <div style={{ textAlign: "center", marginTop: "50px", height: "50vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Spin size="large" />
+        </div>
       ) : (
         <Row gutter={[24, 24]}>
           {/* Sidebar filters */}
@@ -129,32 +139,51 @@ const Products = () => {
           <Col xs={24} md={18}>
             <Row gutter={[24, 24]}>
               {filtered.map((product) => (
-                <Col key={product._id} xs={24} sm={12} md={8} lg={6}>
+                <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
                   <Card
                     hoverable
                     cover={
-                      <img
-                        alt={product.name}
-                        src={product.image}
-                        style={{ height: 200, objectFit: "cover" }}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://www.svgrepo.com/show/508699/landscape-placeholder.svg";
+                      <div
+                        style={{
+                          background: "#fff",
+                          padding: 10,
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: 200,
+                          border: "1px solid #f0f0f0", // ✅ Border added here
+                          borderBottom: "none",        // Optional: if you want the card border to continue smoothly
+                          borderRadius: "8px 8px 0 0"  // Match card border radius if needed
                         }}
-                      />
+                      >
+                        <img
+                          alt={product.name}
+                          src={product.image}
+                          style={{
+                            maxHeight: "160px",
+                            maxWidth: "100%",
+                            width: "auto",
+                            objectFit: "contain"
+                          }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://www.svgrepo.com/show/508699/landscape-placeholder.svg";
+                          }}
+                        />
+                      </div>
                     }
                   >
                     <Title level={5}>{product.name}</Title>
                     <Paragraph style={{ marginBottom: 4, color: "#888" }}>
-                      Category: {product.category}
+                      Category: <Tag color="default">{product.category}</Tag>
                     </Paragraph>
-                    <Paragraph strong style={{ fontSize: 16 }}>
+                    <Typography.Text strong style={{ fontSize: 16 }}>
                       ₱{product.price.toLocaleString()}
-                    </Paragraph>
+                    </Typography.Text>
                     <Button
                       type="primary"
                       block
-                      onClick={() => navigate(`/products/${product._id}`)}
+                      onClick={() => navigate(`/products/${product.id}`)}
                     >
                       View Product
                     </Button>
