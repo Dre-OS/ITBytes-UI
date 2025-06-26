@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Avatar, Input, Dropdown, Badge } from 'antd';
+import { Menu, Avatar, Input, Dropdown, Badge, Modal } from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import '../styles/Navbar.css';
@@ -13,7 +13,7 @@ const Navbar = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [firstName, setFirstName] = useState("");
     const [role, setRole] = useState("");
-    const { cart } = useCart();
+    const { cart, clearCart } = useCart();
 
     const uniqueItems = cart.length;
 
@@ -27,10 +27,28 @@ const Navbar = () => {
     }, []);
 
     const handleLogout = () => {
-        sessionStorage.clear();
-        localStorage.clear();
-        setIsAuthenticated(false);
-        navigate("/login");
+        if (cart.length > 0) {
+            Modal.confirm({
+                title: "Are you sure you want to logout?",
+                content: "Your cart items will be cleared on logout.",
+                okText: "Logout",
+                okType: "danger",
+                cancelText: "Cancel",
+                onOk: () => {
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    clearCart();
+                    setIsAuthenticated(false);
+                    navigate("/login");
+                }
+            });
+        } else {
+            sessionStorage.clear();
+            localStorage.clear();
+            clearCart();
+            setIsAuthenticated(false);
+            navigate("/login");
+        }
     };
 
     const userMenu = (
