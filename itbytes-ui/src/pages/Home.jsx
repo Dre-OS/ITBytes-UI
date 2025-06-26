@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Card, Col, Layout, Row, Typography, Carousel } from "antd";
+import axios from 'axios';
 import '../styles/Home.css';
 const { Title, Paragraph } = Typography;
 const { Content, Footer } = Layout;
@@ -17,6 +18,8 @@ import hero4 from '../assets/hero4.png';
 import hero5 from '../assets/hero5.png';
 
 function Home() {
+    const [featured, setFeatured] = useState([]);
+
     const features = [
         {
             icon: <LockOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
@@ -67,6 +70,18 @@ function Home() {
             image: "https://cherryshop.com.ph/cdn/shop/files/s10.jpg?v=1697530588&width=533",
         },
     ];
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_INVENTORY_API_URL}`);
+                setFeatured(res.data.slice(0, 6)); // Only keep the first 6 products
+            } catch (err) {
+                console.error("Failed to fetch featured products:", err);
+            }
+        };
+        fetchProducts();
+    }, []);
 
 
     return (
@@ -154,25 +169,51 @@ function Home() {
                     </div>
                 </div>
                 <Row gutter={[24, 24]} justify="center" style={{ marginTop: 30 }}>
-                    {[1, 2, 3, 4, 5, 6].map((id) => (
-                        <Col xs={24} sm={12} md={4} key={id}>
+                    {featured.map((product) => (
+                        <Col xs={24} sm={12} md={4} key={product._id}>
                             <Card
                                 hoverable
                                 cover={
-                                    <img
-                                        src="https://www.svgrepo.com/show/508699/landscape-placeholder.svg"
-                                        alt=""
-                                        style={{ height: 150, objectFit: "cover", background: "#d9d9d9" }}
-                                    />
+                                    <div
+                                        style={{
+                                            background: "#fff",
+                                            padding: 10,
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            height: 180,
+                                            border: "1px solid #f0f0f0", // ✅ Border added here
+                                            borderBottom: "none",        // Optional: if you want the card border to continue smoothly
+                                            borderRadius: "8px 8px 0 0"  // Match card border radius if needed
+                                        }}
+                                    >
+                                        <img
+                                            src={product.image || "https://www.svgrepo.com/show/508699/landscape-placeholder.svg"}
+                                            alt={product.name}
+                                            style={{
+                                                maxHeight: "100%",
+                                                maxWidth: "100%",
+                                                objectFit: "contain",
+                                            }}
+                                        />
+                                    </div>
                                 }
+                            style={{
+                                background: "#fafafa",      // Content background
+                                // border: "1px solid #d9d9d9", // Light border
+                                // borderRadius: 8,
+                            }}
                             >
-                                <Card.Meta title={`Product ${id}`} description="$99.99" />
-                            </Card>
+                            <Card.Meta
+                                title={product.name}
+                                description={`₱${product.price?.toLocaleString()}`}
+                            />
+                        </Card>
                         </Col>
                     ))}
-                </Row>
-            </Content>
-        </Layout>
+            </Row>
+        </Content>
+        </Layout >
     )
 }
 
