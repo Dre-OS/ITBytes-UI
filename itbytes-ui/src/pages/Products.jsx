@@ -150,7 +150,7 @@ const Products = () => {
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
-                          height: 200,
+                          height: 180,
                           border: "1px solid #f0f0f0", // ✅ Border added here
                           borderBottom: "none",        // Optional: if you want the card border to continue smoothly
                           borderRadius: "8px 8px 0 0"  // Match card border radius if needed
@@ -183,6 +183,7 @@ const Products = () => {
                     <Button
                       type="primary"
                       block
+                      style={{ marginTop: 16 }}
                       onClick={() => navigate(`/products/${product.id}`)}
                     >
                       View Product
