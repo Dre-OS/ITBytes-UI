@@ -39,20 +39,28 @@ const Product = () => {
     }, [id]);
 
     const handleAddToCart = () => {
-  if (quantity < 1) {
-    message.warning("Please enter a valid quantity.");
-    return;
-  }
+        const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+        console.log("isAuthenticated:", isAuthenticated);
+        if (isAuthenticated !== "true") {
+            message.error("Please log in to add items to your cart.");
+            return;
+        }
 
-  const productToAdd = {
-    _id: product._id,
-    name: product.name,
-    price: product.price,
-  };
+        if (quantity < 1) {
+            message.warning("Please enter a valid quantity.");
+            return;
+        }
 
-  addToCart(productToAdd, quantity);
-  message.success(`${quantity} x "${product.name}" added to cart`);
-};
+        const productToAdd = {
+            itemId: product.id,
+            name: product.name,
+            price: product.price,
+        };
+        console.log("Adding to cart:", productToAdd, "Quantity:", quantity);
+
+        addToCart(productToAdd, quantity);
+        message.success(`${quantity} x "${product.name}" added to cart`);
+    };
 
     if (loading) {
         return <Spin size="large" style={{ display: "block", margin: "100px auto" }} />;
@@ -99,7 +107,7 @@ const Product = () => {
                 <div style={{ flex: 1 }}>
                     <Title level={3}>{product.name}</Title>
                     <Divider />
-                    <Paragraph style={{ fontSize: 16}}>
+                    <Paragraph style={{ fontSize: 16 }}>
                         Price: ₱{product.price.toLocaleString()}
                     </Paragraph>
                     <Divider />
