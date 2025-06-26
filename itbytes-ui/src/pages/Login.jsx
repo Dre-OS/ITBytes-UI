@@ -27,6 +27,7 @@ function Login() {
           return;
         }
 
+        sessionStorage.setItem('userId', user._id);
         sessionStorage.setItem('isAuthenticated', true);
         sessionStorage.setItem('firstname', user.firstname);
         sessionStorage.setItem('role', user.role);
