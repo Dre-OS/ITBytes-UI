@@ -5,6 +5,7 @@ import ArrowUpOutlined from "@ant-design/icons/ArrowUpOutlined";
 import { DownOutlined } from "@ant-design/icons";
 import "../../styles/MainLayout.css";
 import { FloatButton } from "antd";
+import { useEffect, useState } from "react";
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -23,22 +24,52 @@ const categoryMenu = (
 );
 
 export default function MainLayout() {
+    const [showButton, setShowButton] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowButton(window.scrollY > 0);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
-        <Layout style={{ minHeight: "100vh", background: "#fff", }}>
+        <Layout style={{ minHeight: "100vh", background: "#fff", transition: "background 0.3s ease" }}>
             <Navbar />
-            <div style={{ display: "flex", justifyContent: "left", width: "90%", marginLeft: "5.5%", marginBottom: "20px" }}>
-                <Dropdown overlay={categoryMenu} arrow>
-                    <a onClick={(e) => e.preventDefault()} style={{ color: '#2C485F', fontWeight: 500 }}>
-                        Categories <DownOutlined style={{ marginLeft: "5px" }} />
-                    </a>
-                </Dropdown>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "left",
+                    width: "90%",
+                    marginLeft: "5.5%",
+                    marginBottom: "20px",
+                    transition: "all 0.3s ease"
+                }}
+            >
             </div>
-            <Divider style={{ margin: "0" }} />
-            <div style={{ width: "100%", marginTop: "30px", marginBottom: "30px" }}>
+            <Divider style={{ margin: "0", transition: "all 0.3s ease" }} />
+            <div
+                style={{
+                    width: "100%",
+                    marginTop: "30px",
+                    marginBottom: "30px",
+                    transition: "all 0.3s ease"
+                }}
+            >
                 <Content>
                     <Outlet />
                 </Content>
             </div>
+            {showButton && (
+                <FloatButton
+                    icon={<ArrowUpOutlined />}
+                    type='default'
+                    style={{ right: 24, bottom: 24, transition: "all 0.3s ease" }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                    tooltip="Back to Top"
+                />
+            )}
         </Layout>
     );
 }
