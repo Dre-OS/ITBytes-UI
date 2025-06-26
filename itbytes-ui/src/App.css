@@ -2,3 +2,23 @@ body {
   margin: 0;
   font-family: "Poppins", sans-serif;
 }
+
+body, html, * {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Optional override for Ant Design components */
+.ant-card,
+.ant-statistic,
+.ant-statistic-title,
+.ant-statistic-content-value,
+.ant-typography,
+.ant-card-head-title,
+.ant-card-body,
+.ant-select,
+.ant-select-selector,
+.ant-tabs,
+.ant-tabs-tab,
+.ant-table {
+  font-family: 'Poppins', sans-serif !important;
+}
