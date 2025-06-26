@@ -12,22 +12,36 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(storedCart);
+    console.log("Cart loaded from localStorage:", storedCart);
     setIsInitialized(true); // 👈 Only allow saving AFTER this
   }, []);
 
-  // ✅ Save to localStorage *only after cart is loaded*
   useEffect(() => {
     if (isInitialized) {
-      localStorage.setItem("cart", JSON.stringify(cart));
+      try {
+        const serializedCart = JSON.stringify(cart);
+        localStorage.setItem("cart", serializedCart);
+      } catch (err) {
+        console.error("❌ Error saving cart to localStorage:", err);
+        console.log("Problematic cart:", cart);
+      }
     }
   }, [cart, isInitialized]);
 
+  const updateQuantity = (itemId, quantity) => {
+  setCart((prevCart) =>
+    prevCart.map((item) =>
+      item.itemId === itemId ? { ...item, quantity } : item
+    )
+  );
+};
+
   const addToCart = (product, quantity = 1) => {
     setCart((prevCart) => {
-      const existing = prevCart.find((item) => item._id === product._id);
+      const existing = prevCart.find((item) => item.itemId === product.itemId);
       if (existing) {
         return prevCart.map((item) =>
-          item._id === product._id
+          item.itemId === product.itemId
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -38,7 +52,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item._id !== id));
+    setCart((prevCart) => prevCart.filter((item) => item.itemId !== id));
   };
 
   const clearCart = () => {
@@ -46,7 +60,7 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, updateQuantity }}>
       {children}
     </CartContext.Provider>
   );
