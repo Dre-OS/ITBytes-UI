@@ -39,6 +39,8 @@ const ManageUsers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -108,25 +110,30 @@ const ManageUsers = () => {
 
   const handleSearch = (value) => {
     setSearchText(value);
-    const lower = value.toLowerCase();
+    applyFilters(value, selectedRole, selectedStatus);
+  };
 
-    if (!value) {
-      // if search is cleared, reset to full list
-      setUsers(allUsers);
-      return;
-    }
+  const applyFilters = (search, role, status) => {
+    const lower = search.toLowerCase();
 
-    const filtered = allUsers.filter(
-      (u) =>
-        u.firstname?.toLowerCase().includes(lower) ||
-        u.lastname?.toLowerCase().includes(lower) ||
-        u.email?.toLowerCase().includes(lower) ||
-        u.middlename?.toLowerCase().includes(lower) ||
-        u.role?.toLowerCase().includes(lower)
-    );
+    const filtered = allUsers.filter((user) => {
+      const matchesSearch =
+        !search ||
+        user.firstname?.toLowerCase().includes(lower) ||
+        user.lastname?.toLowerCase().includes(lower) ||
+        user.email?.toLowerCase().includes(lower) ||
+        user.middlename?.toLowerCase().includes(lower) ||
+        user.role?.toLowerCase().includes(lower);
+
+      const matchesRole = !role || user.role === role;
+      const matchesStatus = !status || user.isAuth === status;
+
+      return matchesSearch && matchesRole && matchesStatus;
+    });
 
     setUsers(filtered);
   };
+
 
   const columns = [
     { title: "User ID", dataIndex: "_id", key: "_id", hidden: true },
@@ -229,10 +236,9 @@ const ManageUsers = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Content style={{ padding: 35, background: "#fff" }}>
-        <h1>User Management</h1>
+      <Content style={{ padding: "10px 35px", background: "#F5F5F5" }}>
+        <h1 style={{ marginBottom: -5 }}>User Management</h1>
         <p>Handles user registration and access control.</p>
-        <Divider />
         <div className="table-top-parent">
           <div className="table-top-left">
             <Input.Search
@@ -242,6 +248,36 @@ const ManageUsers = () => {
               className="table-search"
               allowClear
             />
+            <Select
+              placeholder="Filter by Role"
+              style={{ width: 150 }}
+              allowClear
+              value={selectedRole}
+              onChange={(value) => {
+                setSelectedRole(value);
+                applyFilters(searchText, value, selectedStatus);
+              }}
+            >
+              <Select.Option value="admin">Admin</Select.Option>
+              <Select.Option value="sales">Sales</Select.Option>
+              <Select.Option value="inventory">Inventory</Select.Option>
+              <Select.Option value="business">Business</Select.Option>
+              <Select.Option value="customer">Customer</Select.Option>
+            </Select>
+            <Select
+              placeholder="Filter by Status"
+              style={{ width: 160 }}
+              allowClear
+              value={selectedStatus}
+              onChange={(value) => {
+                setSelectedStatus(value);
+                applyFilters(searchText, selectedRole, value);
+              }}
+            >
+              <Select.Option value="approved">Approved</Select.Option>
+              <Select.Option value="pending">Pending</Select.Option>
+              <Select.Option value="rejected">Rejected</Select.Option>
+            </Select>
           </div>
           <div className="table-top-right">
             <Button
@@ -314,7 +350,7 @@ const ManageUsers = () => {
                 <Select.Option value="admin">Admin</Select.Option>
               </Select>
             </Form.Item>
-            <Divider />
+            <Divider className="full-width-divider" />
             <Form.Item
               label="Email"
               name="email"
