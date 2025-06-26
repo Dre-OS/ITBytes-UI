@@ -17,11 +17,18 @@
   flex-wrap: wrap;
   gap: 10px;
   width: 100%;
+  margin-top: 30px;
+}
+
+.full-width-divider {
+  margin-inline: -35px;
 }
 
 .table-top-left {
   flex: 1;
   min-width: 250px;
+  display: flex;
+  gap: 10px;
 }
 
 .table-top-right {
