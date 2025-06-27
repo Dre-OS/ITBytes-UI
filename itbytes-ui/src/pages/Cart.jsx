@@ -8,13 +8,24 @@ const apiUrl = import.meta.env.VITE_ORDER_API_URL;
 
 const Cart = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
+  const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
+
+    if (!isAuthenticated) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px", fontFamily: "Poppins" }}>
+        <Title level={4}>Sign in to add items to your cart</Title>
+        <Button type="primary" href="/login">Sign In</Button>
+      </div>
+    );
+  }
 
   const handleOrder = async () => {
     try {
       const order = {
-        customerId: sessionStorage.getItem("userID"),
+        customerId: sessionStorage.getItem("userId"),
         orders: cart,
       };
+      console.log("Placing order:", order);
       await axios.post(`${apiUrl}/out`, order);
       message.success("Order placed successfully!");
       clearCart();
