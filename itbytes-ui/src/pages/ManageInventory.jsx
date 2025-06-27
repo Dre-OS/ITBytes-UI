@@ -12,7 +12,8 @@ import {
   Divider,
   Tag,
   Select,
-  Upload
+  Upload,
+  Image
 } from "antd";
 import {
   PlusOutlined,
@@ -80,7 +81,7 @@ const ManageInventory = () => {
       tags: values.tags,
       quantity: values.quantity,
       price: values.price,
-      image: base64Image || editingItem?.image || "", // ✅ safe fallback
+      image: base64Image || (form.getFieldValue("image")?.[0]?.url ?? editingItem?.image ?? "")
     };
 
     console.log("Item Data:", itemData);
@@ -145,19 +146,19 @@ const ManageInventory = () => {
       key: "image",
       width: 100,
       render: (img) => (
-        <img
+        <Image
           src={img}
           alt="product"
-          style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 4 }}
-          onError={(e) => {
-            e.target.onerror = null; // Prevent infinite loop
-            e.target.src = "https://www.svgrepo.com/show/508699/landscape-placeholder.svg"; // Fallback image
-          }}
+          width={60}
+          height={60}
+          style={{ objectFit: "contain", borderRadius: 4 }}
+          fallback="https://www.svgrepo.com/show/508699/landscape-placeholder.svg"
+          preview={true}
         />
       )
     },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
-    { title: "Description", dataIndex: "description", key: "description", maxWidth: 180 },
+    { title: "Description", dataIndex: "description", key: "description", width: 500 },
     {
       title: "Category", dataIndex: "category", key: "category", width: 120,
       render: (category) => <Tag color="default">{category}</Tag>
@@ -182,7 +183,7 @@ const ManageInventory = () => {
       dataIndex: "price",
       key: "price",
       width: 100,
-      render: (price) => `$${price.toFixed(2)}`
+      render: (price) => `₱${price.toFixed(2)}`
     },
     {
       title: "",
@@ -257,8 +258,9 @@ const ManageInventory = () => {
               <Select.Option value="Printer">Printer</Select.Option>
               <Select.Option value="Smartphones">Smartphones</Select.Option>
               <Select.Option value="Computer">Computer</Select.Option>
-              <Select.Option value="Electronics">Electronics</Select.Option>
+              <Select.Option value="Electronics">Components</Select.Option>
               <Select.Option value="Monitors">Monitors</Select.Option>
+              <Select.Option value="Peripherals">Peripherals</Select.Option>
             </Select>
           </div>
           <Button
@@ -320,6 +322,10 @@ const ManageInventory = () => {
                   setBase64Image(base64);
                   form.setFieldsValue({ image: [file] });
                   return false; // Prevent automatic upload
+                }}
+                onRemove={() => {
+                  setBase64Image("");
+                  form.setFieldsValue({ image: [] }); // Reset form value
                 }}
               >
                 {form.getFieldValue("image")?.length >= 1 ? null : "+ Upload"}
