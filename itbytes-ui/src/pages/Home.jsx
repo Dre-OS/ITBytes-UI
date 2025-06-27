@@ -69,6 +69,14 @@ function Home() {
             title: "Smartphones",
             image: "https://cherryshop.com.ph/cdn/shop/files/s10.jpg?v=1697530588&width=533",
         },
+        {
+            title: "Components",
+            image: "https://images.teamgroupinc.com/products/ssd/m2/ga-pro/01_s.jpg",
+        },
+        {
+            title: "Peripherals",
+            image: "https://fantechworld.com/cdn/shop/files/ProductImage_HeliosIIProSXD3V34K8KBlack.png?v=1717055541",
+        },
     ];
 
     useEffect(() => {
@@ -149,7 +157,7 @@ function Home() {
                 </div>
                 <Row gutter={[24, 24]} justify="center" style={{ marginTop: 30 }}>
                     {categories.map((category, index) => (
-                        <Col xs={24} sm={12} md={4} key={index}>
+                        <Col xs={24} sm={12} md={3} key={index}>
                             <Card hoverable variant="borderless" className="category-card">
                                 <img src={category.image} alt={category.title} className="category-image" />
                                 <h3 style={{ fontWeight: 500 }}>{category.title}</h3>
@@ -198,21 +206,21 @@ function Home() {
                                         />
                                     </div>
                                 }
-                            style={{
-                                background: "#fafafa",      // Content background
-                                // border: "1px solid #d9d9d9", // Light border
-                                // borderRadius: 8,
-                            }}
+                                style={{
+                                    background: "#fafafa",      // Content background
+                                    // border: "1px solid #d9d9d9", // Light border
+                                    // borderRadius: 8,
+                                }}
                             >
-                            <Card.Meta
-                                title={product.name}
-                                description={`₱${product.price?.toLocaleString()}`}
-                            />
-                        </Card>
+                                <Card.Meta
+                                    title={product.name}
+                                    description={`₱${product.price?.toLocaleString()}`}
+                                />
+                            </Card>
                         </Col>
                     ))}
-            </Row>
-        </Content>
+                </Row>
+            </Content>
         </Layout >
     )
 }
