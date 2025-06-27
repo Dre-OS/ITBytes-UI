@@ -17,7 +17,7 @@ const UserInsights = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get(apiUrl);
+      const { data } = await axios.get(`${apiUrl}/all`);
       setUsers(data);
 
       // Role counts
