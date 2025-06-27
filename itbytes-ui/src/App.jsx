@@ -8,6 +8,7 @@ import ManageOrders from "./pages/ManageOrders";
 import ManageSales from "./pages/ManageSales";
 import ManageUsers from "./pages/ManageUsers";
 import Settings from "./pages/Settings";
+import Businesses from "./pages/Businesses";
 
 //Customer Routes
 import Main from "./pages//layouts/MainLayout";
@@ -100,6 +101,14 @@ export default function App() {
             element={
               <RoleRoute allowedRoles={["admin"]}>
                 <Settings />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="other-businesses"
+            element={
+              <RoleRoute allowedRoles={["admin"]}>
+                <Businesses />
               </RoleRoute>
             }
           />
