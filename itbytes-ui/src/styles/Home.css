@@ -28,7 +28,7 @@
   object-fit: cover;
   display: block;
   margin: 0 auto 16px auto;
-    border: 1px solid lightgray; /* Customize the color and thickness */
+    border: 1px solid #f0f0f0; /* Customize the color and thickness */
 }
 
 .category-card {
