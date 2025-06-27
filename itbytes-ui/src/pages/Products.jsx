@@ -47,8 +47,9 @@ const Products = () => {
     "Printer",
     "Smartphones",
     "Computer",
-    "Electronics",
-    "Monitors"
+    "Components",
+    "Monitors",
+    "Peripherals",
   ];
 
   const applyFilters = () => {
