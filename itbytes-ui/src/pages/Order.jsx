@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Typography, Tag, List, Descriptions, Spin, message, Button } from "antd";
+import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal } from "antd";
 import axios from "axios";
 
 const { Title, Text } = Typography;
@@ -8,11 +8,18 @@ const apiUrl = import.meta.env.VITE_ORDER_API_URL;
 const Order = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null); // "cancel" or "pay"
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const customerId = sessionStorage.getItem("userID");
+  const customerId = sessionStorage.getItem("userId");
 
   useEffect(() => {
-    axios.get(`${apiUrl}/customer/${customerId}`)
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    axios.get(`${apiUrl}/out/customer/${customerId}`)
       .then((res) => {
         setOrders(res.data);
         setLoading(false);
@@ -22,7 +29,7 @@ const Order = () => {
         message.error("Failed to fetch orders.");
         setLoading(false);
       });
-  }, []);
+  };
 
   const handlePayment = async (orderId) => {
     try {
@@ -45,6 +52,18 @@ const Order = () => {
       </div>
     );
   }
+  const handleCancelOrder = async (orderId) => {
+    try {
+      const cancel = { status: "cancelled" };
+      await axios.put(`${apiUrl}/out/${orderId}`, cancel);
+      fetchOrders(); // Refresh orders after cancellation
+      message.success("Order cancelled.");
+    } catch (err) {
+      console.error(err);
+      message.error("Cancellation failed.");
+    }
+  };
+
 
   return (
     <div style={{ padding: "0 5%" }}>
@@ -57,29 +76,47 @@ const Order = () => {
           <Card
             key={order._id}
             title={`Order ID: ${order._id}`}
-            style={{ marginBottom: 24 }}
+            style={{
+              marginBottom: 24,
+              opacity: order.status === "cancelled" ? 0.5 : 1,        // Grays it out
+              pointerEvents: order.status === "cancelled" ? "none" : "auto", // Optional: disable interaction
+            }}
             bordered
             extra={
-              !order.isPaid && (
+              (order.status !== "cancelled" && !order.isPaid) && (
                 <div style={{ display: "flex", gap: 8 }}>
-                  <Button type="default" onClick={() => handlePayment(order._id)}>
+                  <Button type="default" onClick={() => {
+                    setSelectedOrder(order);
+                    setModalType("cancel");
+                    setIsModalOpen(true);
+                  }}>
                     Cancel Order
                   </Button>
-                  <Button type="primary" onClick={() => handlePayment(order._id)}>
+
+                  <Button type="primary" onClick={() => {
+                    setSelectedOrder(order);
+                    setModalType("pay");
+                    setIsModalOpen(true);
+                  }}>
                     Pay for Order
                   </Button>
                 </div>
               )
             }
           >
+
             <Descriptions bordered column={1} size="small">
               <Descriptions.Item label="Total Price">
                 ₱{order.totalPrice.toLocaleString()}
               </Descriptions.Item>
               <Descriptions.Item label="Status">
-                <Tag color={order.status === "Completed" ? "green" : "orange"}>
+                <Tag color={
+                  order.status === "Completed" ? "green" :
+                    order.status === "cancelled" ? "gray" : "orange"
+                }>
                   {order.status}
                 </Tag>
+
               </Descriptions.Item>
               <Descriptions.Item label="Payment">
                 <Tag color={order.isPaid ? "green" : "red"}>
@@ -105,6 +142,32 @@ const Order = () => {
                 </List.Item>
               )}
             />
+            <Modal
+              open={isModalOpen}
+              onCancel={() => {
+                setIsModalOpen(false);
+                setModalType(null);
+                setSelectedOrder(null);
+              }}
+              onOk={() => {
+                if (modalType === "pay") {
+                  handlePayment(selectedOrder._id);
+                } else if (modalType === "cancel") {
+                  handleCancelOrder(selectedOrder._id);
+                }
+                setIsModalOpen(false);
+                setModalType(null);
+                setSelectedOrder(null);
+              }}
+              title={modalType === "pay" ? "Proceed to Payment" : "Cancel Order"}
+            >
+              <p>
+                {modalType === "pay"
+                  ? "Are you sure you want to pay for this order?"
+                  : "Are you sure you want to cancel this order?"}
+              </p>
+            </Modal>
+
           </Card>
         ))
       )}
