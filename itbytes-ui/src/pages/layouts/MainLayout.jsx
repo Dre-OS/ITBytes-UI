@@ -6,6 +6,7 @@ import { DownOutlined } from "@ant-design/icons";
 import "../../styles/MainLayout.css";
 import { FloatButton } from "antd";
 import { useEffect, useState } from "react";
+import BusinessDirectory from "../../components/BusinessDirectory";
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -70,6 +71,7 @@ export default function MainLayout() {
                     tooltip="Back to Top"
                 />
             )}
+            <BusinessDirectory />
         </Layout>
     );
 }
