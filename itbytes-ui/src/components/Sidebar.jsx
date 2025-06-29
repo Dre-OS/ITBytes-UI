@@ -38,13 +38,13 @@ export default function Sidebar({ collapsed, setCollapsed }) {
     { key: "/dashboard/manage-users", icon: <UserOutlined />, label: <Link to="/dashboard/manage-users">Manage Users</Link> },
     { key: "/dashboard/manage-inventory", icon: <InboxOutlined />, label: <Link to="/dashboard/manage-inventory">Manage Inventory</Link> },
     { key: "/dashboard/manage-orders", icon: <ShoppingCartOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
-    { key: "/dashboard/manage-sales", icon: <DollarOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
-    { key: "/dashboard/other-businesses", icon: <ShopOutlined />, label: <Link to="/dashboard/other-businesses">Other Businesses</Link> },
+    // { key: "/dashboard/manage-sales", icon: <DollarOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
+    // { key: "/dashboard/other-businesses", icon: <ShopOutlined />, label: <Link to="/dashboard/other-businesses">Other Businesses</Link> },
   ];
 
   const salesMenu = [
     { key: "/dashboard/manage-orders", icon: <ShoppingCartOutlined />, label: <Link to="/dashboard/manage-orders">Manage Orders</Link> },
-    { key: "/dashboard/manage-sales", icon: <DollarOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
+    // { key: "/dashboard/manage-sales", icon: <DollarOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
   ];
 
   const inventoryMenu = [
