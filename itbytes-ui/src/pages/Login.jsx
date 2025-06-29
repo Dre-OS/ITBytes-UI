@@ -54,8 +54,11 @@ function Login() {
       <div className="login-image">
         <img src={logo} alt="" className="login-image-logo" />
         <div style={{ textAlign: 'center', width: '60%', marginTop: '-30px' }}>
-          <p style={{ fontSize: 13 }}>A user-friendly online store for IT products and CCTV systems, offering seamless browsing, ordering, and secure checkout for customers.</p>
+          <p style={{ fontSize: 13 }}>
+            <p style={{ fontSize: 13 }}>A user-friendly online store for IT products and CCTV systems, offering seamless browsing, ordering, and secure checkout for customers.</p>
+          </p>
         </div>
+
       </div>
       <div className="login-form">
         <div className='login-back'>
