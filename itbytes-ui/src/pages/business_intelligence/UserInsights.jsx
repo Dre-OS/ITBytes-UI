@@ -9,6 +9,8 @@ const UserInsights = () => {
   const [users, setUsers] = useState([]);
   const [roleCounts, setRoleCounts] = useState([]);
   const [authCounts, setAuthCounts] = useState([]);
+  const [adminCount, setAdminCount] = useState(0);
+  const [recentUser, setRecentUser] = useState(null);
   const [statusCounts, setStatusCounts] = useState([]);
 
   useEffect(() => {
@@ -19,6 +21,13 @@ const UserInsights = () => {
     try {
       const { data } = await axios.get(`${apiUrl}/all`);
       setUsers(data);
+
+      const adminCount = users.filter(user => user.role === "admin").length;
+      const recentUser = users.reduce((latest, user) =>
+        new Date(user.createdAt) > new Date(latest.createdAt) ? user : latest, users[0] || {}
+      );
+      setAdminCount(adminCount);
+      setRecentUser(recentUser);
 
       // Role counts
       const roles = data.reduce((acc, user) => {
@@ -64,7 +73,7 @@ const UserInsights = () => {
         <Col span={6}>
           <Card>
             <Statistic style={{ fontFamily: 'Poppins' }}
-              valueStyle={{ fontSize: '20px', fontFamily: 'Poppins', fontWeight: 600 }}
+              valueStyle={{ fontSize: '16px', fontFamily: 'Poppins', fontWeight: 600 }}
               title="Total Users" value={users.length} />
           </Card>
         </Col>
@@ -72,7 +81,7 @@ const UserInsights = () => {
           <Card>
             <Statistic
               style={{ fontFamily: 'Poppins' }}
-              valueStyle={{ fontSize: '20px', fontFamily: 'Poppins', fontWeight: 600 }}
+              valueStyle={{ fontSize: '16px', fontFamily: 'Poppins', fontWeight: 600 }}
               title="Most Common Role"
               value={
                 roleCounts.length > 0
@@ -82,6 +91,27 @@ const UserInsights = () => {
             />
           </Card>
         </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic
+              style={{ fontFamily: 'Poppins' }}
+              valueStyle={{ fontSize: '16px', fontFamily: 'Poppins', fontWeight: 600 }}
+              title="Total Admins"
+              value={adminCount}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic
+              style={{ fontFamily: 'Poppins' }}
+              valueStyle={{ fontSize: '16px', fontWeight: 600 }}
+              title="Most Recent User"
+              value={recentUser?.firstName ? `${recentUser.firstName} ${recentUser.lastName}` : "-"}
+            />
+          </Card>
+        </Col>
+
       </Row>
 
       <Row gutter={24}>
