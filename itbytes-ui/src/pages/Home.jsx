@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { Button, Card, Col, Layout, Row, Typography, Carousel } from "antd";
 import axios from 'axios';
 import '../styles/Home.css';
+import ProductModal from '../components/ProductModal';
+import { useNavigate } from 'react-router-dom';
 const { Title, Paragraph } = Typography;
 const { Content, Footer } = Layout;
 import {
@@ -17,8 +19,23 @@ import hero3 from '../assets/hero3.png';
 import hero4 from '../assets/hero4.png';
 import hero5 from '../assets/hero5.png';
 
+
 function Home() {
     const [featured, setFeatured] = useState([]);
+    const [selectedProductId, setSelectedProductId] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const navigate = useNavigate();
+
+    const openProductModal = (id) => {
+        console.log("Opening modal for product ID:", id);
+        setSelectedProductId(id);
+        setModalVisible(true);
+    };
+
+    const closeProductModal = () => {
+        setModalVisible(false);
+        setSelectedProductId(null);
+    };
 
     const features = [
         {
@@ -158,12 +175,18 @@ function Home() {
                 <Row gutter={[24, 24]} justify="center" style={{ marginTop: 30 }}>
                     {categories.map((category, index) => (
                         <Col xs={24} sm={12} md={3} key={index}>
-                            <Card hoverable variant="borderless" className="category-card">
+                            <Card
+                                hoverable
+                                variant="borderless"
+                                className="category-card"
+                                onClick={() => navigate(`/products?category=${encodeURIComponent(category.title)}`)}
+                            >
                                 <img src={category.image} alt={category.title} className="category-image" />
-                                <h3 style={{ fontWeight: 500 }}>{category.title}</h3>
+                                <h3 style={{ fontWeight: 500, textAlign: "center", marginTop: 10, width: "100%" }}>{category.title}</h3>
                             </Card>
                         </Col>
                     ))}
+
                 </Row>
             </Content>
 
@@ -196,12 +219,16 @@ function Home() {
                                         }}
                                     >
                                         <img
-                                            src={product.image || "https://www.svgrepo.com/show/508699/landscape-placeholder.svg"}
+                                            src={product.image || "https://static.vecteezy.com/system/resources/thumbnails/008/695/917/small_2x/no-image-available-icon-simple-two-colors-template-for-no-image-or-picture-coming-soon-and-placeholder-illustration-isolated-on-white-background-vector.jpg"}
                                             alt={product.name}
                                             style={{
                                                 maxHeight: "100%",
                                                 maxWidth: "100%",
                                                 objectFit: "contain",
+                                            }}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = "https://static.vecteezy.com/system/resources/thumbnails/008/695/917/small_2x/no-image-available-icon-simple-two-colors-template-for-no-image-or-picture-coming-soon-and-placeholder-illustration-isolated-on-white-background-vector.jpg";
                                             }}
                                         />
                                     </div>
@@ -216,11 +243,25 @@ function Home() {
                                     title={product.name}
                                     description={`₱${product.price?.toLocaleString()}`}
                                 />
+                                <Button
+                                    type="primary"
+                                    block
+                                    style={{ marginTop: 16 }}
+                                    onClick={() => openProductModal(product._id)}
+                                >
+                                    View Product
+                                </Button>
                             </Card>
                         </Col>
                     ))}
                 </Row>
             </Content>
+            <ProductModal
+                productId={selectedProductId}
+                visible={modalVisible}
+                onClose={closeProductModal}
+            />
+
         </Layout >
     )
 }
