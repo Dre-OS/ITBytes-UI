@@ -31,7 +31,7 @@ const BusinessDirectory = () => {
             }}
         >
             <Title level={4} style={{ textAlign: "center", marginBottom: "30px" }}>
-                Other Businesses
+                Business Directory
             </Title>
             <Row gutter={[16, 16]} justify="center" align="middle">
                 {businesses.map((biz, index) => (
