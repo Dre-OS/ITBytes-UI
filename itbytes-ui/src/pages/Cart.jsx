@@ -12,7 +12,7 @@ const Cart = () => {
 
     if (!isAuthenticated) {
     return (
-      <div style={{ textAlign: "center", marginTop: "50px", fontFamily: "Poppins" }}>
+      <div style={{ textAlign: "center", marginTop: "50px", fontFamily: "Poppins", height: "100vh" }}>
         <Title level={4}>Sign in to add items to your cart</Title>
         <Button type="primary" href="/login">Sign In</Button>
       </div>
