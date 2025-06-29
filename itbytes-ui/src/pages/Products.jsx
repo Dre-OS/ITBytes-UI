@@ -13,7 +13,10 @@ import {
   Tag
 } from "antd";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import ProductModal from "../components/ProductModal"; // Adjust path if needed
+
+
 
 const { Title, Paragraph } = Typography;
 const apiUrl = import.meta.env.VITE_INVENTORY_API_URL || "http://localhost:5000/api/products";
@@ -26,13 +29,31 @@ const Products = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const categoryFromQuery = queryParams.get("category");
 
-  const navigate = useNavigate();
+
+  const openProductModal = (id) => {
+    setSelectedProductId(id);
+    setModalVisible(true);
+  };
+
+  const closeProductModal = () => {
+    setModalVisible(false);
+    setSelectedProductId(null);
+  };
 
   useEffect(() => {
     axios.get(`${apiUrl}`)
       .then((res) => {
         setProducts(res.data);
+        if (categoryFromQuery) {
+          setSelectedCategories([categoryFromQuery]);
+        }
+
         setFiltered(res.data);
         setLoading(false);
       })
@@ -185,7 +206,7 @@ const Products = () => {
                       type="primary"
                       block
                       style={{ marginTop: 16 }}
-                      onClick={() => navigate(`/products/${product.id}`)}
+                      onClick={() => openProductModal(product._id)}
                     >
                       View Product
                     </Button>
@@ -196,6 +217,11 @@ const Products = () => {
           </Col>
         </Row>
       )}
+      <ProductModal
+        productId={selectedProductId}
+        visible={modalVisible}
+        onClose={closeProductModal}
+      />
     </div>
   );
 };
