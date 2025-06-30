@@ -10,16 +10,18 @@
 
 /* Hover on menu item */
 .ant-menu-dark .ant-menu-item:hover {
-  background-color: #3A5F7A !important; /* slightly lighter */
+  background-color: #3A5F7A !important;
+  /* slightly lighter */
 }
 
 /* Selected menu item */
 .ant-menu-dark .ant-menu-item-selected {
-  background-color: #244053 !important; /* slightly darker */
+  background-color: #244053 !important;
+  /* slightly darker */
 }
 
 /* Link color */
-.ant-menu-dark .ant-menu-item > a {
+.ant-menu-dark .ant-menu-item>a {
   color: #FFFFFF !important;
 }
 
@@ -46,4 +48,24 @@
   .ant-layout-sider-collapsed {
     width: 80px !important;
   }
+}
+
+/* Child menu item (submenu) background */
+.ant-menu-dark .ant-menu-submenu>.ant-menu {
+  background-color: #37566E !important;
+}
+
+/* Child item hover */
+.ant-menu-dark .ant-menu-submenu>.ant-menu .ant-menu-item:hover {
+  background-color: #426985 !important;
+}
+
+/* Child item selected */
+.ant-menu-dark .ant-menu-submenu>.ant-menu .ant-menu-item-selected {
+  background-color: #2D4D64 !important;
+}
+
+/* Child link color (in case it's overridden) */
+.ant-menu-dark .ant-menu-submenu>.ant-menu .ant-menu-item>a {
+  color: #FFFFFF !important;
 }
