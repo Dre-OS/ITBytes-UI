@@ -47,21 +47,54 @@ const Products = () => {
   };
 
   useEffect(() => {
-    axios.get(`${apiUrl}`)
-      .then((res) => {
-        setProducts(res.data);
-        if (categoryFromQuery) {
-          setSelectedCategories([categoryFromQuery]);
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(apiUrl);
+        const allProducts = res.data;
+        setProducts(allProducts);
+
+        const queryParams = new URLSearchParams(location.search);
+        const categoryFromUrl = queryParams.get("category");
+
+        // Update selectedCategories (if from URL)
+        if (categoryFromUrl) {
+          setSelectedCategories([categoryFromUrl]);
+        } else {
+          setSelectedCategories([]);
         }
 
-        setFiltered(res.data);
+
+        // ✅ Apply filters manually after setting all necessary data
+        const lowerSearch = searchText.toLowerCase();
+        let filtered = [...allProducts];
+
+        if (categoryFromUrl) {
+          filtered = filtered.filter(p => p.category === categoryFromUrl);
+        }
+
+        if (searchText) {
+          filtered = filtered.filter(p =>
+            p.name.toLowerCase().includes(lowerSearch) ||
+            p.description.toLowerCase().includes(lowerSearch)
+          );
+        }
+
+        setFiltered(filtered);
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Fetch error:", err);
         message.error("Error fetching products");
-      });
-  }, []);
+      }
+    };
+
+    fetchProducts();
+  }, [location.search]); // Re-run when query changes (like category)
+
+  useEffect(() => {
+    applyFilters();
+  }, [searchText, selectedCategories, minPrice, maxPrice, products]);
+
+
 
   const uniqueCategories = [
     "CCTV",
@@ -99,10 +132,6 @@ const Products = () => {
     setFiltered(filtered);
   };
 
-  useEffect(() => {
-    applyFilters();
-  }, [searchText, selectedCategories, minPrice, maxPrice]);
-
   return (
     <div style={{ padding: "0 5%" }}>
       <Title level={3} style={{ marginBottom: "30px" }}>All Products</Title>
@@ -136,6 +165,7 @@ const Products = () => {
                   </Checkbox>
                 ))}
               </Checkbox.Group>
+
 
               <Title level={5}>Price Range</Title>
               <div style={{ display: "flex", gap: 8 }}>
@@ -189,13 +219,25 @@ const Products = () => {
                           }}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "https://static.vecteezy.com/system/resources/thumbnails/008/695/917/small_2x/no-image-available-icon-simple-two-colors-template-for-no-image-or-picture-coming-soon-and-placeholder-illustration-isolated-on-white-background-vector.jpg";
+                            e.target.src = "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg";
                           }}
                         />
                       </div>
                     }
                   >
-                    <Title level={5}>{product.name}</Title>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        fontSize: 16,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        height: 24,
+                      }}
+                      title={product.name} // Tooltip shows full name on hover
+                    >
+                      {product.name}
+                    </div>
                     <Paragraph style={{ marginBottom: 4, color: "#888" }}>
                       Category: <Tag color="default">{product.category}</Tag>
                     </Paragraph>
@@ -206,7 +248,7 @@ const Products = () => {
                       type="primary"
                       block
                       style={{ marginTop: 16 }}
-                      onClick={() => openProductModal(product._id)}
+                      onClick={() => openProductModal(product.id)}
                     >
                       View Product
                     </Button>
