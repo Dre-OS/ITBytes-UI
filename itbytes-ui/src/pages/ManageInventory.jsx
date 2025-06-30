@@ -144,7 +144,7 @@ const ManageInventory = () => {
       )
     },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
-    { title: "Description", dataIndex: "description", key: "description", width: 500 },
+    { title: "Description", dataIndex: "description", key: "description", width: 300 },
     {
       title: "Category",
       dataIndex: "category",
@@ -232,28 +232,30 @@ const ManageInventory = () => {
       <Content style={{ padding: "10px 35px", background: "#F5F5F5" }}>
         <h1 style={{ marginBottom: -5 }}>Inventory Management</h1>
         <p>Manages stock levels, item tracking, and managing products</p>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20, marginTop: 30 }}>
-          <Input.Search
-            placeholder="Search inventory..."
-            value={searchText}
-            onChange={(e) => handleSearch(e.target.value)}
-            style={{ width: 300 }}
-            allowClear
-          />
-          <Select
-            placeholder="Filter by Category"
-            style={{ width: 200 }}
-            allowClear
-            value={selectedCategory}
-            onChange={(value) => {
-              setSelectedCategory(value);
-              applyFilters(searchText, value);
-            }}
-          >
-            {['CCTV', 'Printer', 'Smartphones', 'Computer', 'Electronics', 'Monitors', 'Peripherals'].map(cat => (
-              <Select.Option key={cat} value={cat}>{cat}</Select.Option>
-            ))}
-          </Select>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20, marginTop: 30, className: "table-top-parent" }}>
+          <div className="table-top-left">
+            <Input.Search
+              placeholder="Search inventory..."
+              value={searchText}
+              onChange={(e) => handleSearch(e.target.value)}
+              style={{ width: 300 }}
+              allowClear
+            />
+            <Select
+              placeholder="Filter by Category"
+              style={{ width: 200 }}
+              allowClear
+              value={selectedCategory}
+              onChange={(value) => {
+                setSelectedCategory(value);
+                applyFilters(searchText, value);
+              }}
+            >
+              {['CCTV', 'Printer', 'Smartphones', 'Computer', 'Electronics', 'Monitors', 'Peripherals', 'Tablets'].map(cat => (
+                <Select.Option key={cat} value={cat}>{cat}</Select.Option>
+              ))}
+            </Select>
+          </div>
           <Button
             icon={<PlusOutlined />}
             type="primary"
@@ -286,7 +288,15 @@ const ManageInventory = () => {
             wrapperCol={{ flex: 1 }}
             labelAlign="left"
           >
-            <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please enter item name!" }]}> <Input placeholder="Enter item name" /> </Form.Item>
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[{ required: true, message: "Please enter item name!" }]}
+            >
+              <Input
+                placeholder="Enter item name"
+              />
+            </Form.Item>
             <Form.Item label="Product Image">
               <Upload
                 listType="picture-card"
