@@ -63,7 +63,7 @@ function Home() {
 
     const categories = [
         {
-            title: "Printers",
+            title: "Printer",
             image: "https://www.brother.com.ph/-/media/ap2/products/printer/dcp-t520w/t520-frontview.jpg?rev=9b21357df1894fe39fd94bb007faf4da",
         },
         {
@@ -71,15 +71,11 @@ function Home() {
             image: "https://www.cheapid.com.ph/cdn/shop/files/MONITOR_Nvision_N2510_Black_25_Inches_FHD_100Hz_VA_Flat_A.jpg?v=1728051924",
         },
         {
-            title: "Tablets",
-            image: "https://cherryshop.com.ph/cdn/shop/products/SUPERION-S2_BLACK.jpg?v=1602234418&width=533",
-        },
-        {
-            title: "CCTVs",
+            title: "CCTV",
             image: "https://amimarine.com/wp-content/uploads/2020/09/X-MDR-System-Camera-2.jpg",
         },
         {
-            title: "Laptops",
+            title: "Computers",
             image: "https://image.made-in-china.com/202f0j00GkSgcQyKhEuj/15-6-Inch-Innovative-Product-Dual-Core-Laptop-for-Home-and-Student.webp",
         },
         {
@@ -194,10 +190,12 @@ function Home() {
             <Content style={{ background: "#fff", padding: "30px 0", width: "100%", margin: "auto" }}>
                 <div className='home-header'>
                     <h2 className='home-title'>Featured Products</h2>
-                    <div className='home-see-more'>
-                        <p>See more</p>
-                        <ArrowRightOutlined />
-                    </div>
+                    <a onClick={() => navigate('/products')} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div className='home-see-more'>
+                            <p>See more</p>
+                            <ArrowRightOutlined />
+                        </div>
+                    </a>
                 </div>
                 <Row gutter={[24, 24]} justify="center" style={{ marginTop: 30 }}>
                     {featured.map((product) => (
@@ -219,7 +217,7 @@ function Home() {
                                         }}
                                     >
                                         <img
-                                            src={product.image || "https://static.vecteezy.com/system/resources/thumbnails/008/695/917/small_2x/no-image-available-icon-simple-two-colors-template-for-no-image-or-picture-coming-soon-and-placeholder-illustration-isolated-on-white-background-vector.jpg"}
+                                            src={product.image || "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg"}
                                             alt={product.name}
                                             style={{
                                                 maxHeight: "100%",
@@ -228,7 +226,7 @@ function Home() {
                                             }}
                                             onError={(e) => {
                                                 e.target.onerror = null;
-                                                e.target.src = "https://static.vecteezy.com/system/resources/thumbnails/008/695/917/small_2x/no-image-available-icon-simple-two-colors-template-for-no-image-or-picture-coming-soon-and-placeholder-illustration-isolated-on-white-background-vector.jpg";
+                                                e.target.src = "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg";
                                             }}
                                         />
                                     </div>
@@ -247,7 +245,7 @@ function Home() {
                                     type="primary"
                                     block
                                     style={{ marginTop: 16 }}
-                                    onClick={() => openProductModal(product._id)}
+                                    onClick={() => openProductModal(product.id)}
                                 >
                                     View Product
                                 </Button>
