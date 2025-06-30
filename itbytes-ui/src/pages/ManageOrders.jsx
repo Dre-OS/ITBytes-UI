@@ -105,6 +105,20 @@ const ManageOrders = () => {
       key: "customerId",
     },
     {
+      title: "Items",
+      dataIndex: "orders",
+      key: "orders",
+      render: (items) => (
+        <div>
+          {items.map((item, index) => (
+            <div key={index}>
+              <strong>{item.name}</strong> × {item.quantity} {/* —   ₱{item.subtotal.toFixed(2)} */}
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
       title: "Total",
       dataIndex: "totalPrice",
       key: "totalPrice",
@@ -182,7 +196,7 @@ const ManageOrders = () => {
           bordered
           loading={loading}
           columns={columns}
-          dataSource={orders}
+          dataSource={filteredOrders}
           rowKey="_id"
           pagination={{ pageSize: 6 }}
           scroll={{ x: "max-content" }}
