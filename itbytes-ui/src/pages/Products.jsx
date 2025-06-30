@@ -104,6 +104,7 @@ const Products = () => {
     "Components",
     "Monitors",
     "Peripherals",
+    "Tablets"
   ];
 
   const applyFilters = () => {
