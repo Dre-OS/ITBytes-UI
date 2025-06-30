@@ -90,6 +90,10 @@ function Home() {
             title: "Peripherals",
             image: "https://fantechworld.com/cdn/shop/files/ProductImage_HeliosIIProSXD3V34K8KBlack.png?v=1717055541",
         },
+        {
+            title: "Tablets",
+            image: "https://consumer.huawei.com/content/dam/huawei-cbg-site/common/mkt/plp-x/tablets-v5/product-shelf-and-pop-up/view-all/all-matepad-11-5-s.jpg",
+        },
     ];
 
     useEffect(() => {
