@@ -33,15 +33,13 @@ const Order = () => {
 
   const handlePayment = async (orderId) => {
     try {
-      await axios.patch(`${apiUrl}/pay/${orderId}`);
-      message.success("Payment successful!");
-
-      // Refresh orders
-      const { data } = await axios.get(`${apiUrl}/customer/${customerId}`);
-      setOrders(data);
+      const payment = { isPaid: true };
+      await axios.put(`${apiUrl}/out/${orderId}`, payment);
+      fetchOrders();
+      message.success("Payment Succesful.");
     } catch (err) {
       console.error(err);
-      message.error("Payment failed. Please try again.");
+      message.error("Payment Failed.");
     }
   };
 
@@ -66,13 +64,13 @@ const Order = () => {
 
 
   return (
-    <div style={{ padding: "0 5%" }}>
+    <div style={{ padding: "0 5%"}}>
       <Title level={3}>My Orders</Title>
 
       {orders.length === 0 ? (
         <Text>No orders found.</Text>
       ) : (
-        orders.map((order) => (
+        [...orders].reverse().map((order) => (
           <Card
             key={order._id}
             title={`Order ID: ${order._id}`}
