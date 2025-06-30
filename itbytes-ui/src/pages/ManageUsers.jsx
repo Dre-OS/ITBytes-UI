@@ -11,7 +11,8 @@ import {
   Popconfirm,
   Divider,
   Tag,
-  Select
+  Select,
+  Switch
 } from "antd";
 import {
   PlusOutlined,
@@ -41,6 +42,7 @@ const ManageUsers = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [showDeleted, setShowDeleted] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -49,13 +51,16 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get(`${apiUrl}`);
-      setAllUsers(data); // store original
-      setUsers(data);    // display filtered
+      const { data } = await axios.get(`${apiUrl}/all`);
+      setAllUsers(data); // Store original full list
+      // Filter out deleted users if toggle is off
+      const visibleUsers = showDeleted ? data : data.filter(user => !user.isDeleted);
+      setUsers(visibleUsers); // Display filtered
     } catch {
       message.error("Error fetching users");
     }
   };
+
 
 
   const handleSubmit = async (values) => {
@@ -113,7 +118,7 @@ const ManageUsers = () => {
     applyFilters(value, selectedRole, selectedStatus);
   };
 
-  const applyFilters = (search, role, status) => {
+  const applyFilters = (search, role, status, showDeletedFlag = showDeleted) => {
     const lower = search.toLowerCase();
 
     const filtered = allUsers.filter((user) => {
@@ -127,12 +132,14 @@ const ManageUsers = () => {
 
       const matchesRole = !role || user.role === role;
       const matchesStatus = !status || user.isAuth === status;
+      const matchesDeleted = showDeletedFlag || !user.isDeleted;
 
-      return matchesSearch && matchesRole && matchesStatus;
+      return matchesSearch && matchesRole && matchesStatus && matchesDeleted;
     });
 
     setUsers(filtered);
   };
+
 
 
   const columns = [
@@ -240,7 +247,7 @@ const ManageUsers = () => {
         <h1 style={{ marginBottom: -5 }}>User Management</h1>
         <p>Handles user registration and access control.</p>
         <div className="table-top-parent">
-          <div className="table-top-left">
+          <div className="table-top-left" style={{ alignItems: "center" }}>
             <Input.Search
               placeholder="Search users..."
               value={searchText}
@@ -255,7 +262,7 @@ const ManageUsers = () => {
               value={selectedRole}
               onChange={(value) => {
                 setSelectedRole(value);
-                applyFilters(searchText, value, selectedStatus);
+                applyFilters(searchText, value, selectedStatus, showDeleted);
               }}
             >
               <Select.Option value="admin">Admin</Select.Option>
@@ -271,13 +278,24 @@ const ManageUsers = () => {
               value={selectedStatus}
               onChange={(value) => {
                 setSelectedStatus(value);
-                applyFilters(searchText, selectedRole, value);
+                applyFilters(searchText, selectedRole, value, showDeleted);
               }}
             >
               <Select.Option value="approved">Approved</Select.Option>
               <Select.Option value="pending">Pending</Select.Option>
               <Select.Option value="rejected">Rejected</Select.Option>
             </Select>
+            <div style={{ display: "flex", alignItems: "center", marginLeft: 8, gap: 8 }}>
+              <p style={{ color: "lightgray", fontSize: 12 }}>Show Deleted Users</p>
+              <Switch
+                checked={showDeleted}
+                onChange={(checked) => {
+                  setShowDeleted(checked);
+                  applyFilters(searchText, selectedRole, selectedStatus, checked);
+                }}
+              />
+            </div>
+
           </div>
           <div className="table-top-right">
             <Button
