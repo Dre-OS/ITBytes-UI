@@ -31,20 +31,20 @@ const ProductInsights = () => {
       setLowStockCount(lowStock);
 
       const buckets = {
-        "₱0 - ₱999": 0,
-        "₱1,000 - ₱2,999": 0,
-        "₱3,000 - ₱4,999": 0,
+        "₱0 - ₱4999": 0,
         "₱5,000 - ₱9,999": 0,
-        "₱10,000+": 0,
+        "₱10,000 - ₱19,999": 0,
+        "₱20,000 - ₱29,999": 0,
+        "₱30,000+": 0,
       };
 
       data.forEach((product) => {
         const price = product.price;
-        if (price < 1000) buckets["₱0 - ₱999"]++;
-        else if (price < 3000) buckets["₱1,000 - ₱2,999"]++;
-        else if (price < 5000) buckets["₱3,000 - ₱4,999"]++;
+        if (price < 5000) buckets["₱0 - ₱4999"]++;
         else if (price < 10000) buckets["₱5,000 - ₱9,999"]++;
-        else buckets["₱10,000+"]++;
+        else if (price < 20000) buckets["₱10,000 - ₱19,999"]++;
+        else if (price < 30000) buckets["₱20,000 - ₱29,999"]++;
+        else buckets["₱30,000+"]++;
       });
 
       const histogramData = Object.entries(buckets).map(([range, count]) => ({
