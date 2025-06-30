@@ -30,6 +30,7 @@ function Login() {
         sessionStorage.setItem('userId', user._id);
         sessionStorage.setItem('isAuthenticated', true);
         sessionStorage.setItem('firstname', user.firstname);
+        sessionStorage.setItem('lastname', user.lastname);
         sessionStorage.setItem('role', user.role);
         if (user.role == 'customer') {
           navigate('/'); // Redirect customers to home page
