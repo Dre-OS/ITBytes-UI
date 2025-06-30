@@ -79,13 +79,13 @@ const ProductModal = ({ productId, visible, onClose }) => {
               style={{
                 width: "100%",
                 height: '100%',
-                objectFit: "cover",
+                objectFit: "contain",
                 borderRadius: 8,
-                backgroundColor: "#f5f5f5"
+                backgroundColor: "#fff"
               }}
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = "https://www.svgrepo.com/show/508699/landscape-placeholder.svg";
+                e.target.src = "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg";
               }}
             />
           </div>
