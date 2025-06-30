@@ -107,7 +107,7 @@ const OrderInsights = () => {
 
       if (data.length > 0) {
         setAverageOrderValue(totalSales / data.length);
-      } s
+      }
 
     } catch (err) {
       console.error("Failed to fetch orders:", err);
