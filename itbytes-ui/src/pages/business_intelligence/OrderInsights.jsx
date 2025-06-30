@@ -19,15 +19,19 @@ const OrderInsights = () => {
 
   useEffect(() => {
     fetchOrders();
+
   }, []);
 
   const fetchOrders = async () => {
     try {
       const { data } = await axios.get(`${apiUrl}/out`);
       setOrders(data);
+      console.log("Fetched Orders:", data);
 
       // Total Sales
-      const total = data.reduce((acc, order) => acc + order.totalPrice, 0);
+      const total = data
+        .filter(order => order.isPaid)
+        .reduce((acc, order) => acc + order.totalPrice, 0);
       setTotalSales(total);
 
       // Order Status Breakdown
@@ -44,17 +48,21 @@ const OrderInsights = () => {
       // Sales per Day
       const salesMap = {};
       data.forEach((order) => {
-        const date = new Date(order.createdAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-        salesMap[date] = (salesMap[date] || 0) + order.totalPrice;
+        if (order.isPaid) {  // ✅ Include only paid orders
+          const date = new Date(order.createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+          salesMap[date] = (salesMap[date] || 0) + order.totalPrice;
+        }
       });
+
       const salesArr = Object.entries(salesMap).map(([date, value]) => ({
         date,
         value,
       }));
+
       setSalesData(salesArr);
 
       // Top Ordered Items
@@ -72,6 +80,7 @@ const OrderInsights = () => {
         .sort((a, b) => b.quantity - a.quantity)
         .slice(0, 5); // Top 5
       setTopItems(itemArr);
+      console.log("Top Items Data:", itemMap);
 
       console.log("Top Items:", itemArr);
 
