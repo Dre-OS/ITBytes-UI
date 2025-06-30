@@ -9,32 +9,22 @@ import {
   Input,
   message,
   Popconfirm,
-  Divider,
   Tag,
   Select,
   Upload,
-  Image
+  Image,
+  Space
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  CheckOutlined,
-  CloseOutlined
 } from "@ant-design/icons";
 import "../styles/ManageUsers.css";
 
 const { Content } = Layout;
 const apiUrl = import.meta.env.VITE_INVENTORY_API_URL;
 
-const roleColors = {
-  admin: "red",
-  sales: "blue",
-  inventory: "green",
-  business: "purple",
-  customer: "gold"
-};
-// ...existing code...
 const ManageInventory = () => {
   const [items, setItems] = useState([]);
   const [base64Image, setBase64Image] = useState("");
@@ -44,6 +34,7 @@ const ManageInventory = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState([]);
 
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -60,7 +51,6 @@ const ManageInventory = () => {
   const fetchItems = async () => {
     try {
       const { data } = await axios.get(`${apiUrl}`);
-      console.log("Fetched Items:", data);
       setItems(data);
       setFilteredItems(data);
     } catch {
@@ -73,6 +63,11 @@ const ManageInventory = () => {
       message.error("Quantity cannot be negative.");
       return;
     }
+    const imageField = form.getFieldValue("image");
+    const imageToUse =
+      base64Image ||
+      (imageField && imageField[0] && imageField[0].url) ||
+      ""; // If no image, will be empty string
 
     const itemData = {
       name: values.name,
@@ -81,14 +76,11 @@ const ManageInventory = () => {
       tags: values.tags,
       quantity: values.quantity,
       price: values.price,
-      image: base64Image || (form.getFieldValue("image")?.[0]?.url ?? editingItem?.image ?? "")
+      image: imageToUse
     };
 
-    console.log("Item Data:", itemData);
     try {
-      const url = editingItem
-        ? `${apiUrl}/${editingItem.id}`
-        : `${apiUrl}`;
+      const url = editingItem ? `${apiUrl}/${editingItem.id}` : `${apiUrl}`;
       const method = editingItem ? axios.put : axios.post;
       const { data } = await method(url, itemData);
       message.success(data.message || "Item saved successfully");
@@ -104,7 +96,6 @@ const ManageInventory = () => {
   const handleDelete = async (_id) => {
     try {
       await axios.delete(`${apiUrl}/${_id}`);
-      console.log("Deleted Item ID:", _id);
       message.success("Item deleted successfully");
       fetchItems();
     } catch {
@@ -119,7 +110,6 @@ const ManageInventory = () => {
 
   const applyFilters = (search, category) => {
     const lower = search.toLowerCase();
-
     const filtered = items.filter((item) => {
       const matchesSearch =
         !search ||
@@ -128,15 +118,11 @@ const ManageInventory = () => {
         (Array.isArray(item.tags)
           ? item.tags.some((tag) => tag.toLowerCase().includes(lower))
           : item.tags?.toLowerCase().includes(lower));
-
       const matchesCategory = !category || item.category === category;
-
       return matchesSearch && matchesCategory;
     });
-
     setFilteredItems(filtered);
   };
-
 
   const columns = [
     { title: "Item ID", dataIndex: "_id", key: "_id", hidden: true },
@@ -153,14 +139,17 @@ const ManageInventory = () => {
           height={60}
           style={{ objectFit: "contain", borderRadius: 4 }}
           fallback="https://www.svgrepo.com/show/508699/landscape-placeholder.svg"
-          preview={true}
+          preview
         />
       )
     },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
     { title: "Description", dataIndex: "description", key: "description", width: 500 },
     {
-      title: "Category", dataIndex: "category", key: "category", width: 120,
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+      width: 120,
       render: (category) => <Tag color="default">{category}</Tag>
     },
     {
@@ -189,33 +178,41 @@ const ManageInventory = () => {
       title: "",
       key: "actions",
       render: (_, record) => (
-        <div style={{ display: "flex", justifyContent: "right", gap: 8 }}>
+        <Space>
           <Button
             icon={<EditOutlined />}
             style={{ width: 50 }}
             onClick={() => {
               setEditingItem(record);
+              setIsModalOpen(true);
+              setBase64Image(""); // Only set this to "" on edit
+              setFileList(
+                record.image
+                  ? [{
+                    uid: "-1",
+                    name: "image.png",
+                    status: "done",
+                    url: record.image
+                  }]
+                  : []
+              );
               form.setFieldsValue({
                 name: record.name,
                 description: record.description,
                 category: record.category,
-                tags: Array.isArray(record.tags)
-                  ? record.tags
-                  : record.tags?.split(",").map((t) => t.trim()),
+                tags: Array.isArray(record.tags) ? record.tags : record.tags?.split(",").map(t => t.trim()),
                 quantity: record.quantity,
                 price: record.price,
                 image: record.image
-                  ? [
-                    {
-                      uid: "-1",
-                      name: "image.png",
-                      status: "done",
-                      url: record.image,
-                      base64: record.image,
-                    },
-                  ]
-                  : [],
+                  ? [{
+                    uid: "-1",
+                    name: "image.png",
+                    status: "done",
+                    url: record.image
+                  }]
+                  : []
               });
+              console.log("Editing item:", record.name);
               setIsModalOpen(true);
             }}
           />
@@ -225,7 +222,7 @@ const ManageInventory = () => {
           >
             <Button icon={<DeleteOutlined />} danger style={{ width: 50 }} />
           </Popconfirm>
-        </div>
+        </Space>
       )
     }
   ];
@@ -235,40 +232,35 @@ const ManageInventory = () => {
       <Content style={{ padding: "10px 35px", background: "#F5F5F5" }}>
         <h1 style={{ marginBottom: -5 }}>Inventory Management</h1>
         <p>Manages stock levels, item tracking, and managing products</p>
-        <div className="table-top-parent" style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-          <div class name="table-top-left" style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <Input.Search
-              placeholder="Search inventory..."
-              value={searchText}
-              onChange={(e) => handleSearch(e.target.value)}
-              style={{ width: 300 }}
-              allowClear
-            />
-            <Select
-              placeholder="Filter by Category"
-              style={{ width: 200 }}
-              allowClear
-              value={selectedCategory}
-              onChange={(value) => {
-                setSelectedCategory(value);
-                applyFilters(searchText, value);
-              }}
-            >
-              <Select.Option value="CCTV">CCTV</Select.Option>
-              <Select.Option value="Printer">Printer</Select.Option>
-              <Select.Option value="Smartphones">Smartphones</Select.Option>
-              <Select.Option value="Computer">Computer</Select.Option>
-              <Select.Option value="Electronics">Components</Select.Option>
-              <Select.Option value="Monitors">Monitors</Select.Option>
-              <Select.Option value="Peripherals">Peripherals</Select.Option>
-            </Select>
-          </div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20, marginTop: 30 }}>
+          <Input.Search
+            placeholder="Search inventory..."
+            value={searchText}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: 300 }}
+            allowClear
+          />
+          <Select
+            placeholder="Filter by Category"
+            style={{ width: 200 }}
+            allowClear
+            value={selectedCategory}
+            onChange={(value) => {
+              setSelectedCategory(value);
+              applyFilters(searchText, value);
+            }}
+          >
+            {['CCTV', 'Printer', 'Smartphones', 'Computer', 'Electronics', 'Monitors', 'Peripherals'].map(cat => (
+              <Select.Option key={cat} value={cat}>{cat}</Select.Option>
+            ))}
+          </Select>
           <Button
             icon={<PlusOutlined />}
             type="primary"
             onClick={() => {
               setEditingItem(null);
               form.resetFields();
+              setBase64Image("");
               setIsModalOpen(true);
             }}
           >
@@ -280,9 +272,8 @@ const ManageInventory = () => {
           columns={columns}
           dataSource={filteredItems}
           rowKey="_id"
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: "max-content" }}
           pagination={{ pageSize: 5 }}
-          style={{ marginTop: 20 }}
         />
         <Modal open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null} width={500}>
           <h2 style={{ textAlign: "center" }}>{editingItem ? "Edit" : "Add"} Item</h2>
@@ -295,110 +286,77 @@ const ManageInventory = () => {
             wrapperCol={{ flex: 1 }}
             labelAlign="left"
           >
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[{ required: true, message: "Please enter item name!" }]}
-
-            >
-              <Input placeholder="Enter item name" />
-            </Form.Item>
-            <Form.Item
-              name="image"
-              label="Product Image"
-              valuePropName="fileList"
-              getValueFromEvent={(e) => {
-                if (Array.isArray(e)) return e;
-                return e?.fileList;
-              }}
-              rules={[{ required: false }]}
-            >
+            <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please enter item name!" }]}> <Input placeholder="Enter item name" /> </Form.Item>
+            <Form.Item label="Product Image">
               <Upload
                 listType="picture-card"
-                showUploadList={{ showRemoveIcon: true }}
                 accept="image/*"
+                fileList={fileList}
                 beforeUpload={async (file) => {
                   const base64 = await getBase64(file);
                   setBase64Image(base64);
-                  form.setFieldsValue({ image: [file] });
-                  return false; // Prevent automatic upload
+                  setFileList([{
+                    uid: file.uid,
+                    name: file.name,
+                    status: "done",
+                    url: base64
+                  }]);
+                  form.setFieldsValue({
+                    image: [{
+                      uid: file.uid,
+                      name: file.name,
+                      status: "done",
+                      url: base64
+                    }]
+                  });
+                  return false;
                 }}
                 onRemove={() => {
                   setBase64Image("");
-                  form.setFieldsValue({ image: [] }); // Reset form value
+                  setFileList([]);
+                  form.setFieldsValue({ image: [] });
+                  return true;
                 }}
+                showUploadList={{ showRemoveIcon: true }}
               >
-                {form.getFieldValue("image")?.length >= 1 ? null : "+ Upload"}
+                {fileList.length >= 1 ? null : "+ Upload"}
               </Upload>
             </Form.Item>
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[{ required: false }]}
-              style={{ marginBottom: 12 }}
-            >
-              <Input.TextArea
-                placeholder="Enter description"
-                rows={3}
-                showCount
-                maxLength={200}
-              />
-            </Form.Item>
-            <Form.Item
-              name="category"
-              label="Category"
-              rules={[{ required: true, message: "Please select a category!" }]}
-              style={{ marginBottom: 12 }}
-            >
-              <Select placeholder="Select category">
-                <Select.Option value="CCTV">CCTV</Select.Option>
-                <Select.Option value="Printer">Printer</Select.Option>
-                <Select.Option value="Smartphones">Smartphones</Select.Option>
-                <Select.Option value="Computer">Computer</Select.Option>
-                <Select.Option value="Electronics">Electronics</Select.Option>
-                <Select.Option value="Monitors">Monitors</Select.Option>
-              </Select>
-            </Form.Item>
+            <Form.Item name="description" label="Description"><Input.TextArea placeholder="Enter description" rows={3} showCount maxLength={200} /></Form.Item>
+            <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please select a category!" }]}><Select placeholder="Select category">{['CCTV', 'Printer', 'Smartphones', 'Computer', 'Electronics', 'Monitors'].map(cat => (<Select.Option key={cat} value={cat}>{cat}</Select.Option>))}</Select></Form.Item>
             <Form.Item
               name="tags"
               label="Tags"
-              rules={[{ required: false }]}
-              style={{ marginBottom: 12 }}
+              rules={[
+                {
+                  validator: (_, value) =>
+                    !value || value.length <= 5
+                      ? Promise.resolve()
+                      : Promise.reject(new Error("You can select up to 5 tags only!")),
+                },
+              ]}
             >
               <Select
                 mode="tags"
                 placeholder="Enter or select tags"
                 tokenSeparators={[',']}
+                maxTagCount="responsive"
                 options={[
-                  { label: "New Arrival", value: "New Arrival" },
-                  { label: "Best Seller", value: "Best Seller" },
-                  { label: "Gaming PC", value: "Gaming PC" },
-                  { label: "Office Use", value: "Office Use" },
-                  { label: "Refurbished", value: "Refurbished" },
-                  { label: "Wireless", value: "Wireless" },
-                  { label: "Fast Charging", value: "Fast Charging" },
-                  { label: "Night Vision", value: "Night Vision" },
-                  { label: "HD Camera", value: "HD Camera" },
-                  { label: "Monitor", value: "Monitor" }
-                ]}
+                  "New Arrival",
+                  "Best Seller",
+                  "Gaming PC",
+                  "Office Use",
+                  "Refurbished",
+                  "Wireless",
+                  "Fast Charging",
+                  "Night Vision",
+                  "HD Camera",
+                  "Monitor",
+                ].map((t) => ({ label: t, value: t }))}
               />
             </Form.Item>
-            <Form.Item
-              name="quantity"
-              label="Quantity"
-              rules={[{ required: true, message: "Please enter quantity!" }]}
-              style={{ marginBottom: 12 }}
-            >
-              <Input type="number" placeholder="Enter quantity" min={0} />
-            </Form.Item>
-            <Form.Item
-              name="price"
-              label="Price"
-              rules={[{ required: true, message: "Please enter price!" }]}
-              style={{ marginBottom: 12 }}
-            >
-              <Input type="number" placeholder="Enter price" min={1} step="0.01" />
-            </Form.Item>
+            <Form.Item name="quantity" label="Quantity" rules={[{ required: true, message: "Please enter quantity!" }]}><Input type="number" min={0} placeholder="Enter quantity" /></Form.Item>
+            <Form.Item name="price" label="Price" rules={[{ required: true, message: "Please enter price!" }]}><Input type="number" min={1} step="0.01" placeholder="Enter price" /></Form.Item>
             <Form.Item wrapperCol={{ span: 24 }}>
               <Button type="primary" htmlType="submit" block>
                 {editingItem ? "Update" : "Add"} Item
@@ -412,4 +370,3 @@ const ManageInventory = () => {
 };
 
 export default ManageInventory;
-// ...existing code...
