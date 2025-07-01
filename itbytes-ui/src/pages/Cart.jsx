@@ -2,15 +2,19 @@ import React from "react";
 import { useCart } from "../contexts/CartContext";
 import { List, Button, Typography, message, InputNumber, Modal } from "antd";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 const apiUrl = import.meta.env.VITE_ORDER_API_URL;
+const productApiUrl = import.meta.env.VITE_INVENTORY_API_URL;
 
 const Cart = () => {
+  const [quantity, setQuantity] = React.useState(1);
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
   const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
+  const navigate = useNavigate();
 
-    if (!isAuthenticated) {
+  if (!isAuthenticated) {
     return (
       <div style={{ textAlign: "center", marginTop: "50px", fontFamily: "Poppins", height: "20vh" }}>
         <Title level={4}>Sign in to add items to your cart</Title>
@@ -48,6 +52,7 @@ const Cart = () => {
       cancelText: "Cancel",
       onOk: () => {
         handleOrder();
+        navigate("/orders");
       }
     });
   };
@@ -63,10 +68,19 @@ const Cart = () => {
             actions={[
               <InputNumber
                 min={1}
-                max={item.maxQuantity || 100}
                 value={item.quantity}
                 onChange={(val) => updateQuantity(item.itemId, val)}
-              />,
+                onBlur={async () => {
+                  const res = await axios.get(`${productApiUrl}/${item.itemId}`);
+                  console.log("Stock response:", res.data);
+                  const stock = res.data.quantity;
+                  if (item.quantity > stock) {
+                    message.warning(`Only ${stock} available`);
+                    updateQuantity(item.itemId, stock);
+                  }
+                }}
+              />
+              ,
               <Button danger onClick={() => removeFromCart(item.itemId)}>Remove</Button>
             ]}
           >
