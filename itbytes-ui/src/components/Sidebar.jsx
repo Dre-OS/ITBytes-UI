@@ -6,7 +6,7 @@ import {
   UserOutlined,
   DashboardOutlined,
   SettingOutlined,
-  DollarOutlined,
+  HomeOutlined,
   InboxOutlined,
   ShopOutlined,
   PlusCircleOutlined,
@@ -161,6 +161,11 @@ export default function Sidebar({ collapsed, setCollapsed }) {
                     icon: <LogoutOutlined />,
                     label: <Link to="/login" onClick={handleLogout}>Logout</Link>,
                   },
+                  {
+                    key: "home",
+                    icon: <HomeOutlined />,
+                    label: <Link to="/">Home</Link>,
+                  }
                 ],
               }}
             >
@@ -181,6 +186,11 @@ export default function Sidebar({ collapsed, setCollapsed }) {
                     icon: <LogoutOutlined />,
                     label: <Link to="/login" onClick={handleLogout}>Logout</Link>,
                   },
+                  {
+                    key: "home",
+                    icon: <HomeOutlined />,
+                    label: <Link to="/">Home</Link>,
+                  }
                 ],
               }}
             >
