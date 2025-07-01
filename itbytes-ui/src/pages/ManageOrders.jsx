@@ -18,6 +18,7 @@ const { Content } = Layout;
 const { Option } = Select;
 
 const apiUrl = import.meta.env.VITE_ORDER_API_URL;
+const userApiUrl = import.meta.env.VITE_USER_API_URL; // Adjust this to your actual user API URL
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -29,32 +30,45 @@ const ManageOrders = () => {
   const [paymentFilter, setPaymentFilter] = useState(null);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [form] = Form.useForm();
+  const [users, setUsers] = useState([]);
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get(`${apiUrl}/out`);
-      setOrders(data);
-      setFilteredOrders(data); // Initial value
+      const { data: ordersData } = await axios.get(`${apiUrl}/out`);
+      const { data: usersData } = await axios.get(`${userApiUrl}`);
+
+      const userMap = {};
+      usersData.forEach(user => {
+        userMap[user._id] = user.firstname + " " + user.lastname;
+      });
+
+      const enrichedOrders = ordersData.map(order => ({
+        ...order,
+        customerName: userMap[order.customerId] || order.customerId // fallback
+      }));
+
+      setOrders(enrichedOrders);
+      setFilteredOrders(enrichedOrders);
       setLoading(false);
-    } catch {
-      message.error("Failed to fetch orders.");
+    } catch (err) {
+      message.error("Failed to fetch orders or users");
     }
   };
 
+
   const applyFilters = (search, status, payment) => {
     const lower = search.toLowerCase();
-
     const filtered = orders.filter((order) => {
       const matchesSearch =
         order._id.toLowerCase().includes(lower) ||
-        order.customerId.toLowerCase().includes(lower);
+        order.customerName?.toLowerCase().includes(lower); // ✅ use name
 
       const matchesStatus = !status || order.status === status;
-      const matchesPayment =
-        payment === null || order.isPaid === (payment === "Paid");
+      const matchesPayment = payment === null || order.isPaid === (payment === "Paid");
 
       return matchesSearch && matchesStatus && matchesPayment;
     });
+
 
     setFilteredOrders(filtered);
   };
@@ -100,9 +114,9 @@ const ManageOrders = () => {
       key: "_id",
     },
     {
-      title: "Customer ID",
-      dataIndex: "customerId",
-      key: "customerId",
+      title: "Customer",
+      dataIndex: "customerName",
+      key: "customerName",
     },
     {
       title: "Items",
