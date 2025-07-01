@@ -143,3 +143,20 @@
         margin-left: 20px;
     }
 }
+
+/* Change selected segmented button background and text color */
+.ant-segmented-item-selected {
+  background-color: #2C485F !important; /* Your custom primary color */
+  color: white !important;
+  border-color: #2C485F !important;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.ant-segmented-item {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Optional: Change hover style */
+.ant-segmented-item:hover {
+  color: #2C485F;
+}
