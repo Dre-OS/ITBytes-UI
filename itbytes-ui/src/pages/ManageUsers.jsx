@@ -228,7 +228,7 @@ const ManageUsers = () => {
                 middlename: record.middlename,
                 email: record.email,
                 role: record.role,
-                password: record.user_password
+                password: record.password
               });
               setIsModalOpen(true);
             }}
