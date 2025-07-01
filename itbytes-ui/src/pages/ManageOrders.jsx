@@ -139,6 +139,12 @@ const ManageOrders = () => {
       render: (total) => `₱${total.toLocaleString()}`,
     },
     {
+      title: "Order Date",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (createdAt) => new Date(createdAt).toLocaleString(),
+    },
+    {
       title: "Status",
       dataIndex: "status",
       key: "status",
