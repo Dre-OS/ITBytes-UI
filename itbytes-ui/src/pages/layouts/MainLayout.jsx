@@ -49,11 +49,9 @@ export default function MainLayout() {
                 }}
             >
             </div>
-            <Divider style={{ margin: "0", transition: "all 0.3s ease" }} />
             <div
                 style={{
                     width: "100%",
-                    marginTop: "30px",
                     marginBottom: "30px",
                     transition: "all 0.3s ease"
                 }}
