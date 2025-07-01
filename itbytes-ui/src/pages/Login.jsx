@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
 import { Form, Input, Button, message } from 'antd';
-import { LockOutlined, MailOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { LockOutlined, MailOutlined, CloseOutlined } from '@ant-design/icons';
 import logo from '../assets/logo_white.webp';
 
 const apiUrl = import.meta.env.VITE_USER_API_URL;
@@ -63,7 +63,7 @@ function Login() {
       </div>
       <div className="login-form">
         <div className='login-back'>
-          <CloseCircleOutlined
+          <CloseOutlined
             style={{ fontSize: '24px', cursor: 'pointer' }}
             onClick={() => navigate('/')}
           />
@@ -74,7 +74,7 @@ function Login() {
           onFinish={handleLogin}
         >
           <h1 style={{ textAlign: "left" }}>Welcome Back</h1>
-          <p style={{ textAlign: "left" }}>Please enter your email and password to continue.</p>
+          <p style={{ textAlign: "left", marginBottom: '15px'  }}>Please enter your email and password to continue.</p>
           <Form.Item
             name="email"
             rules={[{ required: true, message: 'Please enter your email!' }]}
@@ -93,15 +93,16 @@ function Login() {
               className="custom-button"
               type="primary"
               htmlType="submit"
-              style={{ width: '60%', height: '40px', borderRadius: '10px', backgroundColor: '#2C485F' }}
+              style={{ width: '100%', height: '40px', borderRadius: '10px', backgroundColor: '#2C485F' }}
               loading={loading}
             >
               Login
             </Button>
           </Form.Item>
         </Form>
-        <div className="login-form-footer">
+        <div className="login-form-footer" style={{ justifyContent: 'space-between', width: '500px'}}>
           <p>No account? <a href="/register">Register Now</a></p>
+          <p><a href="/forgot-password">Forgot Password?</a></p>
         </div>
       </div>
     </div>
