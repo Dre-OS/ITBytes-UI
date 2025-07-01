@@ -22,9 +22,12 @@ const ProductModal = ({ productId, visible, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    if (productId) {
+    if (productId && visible) {
+      setQuantity(1); // ✅ Reset local state
+      form.setFieldsValue({ quantity: 1 }); // ✅ Reset form field
       setLoading(true);
       axios.get(`${apiUrl}/${productId}`)
         .then((res) => {
@@ -36,7 +39,7 @@ const ProductModal = ({ productId, visible, onClose }) => {
           onClose();
         });
     }
-  }, [productId]);
+  }, [productId, visible]);
 
   const handleAddToCart = () => {
     const isAuthenticated = sessionStorage.getItem("isAuthenticated");
@@ -99,13 +102,16 @@ const ProductModal = ({ productId, visible, onClose }) => {
             <Paragraph><strong>In Stock:</strong> {product.quantity}</Paragraph>
             <Paragraph><strong>Price:</strong> ₱{product.price.toLocaleString()}</Paragraph>
 
-            <Form layout="hprizontal" onFinish={handleAddToCart}>
+            <Form form={form} layout="horizontal" onFinish={handleAddToCart}>
               <Form.Item name="quantity" label="Quantity">
                 <InputNumber
                   min={1}
                   max={product.quantity}
                   value={quantity}
-                  onChange={setQuantity}
+                  onChange={(val) => {
+                    setQuantity(val);
+                    form.setFieldsValue({ quantity: val });
+                  }}
                 />
               </Form.Item>
               <Form.Item>
