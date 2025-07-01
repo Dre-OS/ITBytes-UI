@@ -74,13 +74,16 @@ const ManageInventory = () => {
       description: values.description,
       category: values.category,
       tags: values.tags,
-      quantity: values.quantity,
-      price: values.price,
+      quantity: Number(values.quantity),
+      price: Number(values.price),
       image: imageToUse
     };
 
+    console.log("Submitting item data:", itemData);
+
     try {
       const url = editingItem ? `${apiUrl}/${editingItem.id}` : `${apiUrl}`;
+      console.log("API URL:", url);
       const method = editingItem ? axios.put : axios.post;
       const { data } = await method(url, itemData);
       message.success(data.message || "Item saved successfully");
