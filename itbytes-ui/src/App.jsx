@@ -17,6 +17,7 @@ import Product from "./pages/Product";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Order from "./pages/Order";
+import Test from "./pages/Test";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -117,6 +118,7 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/test" element={<Test />} />
 
         {/* Redirect any unmatched routes to the home page */}
 
