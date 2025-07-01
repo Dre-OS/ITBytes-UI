@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal } from "antd";
+import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal, Divider } from "antd";
 import axios from "axios";
+import "../styles/Order.css"; // Assuming you have some styles for the order page
+import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const apiUrl = import.meta.env.VITE_ORDER_API_URL;
@@ -11,6 +13,8 @@ const Order = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null); // "cancel" or "pay"
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [receiptOrder, setReceiptOrder] = useState(null);
+  const [isReceiptVisible, setIsReceiptVisible] = useState(false);
 
   const customerId = sessionStorage.getItem("userId");
 
@@ -64,7 +68,7 @@ const Order = () => {
 
 
   return (
-    <div style={{ padding: "0 5%"}}>
+    <div style={{ padding: "0 5%" }}>
       <Title level={3}>My Orders</Title>
 
       {orders.length === 0 ? (
@@ -79,28 +83,47 @@ const Order = () => {
               opacity: order.status === "cancelled" ? 0.5 : 1,        // Grays it out
               pointerEvents: order.status === "cancelled" ? "none" : "auto", // Optional: disable interaction
             }}
-            bordered
+            variant="bordered"
             extra={
-              (order.status !== "cancelled" && !order.isPaid) && (
-                <div style={{ display: "flex", gap: 8 }}>
-                  <Button type="default" onClick={() => {
-                    setSelectedOrder(order);
-                    setModalType("cancel");
-                    setIsModalOpen(true);
-                  }}>
-                    Cancel Order
+              order.status !== "cancelled" ? (
+                order.isPaid ? (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      setReceiptOrder(order);
+                      setIsReceiptVisible(true);
+                    }}
+                    icon={<FileTextOutlined />}
+                  >
+                    View Receipt
                   </Button>
-
-                  <Button type="primary" onClick={() => {
-                    setSelectedOrder(order);
-                    setModalType("pay");
-                    setIsModalOpen(true);
-                  }}>
-                    Pay for Order
-                  </Button>
-                </div>
-              )
+                ) : (
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <Button
+                      type="default"
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setModalType("cancel");
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      Cancel Order
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setModalType("pay");
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      Pay for Order
+                    </Button>
+                  </div>
+                )
+              ) : null
             }
+
           >
 
             <Descriptions bordered column={1} size="small">
@@ -140,6 +163,39 @@ const Order = () => {
                 </List.Item>
               )}
             />
+            <Modal
+              title="Receipt"
+              open={isReceiptVisible}
+              footer={[
+                <Button key="print" icon={<PrinterOutlined />} onClick={() => window.print()} type="primary">Print</Button>,
+                <Button key="close" onClick={() => setIsReceiptVisible(false)}>Close</Button>,
+              ]}
+              onCancel={() => setIsReceiptVisible(false)}
+            >
+              {receiptOrder && (
+                <div className="receipt-content">
+                  <Title level={4}>ITBytes Order Receipt</Title>
+                  <Text>Order ID: {receiptOrder._id}</Text><br />
+                  <Text>Date: {new Date(receiptOrder.createdAt).toLocaleString()}</Text><br />
+                  <Text>Status: {receiptOrder.status}</Text><br />
+                  <Text>Payment: {receiptOrder.isPaid ? "Paid" : "Unpaid"}</Text><br />
+                  <Divider />
+                  <List
+                    header="Items"
+                    style={{ fontFamily: "Poppins" }}
+                    dataSource={receiptOrder.orders}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
+                        <div>₱{item.subtotal.toLocaleString()}</div>
+                      </List.Item>
+                    )}
+                  />
+                  <Divider />
+                  <Title level={5}>Total: ₱{receiptOrder.totalPrice.toLocaleString()}</Title>
+                </div>
+              )}
+            </Modal>
             <Modal
               open={isModalOpen}
               onCancel={() => {
