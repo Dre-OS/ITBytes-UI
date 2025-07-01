@@ -19,7 +19,8 @@ import {
   EditOutlined,
   DeleteOutlined,
   CheckOutlined,
-  CloseOutlined
+  CloseOutlined,
+  ReloadOutlined
 } from "@ant-design/icons";
 import "../styles/ManageUsers.css";
 
@@ -297,7 +298,7 @@ const ManageUsers = () => {
             </div>
 
           </div>
-          <div className="table-top-right">
+          <div className="table-top-right" style={{ display: "flex", gap: 8 }}>
             <Button
               icon={<PlusOutlined />}
               type="primary"
