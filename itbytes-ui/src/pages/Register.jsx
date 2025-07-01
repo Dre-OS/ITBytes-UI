@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Register.css';
 import { Form, Input, Button, Divider, message, Select, Row, Col, Segmented } from "antd";
-import { CloseCircleOutlined, LaptopOutlined, LockOutlined, CustomerServiceOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
+import { CloseOutlined, LaptopOutlined, LockOutlined, CustomerServiceOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
 
 const apiUrl = import.meta.env.VITE_USER_API_URL;
 
@@ -71,8 +71,6 @@ function Register() {
 
     return (
         <div className="register-container" style={{ fontFamily: 'Poppins' }}>
-            ;
-
             <div className='register-image'>
                 <div
                     style={{
@@ -171,7 +169,7 @@ function Register() {
             <div className='register-form'>
 
                 <div className='register-back'>
-                    <CloseCircleOutlined
+                    <CloseOutlined
                         style={{ fontSize: '24px', cursor: 'pointer' }}
                         onClick={() => navigate('/')}
                     />
