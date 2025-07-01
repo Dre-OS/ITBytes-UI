@@ -7,6 +7,7 @@ import nbsLogo from "../assets/nbs_logo.png";
 import jollibeeLogo from "../assets/jollibee_logo.png";
 import pnbLogo from "../assets/png_logo.png";
 import taralabalogo from "../assets/taralaba_logo.png";
+import dentalLogo from "../assets/dental_logo.png";
 import logo from "../assets/logo_colored.png";
 
 const { Title, Text } = Typography;
@@ -15,7 +16,7 @@ const businesses = [
     { name: "Blended", url: "http://192.168.9.7:5173", image: blendedLogo, bg: "#000000" },
     { name: "National Bookstore", url: "http://192.168.9.16:5173", image: nbsLogo, bg: "#F60002" },
     { name: "Tara Laba", url: "http://192.168.9.27:5173", image: taralabalogo, bg: "#fff" },
-    { name: "Dental Clinic", url: "http://192.168.9.35:5173", image: "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg" },
+    { name: "Dental Clinic", url: "http://192.168.9.35:5173", image: dentalLogo, bg: "#DDE4E4" },
     { name: "Jollibee", url: "http://192.168.9.37:5173", image: jollibeeLogo, bg: "#E41130" },
     { name: "PNB", url: "http://192.168.9.23:5173", image: pnbLogo, bg: "#FFFFFF" },
     //   { name: "ITBYTES", url: "http://192.168.9.4:5173", image: itbytesLogo, bg: "#2E4960" },
