@@ -22,7 +22,7 @@ const UserInsights = () => {
       const { data } = await axios.get(`${apiUrl}/all`);
       setUsers(data);
 
-      const adminCount = users.filter(user => user.role === "admin").length;
+      const adminCount = data.filter(user => user.role == "admin").length;
       const recentUser = users.reduce((latest, user) =>
         new Date(user.createdAt) > new Date(latest.createdAt) ? user : latest, users[0] || {}
       );
