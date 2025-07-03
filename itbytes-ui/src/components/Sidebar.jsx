@@ -50,9 +50,9 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       label: "Manage Purchases",
       children: [
         {
-          key: "/dashboard/manage-purchases/buy-supplies",
+          key: "/dashboard/supplies",
           icon: <PlusCircleOutlined />,
-          label: <Link to="/dashboard/manage-purchases/buy-supplies">Buy Supplies</Link>
+          label: <Link to="/dashboard/supplies">Buy Supplies</Link>
         },
         {
           key: "/dashboard/manage-purchases/order-history",
@@ -78,9 +78,9 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       label: "Manage Purchases",
       children: [
         {
-          key: "/dashboard/manage-purchases/buy-supplies",
+          key: "/dashboard/supplies",
           icon: <PlusCircleOutlined />,
-          label: <Link to="/dashboard/manage-purchases/buy-supplies">Buy Supplies</Link>
+          label: <Link to="/dashboard/supplies">Buy Supplies</Link>
         },
         {
           key: "/dashboard/manage-purchases/order-history",
