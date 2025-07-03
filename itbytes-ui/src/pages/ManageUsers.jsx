@@ -65,11 +65,6 @@ const ManageUsers = () => {
 
 
   const handleSubmit = async (values) => {
-    if (values.password !== values.confirm) {
-      message.error("Oops! Password does not match.");
-      return;
-    }
-
     const userData = {
       firstname: values.firstname,
       lastname: values.lastname,
@@ -296,7 +291,6 @@ const ManageUsers = () => {
                 }}
               />
             </div>
-
           </div>
           <div className="table-top-right" style={{ display: "flex", gap: 8 }}>
             <Button
@@ -381,17 +375,14 @@ const ManageUsers = () => {
             >
               <Input placeholder="Email" />
             </Form.Item>
-            {["password", "confirm"].map((field) => (
-              <Form.Item
-                key={field}
-                name={field}
-                label={field === "confirm" ? "Confirm Password" : "Password"}
-                rules={[{ required: true }]}
-                style={{ marginBottom: 12 }}
-              >
-                <Input.Password placeholder={field === "confirm" ? "Confirm password" : "Enter password"} />
-              </Form.Item>
-            ))}
+            <Form.Item
+              name="password"
+              label="Password"
+              rules={[{ required: true }]}
+              style={{ marginBottom: 12 }}
+            >
+              <Input.Password placeholder="Enter password" />
+            </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" block>
                 {editingUser ? "Update" : "Add"} User
