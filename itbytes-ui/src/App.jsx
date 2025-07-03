@@ -9,6 +9,7 @@ import ManageSales from "./pages/ManageSales";
 import ManageUsers from "./pages/ManageUsers";
 import Settings from "./pages/Settings";
 import Businesses from "./pages/Businesses";
+import BuySupplies from "./pages/BuySupplies";
 
 //Customer Routes
 import Main from "./pages//layouts/MainLayout";
@@ -82,10 +83,10 @@ export default function App() {
             }
           />
           <Route
-            path="manage-sales"
+            path="supplies"
             element={
-              <RoleRoute allowedRoles={["admin", "sales"]}>
-                <ManageSales />
+              <RoleRoute allowedRoles={["admin", "inventory"]}>
+                <BuySupplies />
               </RoleRoute>
             }
           />
