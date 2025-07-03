@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
 import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, MailOutlined, CloseOutlined } from '@ant-design/icons';
+import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import logo from '../assets/logo_white.webp';
 
 const apiUrl = import.meta.env.VITE_USER_API_URL;
@@ -10,6 +11,7 @@ const apiUrl = import.meta.env.VITE_USER_API_URL;
 function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const handleLogin = async (values) => {
     try {
@@ -33,7 +35,7 @@ function Login() {
         sessionStorage.setItem('lastname', user.lastname);
         sessionStorage.setItem('role', user.role);
         if (user.role == 'customer') {
-          navigate('/'); // Redirect customers to home page
+          navigate('/');
           return;
         }
 
@@ -74,7 +76,7 @@ function Login() {
           onFinish={handleLogin}
         >
           <h1 style={{ textAlign: "left" }}>Welcome Back</h1>
-          <p style={{ textAlign: "left", marginBottom: '15px'  }}>Please enter your email and password to continue.</p>
+          <p style={{ textAlign: "left", marginBottom: '15px' }}>Please enter your email and password to continue.</p>
           <Form.Item
             name="email"
             rules={[{ required: true, message: 'Please enter your email!' }]}
@@ -100,11 +102,15 @@ function Login() {
             </Button>
           </Form.Item>
         </Form>
-        <div className="login-form-footer" style={{ justifyContent: 'space-between', width: '500px'}}>
+        <div className="login-form-footer" style={{ justifyContent: 'space-between', width: '500px' }}>
           <p>No account? <a href="/register">Register Now</a></p>
-          <p><a href="/forgot-password">Forgot Password?</a></p>
+          <p><a onClick={() => setModalVisible(true)} style={{ cursor: 'pointer'}}>Forgot Password?</a></p>
         </div>
       </div>
+      <ForgotPasswordModal
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </div>
   );
 }
