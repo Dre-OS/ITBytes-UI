@@ -188,7 +188,7 @@ function Register() {
                     <Form.Item
                         label="Account Type"
                         name="accountType"
-                        rules={[{ required: true, message: 'Please select an account type!' }]}
+                        // rules={[{ required: true, message: 'Please select an account type!' }]}
                         style={{ marginBottom: '16px' }}
                     >
                         <Segmented
