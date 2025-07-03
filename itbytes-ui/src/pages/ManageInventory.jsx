@@ -13,12 +13,14 @@ import {
   Select,
   Upload,
   Image,
-  Space
+  Space,
+  Tooltip
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
+  ExclamationCircleOutlined
 } from "@ant-design/icons";
 import "../styles/ManageUsers.css";
 
@@ -147,7 +149,19 @@ const ManageInventory = () => {
       )
     },
     { title: "Name", dataIndex: "name", key: "name", width: 120 },
-    { title: "Description", dataIndex: "description", key: "description", width: 300 },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      render: (desc) =>
+        desc && desc.length > 80 ? (
+          <Tooltip title={desc} style={{ fontFamily: "Poppins" }}>
+            {desc.slice(0, 80)}...
+          </Tooltip>
+        ) : (
+          desc
+        ),
+    },
     {
       title: "Category",
       dataIndex: "category",
@@ -169,7 +183,20 @@ const ManageInventory = () => {
           ))
           : tags
     },
-    { title: "Quantity", dataIndex: "quantity", key: "quantity", width: 100 },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (qty) =>
+        qty <= 10 ? (
+          <span style={{ color: "red", fontWeight: 600 }}>
+            <ExclamationCircleOutlined style={{ marginRight: 4 }} />
+            {qty} <span style={{ fontSize: 12, fontWeight: 400 }}>(Low stock)</span>
+          </span>
+        ) : (
+          qty
+        ),
+    },
     {
       title: "Price",
       dataIndex: "price",
