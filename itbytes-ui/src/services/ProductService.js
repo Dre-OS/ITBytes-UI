@@ -46,3 +46,13 @@ export const deleteItem = async (id) => {
     return false;
   }
 };
+
+export const fetchFeaturedProducts = async (limit = 6) => {
+  try {
+    const res = await axios.get(apiUrl);
+    return res.data.slice(0, limit); // Return only limited products
+  } catch (error) {
+    console.error("Error fetching featured products:", error);
+    throw error;
+  }
+};
