@@ -39,6 +39,7 @@ const ProductModal = ({ productId, visible, onClose }) => {
           onClose();
         });
     }
+    console.log("ProductModal useEffect triggered", { productId, visible });
   }, [productId, visible]);
 
   const handleAddToCart = () => {
