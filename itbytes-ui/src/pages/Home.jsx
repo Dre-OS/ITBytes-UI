@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Card, Col, Layout, Row, Typography, Carousel } from "antd";
-import axios from 'axios';
+import { fetchFeaturedProducts } from '../services/ProductService'; 
 import '../styles/Home.css';
 import ProductModal from '../components/ProductModal';
 import { useNavigate } from 'react-router-dom';
 const { Title, Paragraph } = Typography;
-const { Content, Footer } = Layout;
+const { Content } = Layout;
 import {
     ArrowRightOutlined,
     LockOutlined,
@@ -97,16 +97,17 @@ function Home() {
     ];
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const loadFeatured = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_INVENTORY_API_URL}`);
-                setFeatured(res.data.slice(0, 6)); // Only keep the first 6 products
+                const data = await fetchFeaturedProducts();
+                setFeatured(data);
             } catch (err) {
                 console.error("Failed to fetch featured products:", err);
             }
         };
-        fetchProducts();
+        loadFeatured();
     }, []);
+
 
 
     return (
