@@ -177,8 +177,8 @@ const Order = () => {
                   <Title level={4}>ITBytes Order Receipt</Title>
                   <Text>Order ID: {receiptOrder._id}</Text><br />
                   <Text>Date: {new Date(receiptOrder.createdAt).toLocaleString()}</Text><br />
-                  <Text>Status: {receiptOrder.status}</Text><br />
-                  <Text>Payment: {receiptOrder.isPaid ? "Paid" : "Unpaid"}</Text><br />
+                  {/* <Text>Status: {receiptOrder.status}</Text><br /> */}
+                  <Text>Payment: {receiptOrder.isPaid ? "Received" : "Unpaid"}</Text><br />
                   <Divider />
                   <List
                     header="Items"
@@ -193,6 +193,10 @@ const Order = () => {
                   />
                   <Divider />
                   <Title level={5}>Total: ₱{receiptOrder.totalPrice.toLocaleString()}</Title>
+
+                  <style>
+                    
+                  </style>
                 </div>
               )}
             </Modal>
