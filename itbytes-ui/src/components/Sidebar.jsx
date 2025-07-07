@@ -17,14 +17,15 @@ import {
 } from "@ant-design/icons";
 import '../styles/Sidebar.css';
 import logo from "../assets/logo_small_white.png";
+import UserSession from "../utils/UserSession";
 
 const { Sider } = Layout;
 
 export default function Sidebar({ collapsed, setCollapsed }) {
   const location = useLocation();
   const selectedKey = location.pathname;
-  const role = sessionStorage.getItem("role");
-  const name = sessionStorage.getItem("firstname") + " " + sessionStorage.getItem("lastname");
+  const role = UserSession.getRole();
+  const name = UserSession.get()?.firstname + " " + UserSession.get()?.lastname;
 
   const toggleSidebar = (value) => {
     setCollapsed(value);
