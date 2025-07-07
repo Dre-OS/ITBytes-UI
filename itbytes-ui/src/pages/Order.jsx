@@ -3,6 +3,7 @@ import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal
 import OrderService from "../services/OrderService";
 import "../styles/Order.css"; // Assuming you have some styles for the order page
 import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
+import UserSession from "../utils/UserSession";
 
 const { Title, Text } = Typography;
 
@@ -15,7 +16,7 @@ const Order = () => {
   const [receiptOrder, setReceiptOrder] = useState(null);
   const [isReceiptVisible, setIsReceiptVisible] = useState(false);
 
-  const customerId = sessionStorage.getItem("userId");
+  const customerId = UserSession.get()?.userId;
 
   useEffect(() => {
     fetchOrders();
