@@ -5,8 +5,7 @@ import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, MailOutlined, CloseOutlined } from '@ant-design/icons';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import logo from '../assets/logo_white.webp';
-
-const apiUrl = import.meta.env.VITE_USER_API_URL;
+import { loginUser } from '../services/AuthService'; // Adjust the import path as necessary
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -14,43 +13,26 @@ function Login() {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleLogin = async (values) => {
-    try {
-      setLoading(true);
+  setLoading(true);
 
-      const response = await fetch(`${apiUrl}`);
-      const users = await response.json();
+  const { user, error } = await loginUser(values.email, values.password);
 
-      const user = users.find((user) => user.email === values.email && user.password === values.password);
+  if (error) {
+    message.error(error);
+    setLoading(false);
+    return;
+  }
 
-      if (user) {
+  sessionStorage.setItem('userId', user._id);
+  sessionStorage.setItem('isAuthenticated', true);
+  sessionStorage.setItem('firstname', user.firstname);
+  sessionStorage.setItem('lastname', user.lastname);
+  sessionStorage.setItem('role', user.role);
 
-        if (user.isDeleted || user.isAuth === 'rejected' || user.isAuth === 'pending') {
-          message.error('Your account has not yet been approved. Please contact support.');
-          return;
-        }
-
-        sessionStorage.setItem('userId', user._id);
-        sessionStorage.setItem('isAuthenticated', true);
-        sessionStorage.setItem('firstname', user.firstname);
-        sessionStorage.setItem('lastname', user.lastname);
-        sessionStorage.setItem('role', user.role);
-        if (user.role == 'customer') {
-          navigate('/');
-          return;
-        }
-
-        message.success('Login successful!');
-        navigate('/dashboard');
-      } else {
-        message.error('Invalid email or password!');
-      }
-    } catch (error) {
-      console.error('Error logging in:', error);
-      message.error('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  message.success('Login successful!');
+  navigate(user.role === 'customer' ? '/' : '/dashboard');
+  setLoading(false);
+};
 
   return (
     <div className="login-container">
