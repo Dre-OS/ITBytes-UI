@@ -70,8 +70,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
       message.error("Failed to reset password.");
     }
   };
-
-
+  
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
