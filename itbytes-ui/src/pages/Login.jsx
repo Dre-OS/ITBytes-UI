@@ -6,6 +6,7 @@ import { LockOutlined, MailOutlined, CloseOutlined } from '@ant-design/icons';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import logo from '../assets/logo_white.webp';
 import { loginUser } from '../services/AuthService'; // Adjust the import path as necessary
+import UserSession from '../utils/UserSession';
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -23,11 +24,7 @@ function Login() {
     return;
   }
 
-  sessionStorage.setItem('userId', user._id);
-  sessionStorage.setItem('isAuthenticated', true);
-  sessionStorage.setItem('firstname', user.firstname);
-  sessionStorage.setItem('lastname', user.lastname);
-  sessionStorage.setItem('role', user.role);
+  UserSession.set(user);
 
   message.success('Login successful!');
   navigate(user.role === 'customer' ? '/' : '/dashboard');
