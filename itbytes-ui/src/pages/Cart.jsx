@@ -1,5 +1,5 @@
 import React from "react";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../context/CartContext";
 import { List, Button, Typography, message, InputNumber, Modal } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
