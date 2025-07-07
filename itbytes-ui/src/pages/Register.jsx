@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect, use } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { isEmailAvailable, registerUser } from '../services/AuthService';
 import '../styles/Register.css';
 import { Form, Input, Button, Divider, message, Select, Row, Col, Segmented } from "antd";
 import { CloseOutlined, LaptopOutlined, LockOutlined, CustomerServiceOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
-
-const apiUrl = import.meta.env.VITE_USER_API_URL;
 
 function Register() {
     const [loading, setLoading] = useState(false);
@@ -20,52 +18,25 @@ function Register() {
     const [form] = Form.useForm();
 
     const onFinish = async (values) => {
-        try {
-            setLoading(true);
-            const isUnique = await validateEmail(values.email);
+        setLoading(true);
 
-            if (!isUnique) {
+        try {
+            const emailOK = await isEmailAvailable(values.email);
+            if (!emailOK) {
                 message.error("Email already registered!");
-                setLoading(false);
                 return;
             }
 
+            await registerUser(values, accountType);
 
-            console.log("Form Values:", values);
-            const payload = {
-                firstname: values.firstName,
-                lastname: values.lastName,
-                middlename: values.middleName,
-                role: accountType === 'business' ? 'business' : values.role,
-                email: values.email,
-                password: values.password,
-                isAuth: "pending",
-                isDeleted: false,
-            };
-
-            const response = await axios.post(`${apiUrl}`, payload);
-            console.log("Success:", response.data);
-            setTimeout(() => {
-                navigate('/login', {
-                    state: { registered: true },
-                });
-            }, 1500);
             message.success("Registration successful! Please log in.");
+            setTimeout(() => {
+                navigate('/login', { state: { registered: true } });
+            }, 1500);
         } catch (error) {
-            console.error("Error:", error);
+            message.error("An error occurred during registration.");
         } finally {
             setLoading(false);
-        }
-    };
-
-    const validateEmail = async (email) => {
-        try {
-            const response = await axios.get(`${apiUrl}`);
-            const exists = response.data.some(user => user.email === email);
-            return !exists;
-        } catch (error) {
-            console.error("Error validating email:", error);
-            return false;
         }
     };
 
