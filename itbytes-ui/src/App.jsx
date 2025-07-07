@@ -7,7 +7,6 @@ import ManageInventory from "./pages/ManageInventory";
 import ManageOrders from "./pages/ManageOrders";
 import ManageUsers from "./pages/ManageUsers";
 import Settings from "./pages/Settings";
-import Businesses from "./pages/Businesses";
 import BuySupplies from "./pages/BuySupplies";
 
 //Customer Routes
@@ -103,23 +102,10 @@ export default function App() {
               </RoleRoute>
             }
           />
-          <Route
-            path="other-businesses"
-            element={
-              <RoleRoute allowedRoles={["admin"]}>
-                <Businesses />
-              </RoleRoute>
-            }
-          />
         </Route>
-
-
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/test" element={<Test />} />
-
-        {/* Redirect any unmatched routes to the home page */}
-
       </Routes>
     </Router>
   );
