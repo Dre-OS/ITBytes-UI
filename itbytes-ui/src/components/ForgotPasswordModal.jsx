@@ -6,6 +6,7 @@ const { Step } = Steps;
 
 const ForgotPasswordModal = ({ visible, onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [sendingOTP, setSendingOTP] = useState(false);
   const [email, setEmail] = useState('');
   const [form] = Form.useForm();
 
@@ -13,14 +14,18 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
   const apiUrl = import.meta.env.VITE_USER_API_URL;
 
   const handleSendOTP = async () => {
+    setSendingOTP(true); // Disable button
     try {
       await axios.post(`${API_BASE}/send-otp`, { email });
       message.success("OTP sent to your email.");
       setCurrentStep(1);
     } catch {
       message.error("Failed to send OTP.");
+    } finally {
+      setSendingOTP(false); // Re-enable button
     }
   };
+
 
   const [otp, setOtp] = useState(Array(6).fill(''));
 
@@ -116,11 +121,14 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
               type="primary"
               htmlType="submit"
               block
-              size='middle'
+              size="middle"
+              loading={sendingOTP}
+              disabled={sendingOTP}
               style={{ borderRadius: 6, fontWeight: 500, marginTop: '0px' }}
             >
-              Send OTP
+              {sendingOTP ? 'Sending OTP...' : 'Send OTP'}
             </Button>
+
           </Form>
 
         );
