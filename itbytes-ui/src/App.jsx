@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
+import UserSession from "./utils/UserSession";
 
 //Admin Routes
 import Admin from "./layouts/AdminLayout";
@@ -22,18 +23,18 @@ import Register from "./pages/Register";
 
 
 const PrivateRoute = () => {
-  const role = sessionStorage.getItem("role");
-  sessionStorage.setItem("isAuthenticated", true);
+  const role = UserSession.getRole();
+  UserSession.set({ ...UserSession.get(), isAuthenticated: true });
   if (role == "customer") {
     return <Navigate to="/" />;
   }
-  const token = sessionStorage.getItem("isAuthenticated");
+  const token = UserSession.isAuthenticated();
   return token ? <Outlet /> : <Navigate to="/" />;
 };
 
 const RoleRoute = ({ allowedRoles, children }) => {
-  const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
-  const role = sessionStorage.getItem("role");
+  const isAuthenticated = UserSession.isAuthenticated();
+  const role = UserSession.getRole();
 
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (!allowedRoles.includes(role)) return <Navigate to="/" />;
