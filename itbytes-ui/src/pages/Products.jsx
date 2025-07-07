@@ -5,21 +5,17 @@ import {
   Card,
   Button,
   Typography,
-  message,
   Spin,
   Input,
   Checkbox,
   InputNumber,
   Tag
 } from "antd";
-import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
-import ProductModal from "../components/ProductModal"; // Adjust path if needed
-
-
+import { useLocation } from "react-router-dom";
+import ProductModal from "../components/ProductModal";
+import { fetchItems } from "../services/ProductService";
 
 const { Title, Paragraph } = Typography;
-const apiUrl = import.meta.env.VITE_INVENTORY_API_URL || "http://localhost:5000/api/products";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -32,9 +28,6 @@ const Products = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const categoryFromQuery = queryParams.get("category");
-
 
   const openProductModal = (id) => {
     setSelectedProductId(id);
@@ -46,55 +39,44 @@ const Products = () => {
     setSelectedProductId(null);
   };
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(apiUrl);
-        const allProducts = res.data;
-        setProducts(allProducts);
+ useEffect(() => {
+  const fetchProducts = async () => {
+    const allProducts = await fetchItems();
+    setProducts(allProducts);
 
-        const queryParams = new URLSearchParams(location.search);
-        const categoryFromUrl = queryParams.get("category");
+    const queryParams = new URLSearchParams(location.search);
+    const categoryFromUrl = queryParams.get("category");
 
-        // Update selectedCategories (if from URL)
-        if (categoryFromUrl) {
-          setSelectedCategories([categoryFromUrl]);
-        } else {
-          setSelectedCategories([]);
-        }
+    if (categoryFromUrl) {
+      setSelectedCategories([categoryFromUrl]);
+    } else {
+      setSelectedCategories([]);
+    }
 
+    const lowerSearch = searchText.toLowerCase();
+    let filtered = [...allProducts];
 
-        // ✅ Apply filters manually after setting all necessary data
-        const lowerSearch = searchText.toLowerCase();
-        let filtered = [...allProducts];
+    if (categoryFromUrl) {
+      filtered = filtered.filter((p) => p.category === categoryFromUrl);
+    }
 
-        if (categoryFromUrl) {
-          filtered = filtered.filter(p => p.category === categoryFromUrl);
-        }
+    if (searchText) {
+      filtered = filtered.filter((p) =>
+        p.name.toLowerCase().includes(lowerSearch) ||
+        p.description.toLowerCase().includes(lowerSearch)
+      );
+    }
 
-        if (searchText) {
-          filtered = filtered.filter(p =>
-            p.name.toLowerCase().includes(lowerSearch) ||
-            p.description.toLowerCase().includes(lowerSearch)
-          );
-        }
+    setFiltered(filtered);
+    setLoading(false);
+  };
 
-        setFiltered(filtered);
-        setLoading(false);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        message.error("Error fetching products");
-      }
-    };
-
-    fetchProducts();
-  }, [location.search]); // Re-run when query changes (like category)
+  fetchProducts();
+}, [location.search]);
 
   useEffect(() => {
     applyFilters();
   }, [searchText, selectedCategories, minPrice, maxPrice, products]);
-
-
 
   const uniqueCategories = [
     "CCTV",
