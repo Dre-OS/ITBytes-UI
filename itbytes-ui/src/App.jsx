@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
 
 //Admin Routes
-import Admin from "./pages/layouts/AdminLayout";
+import Admin from "./layouts/AdminLayout";
 import Dashboard from "./pages/Dashboard";
 import ManageInventory from "./pages/ManageInventory";
 import ManageOrders from "./pages/ManageOrders";
@@ -11,7 +11,7 @@ import Businesses from "./pages/Businesses";
 import BuySupplies from "./pages/BuySupplies";
 
 //Customer Routes
-import Main from "./pages//layouts/MainLayout";
+import Main from "./layouts/MainLayout";
 import Products from "./pages/Products";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
