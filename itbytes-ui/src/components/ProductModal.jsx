@@ -12,7 +12,7 @@ import {
   Modal
 } from "antd";
 import axios from "axios";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../context/CartContext";
 
 const { Title, Paragraph } = Typography;
 const apiUrl = import.meta.env.VITE_INVENTORY_API_URL || "http://localhost:5000/api/products";
