@@ -3,6 +3,7 @@ import { useCart } from "../context/CartContext";
 import { List, Button, Typography, message, InputNumber, Modal } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import UserSession from "../utils/UserSession";
 
 const { Title } = Typography;
 const apiUrl = import.meta.env.VITE_ORDER_API_URL;
@@ -11,7 +12,7 @@ const productApiUrl = import.meta.env.VITE_INVENTORY_API_URL;
 const Cart = () => {
   const [quantity, setQuantity] = React.useState(1);
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
-  const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
+  const isAuthenticated = UserSession.isAuthenticated();
   const navigate = useNavigate();
 
   if (!isAuthenticated) {
