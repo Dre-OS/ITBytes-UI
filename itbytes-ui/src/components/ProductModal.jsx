@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { fetchItembyId } from "../services/ProductService";
 import { useCart } from "../context/CartContext";
+import UserSession from "../utils/UserSession"; // Adjust the import path as necessary
 
 const { Title, Paragraph } = Typography;
 const apiUrl = import.meta.env.VITE_INVENTORY_API_URL || "http://localhost:5000/api/products";
@@ -43,8 +44,7 @@ const ProductModal = ({ productId, visible, onClose }) => {
   }, [productId, visible]);
 
   const handleAddToCart = () => {
-    const isAuthenticated = sessionStorage.getItem("isAuthenticated");
-    if (isAuthenticated !== "true") {
+    if (!UserSession.isAuthenticated()) {
       message.error("Please log in to add items to your cart.");
       return;
     }
