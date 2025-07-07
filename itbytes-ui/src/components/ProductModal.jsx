@@ -1,5 +1,5 @@
 // components/ProductModal.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Typography,
   Button,
@@ -11,7 +11,7 @@ import {
   Divider,
   Modal
 } from "antd";
-import axios from "axios";
+import { fetchItembyId } from "../services/ProductService";
 import { useCart } from "../context/CartContext";
 
 const { Title, Paragraph } = Typography;
@@ -26,12 +26,13 @@ const ProductModal = ({ productId, visible, onClose }) => {
 
   useEffect(() => {
     if (productId && visible) {
-      setQuantity(1); // ✅ Reset local state
-      form.setFieldsValue({ quantity: 1 }); // ✅ Reset form field
+      setQuantity(1);
+      form.setFieldsValue({ quantity: 1 });
       setLoading(true);
-      axios.get(`${apiUrl}/${productId}`)
-        .then((res) => {
-          setProduct(res.data);
+
+      fetchItembyId(productId)
+        .then((data) => {
+          setProduct(data);
           setLoading(false);
         })
         .catch(() => {
@@ -39,7 +40,6 @@ const ProductModal = ({ productId, visible, onClose }) => {
           onClose();
         });
     }
-    console.log("ProductModal useEffect triggered", { productId, visible });
   }, [productId, visible]);
 
   const handleAddToCart = () => {
