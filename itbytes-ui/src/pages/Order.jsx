@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal, Divider } from "antd";
-import axios from "axios";
+import OrderService from "../services/OrderService";
 import "../styles/Order.css"; // Assuming you have some styles for the order page
 import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
-const apiUrl = import.meta.env.VITE_ORDER_API_URL;
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -23,49 +22,38 @@ const Order = () => {
   }, []);
 
   const fetchOrders = async () => {
-    axios.get(`${apiUrl}/out/customer/${customerId}`)
-      .then((res) => {
-        setOrders(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        message.error("Failed to fetch orders.");
-        setLoading(false);
-      });
+    try {
+      const data = await OrderService.getCustomerOrders(customerId);
+      setOrders(data);
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to fetch orders.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePayment = async (orderId) => {
     try {
-      const payment = { isPaid: true };
-      await axios.put(`${apiUrl}/out/${orderId}`, payment);
+      await OrderService.markAsPaid(orderId);
       fetchOrders();
-      message.success("Payment Succesful.");
+      message.success("Payment successful.");
     } catch (err) {
       console.error(err);
-      message.error("Payment Failed.");
+      message.error("Payment failed.");
     }
   };
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: "center", marginTop: 50 }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
   const handleCancelOrder = async (orderId) => {
     try {
-      const cancel = { status: "cancelled" };
-      await axios.put(`${apiUrl}/out/${orderId}`, cancel);
-      fetchOrders(); // Refresh orders after cancellation
+      await OrderService.cancelOrder(orderId);
+      fetchOrders();
       message.success("Order cancelled.");
     } catch (err) {
       console.error(err);
       message.error("Cancellation failed.");
     }
   };
-
 
   return (
     <div style={{ padding: "0 5%" }}>
@@ -195,7 +183,7 @@ const Order = () => {
                   <Title level={5}>Total: ₱{receiptOrder.totalPrice.toLocaleString()}</Title>
 
                   <style>
-                    
+
                   </style>
                 </div>
               )}
