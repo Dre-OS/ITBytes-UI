@@ -11,13 +11,13 @@ import {
   Layout,
   Divider,
 } from "antd";
-import axios from "axios";
+import OrderService from "../services/OrderService";
+import UserService from "../services/UserService";
 import { EditOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
 const { Option } = Select;
 
-const apiUrl = import.meta.env.VITE_ORDER_API_URL;
 const userApiUrl = import.meta.env.VITE_USER_API_URL; // Adjust this to your actual user API URL
 
 const ManageOrders = () => {
@@ -34,8 +34,8 @@ const ManageOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data: ordersData } = await axios.get(`${apiUrl}/out`);
-      const { data: usersData } = await axios.get(`${userApiUrl}`);
+      const ordersData = await OrderService.getAllOrders();
+      const usersData = await UserService.getAll();
 
       const userMap = {};
       usersData.forEach(user => {
@@ -54,7 +54,6 @@ const ManageOrders = () => {
       message.error("Failed to fetch orders or users");
     }
   };
-
 
   const applyFilters = (search, status, payment) => {
     const lower = search.toLowerCase();
