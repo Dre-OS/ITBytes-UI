@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import {
   Layout,
   Button,
@@ -23,9 +22,13 @@ import {
   ExclamationCircleOutlined
 } from "@ant-design/icons";
 import "../styles/ManageUsers.css";
+import {
+  fetchItems,
+  submitItem,
+  deleteItem
+} from "../services/ProductService";
 
 const { Content } = Layout;
-const apiUrl = import.meta.env.VITE_INVENTORY_API_URL;
 
 const ManageInventory = () => {
   const [items, setItems] = useState([]);
@@ -47,17 +50,13 @@ const ManageInventory = () => {
     });
 
   useEffect(() => {
-    fetchItems();
+    loadItems();
   }, []);
 
-  const fetchItems = async () => {
-    try {
-      const { data } = await axios.get(`${apiUrl}`);
-      setItems(data);
-      setFilteredItems(data);
-    } catch {
-      message.error("Error fetching inventory");
-    }
+  const loadItems = async () => {
+    const data = await fetchItems();
+    setItems(data);
+    setFilteredItems(data);
   };
 
   const handleSubmit = async (values) => {
@@ -65,11 +64,12 @@ const ManageInventory = () => {
       message.error("Quantity cannot be negative.");
       return;
     }
+
     const imageField = form.getFieldValue("image");
     const imageToUse =
       base64Image ||
       (imageField && imageField[0] && imageField[0].url) ||
-      ""; // If no image, will be empty string
+      "";
 
     const itemData = {
       name: values.name,
@@ -78,34 +78,21 @@ const ManageInventory = () => {
       tags: values.tags,
       quantity: Number(values.quantity),
       price: Number(values.price),
-      image: imageToUse
+      image: imageToUse,
     };
 
-    console.log("Submitting item data:", itemData);
-
-    try {
-      const url = editingItem ? `${apiUrl}/${editingItem.id}` : `${apiUrl}`;
-      console.log("API URL:", url);
-      const method = editingItem ? axios.put : axios.post;
-      const { data } = await method(url, itemData);
-      message.success(data.message || "Item saved successfully");
-      fetchItems();
+    const success = await submitItem(itemData, editingItem);
+    if (success) {
+      loadItems();
       setIsModalOpen(false);
       setBase64Image("");
       form.resetFields();
-    } catch (error) {
-      message.error(error.response?.data?.error || "Error saving item");
     }
   };
 
   const handleDelete = async (_id) => {
-    try {
-      await axios.delete(`${apiUrl}/${_id}`);
-      message.success("Item deleted successfully");
-      fetchItems();
-    } catch {
-      message.error("Failed to delete item");
-    }
+    const success = await deleteItem(_id);
+    if (success) loadItems();
   };
 
   const handleSearch = (value) => {
