@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { UserOutlined, ShoppingCartOutlined, HomeOutlined, ProductOutlined, ShoppingOutlined, DashboardOutlined } from '@ant-design/icons';
 import '../styles/Navbar.css';
 import logo from '../assets/logo_colored.png';
-import { useCart } from "../contexts/CartContext"; // adjust path if needed
+import { useCart } from "../context/CartContext"; // adjust path if needed
 
 const { Search } = Input;
 
