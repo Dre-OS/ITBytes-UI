@@ -5,6 +5,7 @@ import { UserOutlined, ShoppingCartOutlined, HomeOutlined, ProductOutlined, Shop
 import '../styles/Navbar.css';
 import logo from '../assets/logo_colored.png';
 import { useCart } from "../context/CartContext"; // adjust path if needed
+import UserSession from '../utils/UserSession'; // adjust path if needed
 
 const { Search } = Input;
 
@@ -18,12 +19,12 @@ const Navbar = () => {
     const uniqueItems = cart.length;
 
     useEffect(() => {
-        const auth = sessionStorage.getItem("isAuthenticated") === "true";
-        const fname = sessionStorage.getItem("firstname") || "User";
-        const userRole = sessionStorage.getItem("role") || "customer";
-        setIsAuthenticated(auth);
-        setFirstName(fname);
-        setRole(userRole);
+        const user = UserSession.get();
+        if (user) {
+            setIsAuthenticated(user.isAuthenticated);
+            setFirstName(user.firstname);
+            setRole(user.role);
+        }
     }, []);
 
     const handleLogout = () => {
