@@ -1,16 +1,17 @@
 import React from "react";
-import UserInsights from "./business_intelligence/UserInsights";
-import ProductInsights from "./business_intelligence/ProductInsights";
-import OrderInsights from "./business_intelligence/OrderInsights";
+import UserInsights from "./bi/UserInsights";
+import ProductInsights from "./bi/ProductInsights";
+import OrderInsights from "./bi/OrderInsights";
 import { Layout, Tag, Tabs } from "antd";
 import "../styles/Dashboard.css"; // Assuming you have a CSS file for styling
+import UserSession from "../utils/UserSession";
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
 
 const Dashboard = () => {
-  const role = sessionStorage.getItem("role");
-  const name = sessionStorage.getItem("firstname") || "User";
+  const role = UserSession.getRole();
+  const name = UserSession.get()?.firstname || "User";
 
   const capitalizedRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : "User";
 
