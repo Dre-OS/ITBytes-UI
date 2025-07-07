@@ -5,7 +5,6 @@ import Admin from "./pages/layouts/AdminLayout";
 import Dashboard from "./pages/Dashboard";
 import ManageInventory from "./pages/ManageInventory";
 import ManageOrders from "./pages/ManageOrders";
-import ManageSales from "./pages/ManageSales";
 import ManageUsers from "./pages/ManageUsers";
 import Settings from "./pages/Settings";
 import Businesses from "./pages/Businesses";
@@ -14,7 +13,6 @@ import BuySupplies from "./pages/BuySupplies";
 //Customer Routes
 import Main from "./pages//layouts/MainLayout";
 import Products from "./pages/Products";
-import Product from "./pages/Product";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Order from "./pages/Order";
@@ -51,7 +49,6 @@ export default function App() {
         <Route path="/" element={<Main />}>
           <Route index element={<Home />} />
           <Route path="products" element={<Products />} />
-          <Route path="products/:id" element={<Product />} />
           <Route path="cart" element={<Cart />} />
           <Route path="orders" element={<Order />} />
         </Route>
