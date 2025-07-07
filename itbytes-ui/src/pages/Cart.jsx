@@ -52,7 +52,9 @@ const Cart = () => {
       cancelText: "Cancel",
       onOk: () => {
         handleOrder();
-        navigate("/orders");
+        setTimeout(() => {
+          navigate("/orders");
+        }, 3000);
       }
     });
   };
