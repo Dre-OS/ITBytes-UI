@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import UserService from "../services/UserService";
 import {
   Layout,
   Button,
@@ -20,12 +20,10 @@ import {
   DeleteOutlined,
   CheckOutlined,
   CloseOutlined,
-  ReloadOutlined
 } from "@ant-design/icons";
 import "../styles/ManageUsers.css";
 
 const { Content } = Layout;
-const apiUrl = import.meta.env.VITE_USER_API_URL;
 
 const roleColors = {
   admin: "red",
@@ -52,17 +50,14 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get(`${apiUrl}/all`);
-      setAllUsers(data); // Store original full list
-      // Filter out deleted users if toggle is off
+      const data = await UserService.getAll();
+      setAllUsers(data);
       const visibleUsers = showDeleted ? data : data.filter(user => !user.isDeleted);
-      setUsers(visibleUsers); // Display filtered
+      setUsers(visibleUsers);
     } catch {
       message.error("Error fetching users");
     }
   };
-
-
 
   const handleSubmit = async (values) => {
     const userData = {
@@ -75,11 +70,10 @@ const ManageUsers = () => {
     };
 
     try {
-      const url = editingUser
-        ? `${apiUrl}/${editingUser._id}`
-        : `${apiUrl}`;
-      const method = editingUser ? axios.put : axios.post;
-      const { data } = await method(url, userData);
+      const data = editingUser
+        ? await UserService.update(editingUser._id, userData)
+        : await UserService.create(userData);
+
       message.success(data.message || "User saved successfully");
       fetchUsers();
       setIsModalOpen(false);
@@ -89,9 +83,9 @@ const ManageUsers = () => {
     }
   };
 
-  const handleDelete = async (_id) => {
+  const handleDelete = async (id) => {
     try {
-      await axios.delete(`${apiUrl}/${_id}`);
+      await UserService.delete(id);
       message.success("User deleted successfully");
       fetchUsers();
     } catch {
@@ -99,10 +93,9 @@ const ManageUsers = () => {
     }
   };
 
-  const handleAuthorize = async (_id, status) => {
+  const handleAuthorize = async (id, status) => {
     try {
-      const authorization = { isAuth: status };
-      await axios.put(`${apiUrl}/auth/${_id}`, authorization);
+      await UserService.authorize(id, status);
       fetchUsers();
     } catch {
       message.error("Failed to update authorization");
@@ -135,8 +128,6 @@ const ManageUsers = () => {
 
     setUsers(filtered);
   };
-
-
 
   const columns = [
     { title: "User ID", dataIndex: "_id", key: "_id", hidden: true },
