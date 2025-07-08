@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Table, InputNumber, Button, Typography, message, Divider, Space, Badge, Image } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { orderSupplies } from "../services/ProductService";
 
 const { Title } = Typography;
 
-const supplierIP = "192.168.1.5"; // Replace with your actual supplier IP
-const supplierURL = `http://${supplierIP}:3000/inventory`;
+const supplierIP = "localhost"; // Replace with your actual supplier IP
+const supplierURL = `http://${supplierIP}:3001/supplies`;
 
 function BuySupplies() {
     const [supplierItems, setSupplierItems] = useState([]);
@@ -20,14 +21,22 @@ function BuySupplies() {
     const fetchSupplierInventory = async () => {
         try {
             const res = await axios.get(supplierURL);
-            setSupplierItems(res.data);
+            
+            if (Array.isArray(res.data)) {
+                setSupplierItems(res.data);
+            } else if (Array.isArray(res.data.supplies)) {
+                setSupplierItems(res.data.supplies); // 👈 FIX: use res.data.supplies here
+            }
+
             setIsConnected(true);
         } catch (err) {
-            console.error("Supplier not reachable", err);
+            console.error("Fetch failed", err);
             setIsConnected(false);
             message.error("Failed to connect to supplier.");
+            setSupplierItems([]);
         }
     };
+
 
     const handleQuantityChange = (id, value) => {
         setOrderQuantities(prev => ({ ...prev, [id]: value }));
@@ -39,8 +48,22 @@ function BuySupplies() {
             return message.warning("Please enter a valid quantity.");
         }
 
-        // Simulate order (replace with real POST request if needed)
-        message.success(`Ordered ${quantity} of ${item.name}`);
+        const orderData = {
+            name: item.name,
+            quantity
+        };
+
+        orderSupplies(orderData)
+            .then(() => {
+                message.success(`Ordered ${quantity} of ${item.name}`);
+                // Optionally, you can refresh the inventory after ordering
+                fetchSupplierInventory();
+            })
+            .catch(err => {
+                console.error("Order failed", err);
+                message.error("Failed to place order. Please try again.");
+            }
+            );
 
         // Optional: clear ordered quantity
         setOrderQuantities(prev => ({ ...prev, [item.id]: 0 }));
