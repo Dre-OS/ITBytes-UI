@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Avatar, Input, Dropdown, Badge, Modal } from 'antd';
+import { Menu, Avatar, Input, Dropdown, Badge, Modal, Button } from 'antd';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { UserOutlined, ShoppingCartOutlined, HomeOutlined, ProductOutlined, ShoppingOutlined, DashboardOutlined } from '@ant-design/icons';
+import { UserOutlined, ShoppingCartOutlined, HomeOutlined, ProductOutlined, ShoppingOutlined, DashboardOutlined, SearchOutlined } from '@ant-design/icons';
 import '../styles/Navbar.css';
 import logo from '../assets/logo_colored.png';
 import { useCart } from "../context/CartContext"; // adjust path if needed
@@ -94,7 +94,14 @@ const Navbar = () => {
                 <Search
                     placeholder="Search products"
                     onSearch={onSearch}
-                    enterButton
+                    enterButton={
+                        <Button
+                            type="primary"
+                            style={{ backgroundColor: "#2C485F", borderColor: "#2C485F" }}
+                        >
+                            <SearchOutlined style={{ color: 'white' }} />
+                        </Button>
+                    }
                     style={{ width: '100%' }}
                 />
             </div>
