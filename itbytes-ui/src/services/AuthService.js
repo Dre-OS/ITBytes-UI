@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_USER_API_URL || "http://localhost:5000/api/users";
+const apiUrl = import.meta.env.VITE_USER_API_URL;
 
 export const isEmailAvailable = async (email) => {
   try {
@@ -36,6 +36,7 @@ export const registerUser = async (values, accountType) => {
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.get(apiUrl);
+    console.log("Fetched users:", apiUrl); // Debugging line to check fetched users
     const users = response.data;
 
     const user = users.find((u) => u.email === email && u.password === password);
