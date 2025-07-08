@@ -50,9 +50,26 @@ export const deleteItem = async (id) => {
 export const fetchFeaturedProducts = async (limit = 6) => {
   try {
     const res = await axios.get(apiUrl);
-    return res.data.slice(0, limit); // Return only limited products
+    // Ensure the result is always an array
+    if (Array.isArray(res.data)) {
+      return res.data.slice(0, limit);
+    }
+    return [];
   } catch (error) {
     console.error("Error fetching featured products:", error);
-    throw error;
+    return [];
   }
 };
+
+export const orderSupplies = async (orderData) => {
+  try {
+    const response = await axios.post(`${apiUrl}/in`, orderData);
+    console.log(apiUrl);
+    message.success("Order placed successfully");
+    return response.data;
+  } catch (error) {
+    console.error("Error placing order:", error);
+    message.error(error.response?.data?.error || "Failed to place order");
+    return null;
+  }
+}
