@@ -3,13 +3,13 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 80px;
-    margin-bottom: 20px;
-    background-color: white;
+    height: 100px;
+    background-color: #F9F9F9;
     padding: 10px;
+    margin-bottom: -20px;
     padding-left: 5%;
     padding-right: 5%;
-    border-bottom: 1px solid rgba(44, 72, 95, 0.1);
+    /* border-bottom: 1px solid rgba(44, 72, 95, 0.1); */
 }
 
 .navbar-content {
@@ -40,7 +40,7 @@
     text-decoration: none;
     font-family: 'Poppins', sans-serif;
     transition: color 0.3s ease;
-    line-height: 80px;
+    line-height: 50px;
 }
 
 .nav-link:hover,
@@ -49,8 +49,8 @@
 }
 
 .nav-link.active {
-    border-bottom: #2C485F 2px solid;
-    font-weight: 500;
+    /* border-bottom: #2C485F 2px solid; */
+    font-weight: 600;
     font-size: 14px;
 }
 

@@ -127,7 +127,7 @@ const Products = () => {
         <Row gutter={[24, 24]}>
           {/* Sidebar filters */}
           <Col xs={24} md={6}>
-            <div style={{ padding: 16, background: "#fff", borderRadius: 8, paddingTop: 0, paddingLeft: 0, marginTop: '-30px' }}>
+            <div style={{ padding: 16, background: "#f9f9f9", borderRadius: 8, paddingTop: 0, paddingLeft: 0, marginTop: '-30px' }}>
               <Title level={5}>Search</Title>
               <Input
                 placeholder="Search products"
