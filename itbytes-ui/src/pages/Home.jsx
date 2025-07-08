@@ -108,8 +108,6 @@ function Home() {
         loadFeatured();
     }, []);
 
-
-
     return (
         <Layout style={{ background: "#fff", width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
             {/* Hero Section */}
