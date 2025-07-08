@@ -189,7 +189,7 @@ const ManageInventory = () => {
       dataIndex: "price",
       key: "price",
       width: 100,
-      render: (price) => `₱${price.toFixed(2)}`
+      render: (price) => price != null ? `₱${price.toFixed(2)}` : "N/A"
     },
     {
       title: "",
