@@ -109,7 +109,7 @@ function Home() {
     }, []);
 
     return (
-        <Layout style={{ background: "#fff", width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
+        <Layout style={{ background: "#F9F9F9", width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
             {/* Hero Section */}
             <Content style={{ width: '100%', marginTop: 20 }}>
                 <Carousel autoplay dots arrows>
@@ -177,6 +177,7 @@ function Home() {
                             <Card
                                 hoverable
                                 variant="borderless"
+                                style={{ backgroundColor: '#F9F9F9'}}
                                 className="category-card"
                                 onClick={() => navigate(`/products?category=${encodeURIComponent(category.title)}`)}
                             >
@@ -190,7 +191,7 @@ function Home() {
             </Content>
 
             {/* Featured Products */}
-            <Content style={{ background: "#fff", padding: "30px 0", width: "100%", margin: "auto" }}>
+            <Content style={{ background: "#F9F9F9", padding: "30px 0", width: "100%", margin: "auto" }}>
                 <div className='home-header'>
                     <h2 className='home-title'>Featured Products</h2>
                     <a onClick={() => navigate('/products')} style={{ textDecoration: 'none', color: 'inherit' }}>
