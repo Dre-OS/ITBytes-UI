@@ -9,6 +9,7 @@ import ManageOrders from "./pages/ManageOrders";
 import ManageUsers from "./pages/ManageUsers";
 import Settings from "./pages/Settings";
 import BuySupplies from "./pages/BuySupplies";
+import PendingSupplies from "./pages/PendingSupplies";
 
 //Customer Routes
 import Main from "./layouts/MainLayout";
@@ -84,6 +85,14 @@ export default function App() {
             element={
               <RoleRoute allowedRoles={["admin", "inventory"]}>
                 <BuySupplies />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="manage-purchases/pending-supplies"
+            element={
+              <RoleRoute allowedRoles={["admin", "inventory"]}>
+                <PendingSupplies />
               </RoleRoute>
             }
           />
