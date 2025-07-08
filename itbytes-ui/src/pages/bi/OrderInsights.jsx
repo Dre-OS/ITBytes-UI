@@ -104,7 +104,7 @@ const OrderInsights = () => {
         { type: "Paid", value: paid },
         { type: "Unpaid", value: unpaid },
       ]);
-
+      
       if (data.length > 0) {
         setAverageOrderValue(totalSales / data.length);
       }
