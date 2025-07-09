@@ -61,7 +61,7 @@ const Cart = () => {
   };
 
   return (
-    <div style={{ maxWidth: "90%", margin: "auto" }}>
+    <div style={{ maxWidth: "80%", margin: "auto" }}>
       <Title level={3}>Your Cart</Title>
       <List
         bordered
