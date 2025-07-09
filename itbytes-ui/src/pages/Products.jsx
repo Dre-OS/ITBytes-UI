@@ -39,40 +39,40 @@ const Products = () => {
     setSelectedProductId(null);
   };
 
- useEffect(() => {
-  const fetchProducts = async () => {
-    const allProducts = await fetchItems();
-    setProducts(allProducts);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const allProducts = await fetchItems();
+      setProducts(allProducts);
 
-    const queryParams = new URLSearchParams(location.search);
-    const categoryFromUrl = queryParams.get("category");
+      const queryParams = new URLSearchParams(location.search);
+      const categoryFromUrl = queryParams.get("category");
 
-    if (categoryFromUrl) {
-      setSelectedCategories([categoryFromUrl]);
-    } else {
-      setSelectedCategories([]);
-    }
+      if (categoryFromUrl) {
+        setSelectedCategories([categoryFromUrl]);
+      } else {
+        setSelectedCategories([]);
+      }
 
-    const lowerSearch = searchText.toLowerCase();
-    let filtered = [...allProducts];
+      const lowerSearch = searchText.toLowerCase();
+      let filtered = [...allProducts];
 
-    if (categoryFromUrl) {
-      filtered = filtered.filter((p) => p.category === categoryFromUrl);
-    }
+      if (categoryFromUrl) {
+        filtered = filtered.filter((p) => p.category === categoryFromUrl);
+      }
 
-    if (searchText) {
-      filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(lowerSearch) ||
-        p.description.toLowerCase().includes(lowerSearch)
-      );
-    }
+      if (searchText) {
+        filtered = filtered.filter((p) =>
+          p.name.toLowerCase().includes(lowerSearch) ||
+          p.description.toLowerCase().includes(lowerSearch)
+        );
+      }
 
-    setFiltered(filtered);
-    setLoading(false);
-  };
+      setFiltered(filtered);
+      setLoading(false);
+    };
 
-  fetchProducts();
-}, [location.search]);
+    fetchProducts();
+  }, [location.search]);
 
   useEffect(() => {
     applyFilters();
@@ -225,7 +225,7 @@ const Products = () => {
                       Category: <Tag color="default">{product.category}</Tag>
                     </Paragraph>
                     <Typography.Text strong style={{ fontSize: 16 }}>
-                      ₱{product.price.toLocaleString()}
+                      {product?.price != null ? `₱${product.price.toLocaleString()}` : "₱--"}
                     </Typography.Text>
                     <Button
                       type="primary"
