@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Card, Col, Layout, Row, Typography, Carousel } from "antd";
-import { fetchFeaturedProducts } from '../services/ProductService'; 
+import { fetchFeaturedProducts } from '../services/ProductService';
 import '../styles/Home.css';
 import ProductModal from '../components/ProductModal';
 import { useNavigate } from 'react-router-dom';
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 const { Content } = Layout;
 import {
     ArrowRightOutlined,
@@ -12,13 +12,20 @@ import {
     ThunderboltOutlined,
     CheckCircleOutlined,
     CloudOutlined,
+    LaptopOutlined,
+    MobileOutlined,
+    PrinterOutlined,
+    AppstoreOutlined,
+    DesktopOutlined,
+    VideoCameraOutlined,
+    TabletOutlined,
+    UsbOutlined
 } from '@ant-design/icons';
 import hero1 from '../assets/hero1.png';
 import hero2 from '../assets/hero2.png';
 import hero3 from '../assets/hero3.png';
 import hero4 from '../assets/hero4.png';
 import hero5 from '../assets/hero5.png';
-
 
 function Home() {
     const [featured, setFeatured] = useState([]);
@@ -37,24 +44,26 @@ function Home() {
         setSelectedProductId(null);
     };
 
+    const { Title } = Typography;
+
     const features = [
         {
-            icon: <LockOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            icon: <LockOutlined style={{ fontSize: 24, color: '#000' }} />,
             title: 'Secure Checkout',
             description: 'All payments are protected with end-to-end encryption.',
         },
         {
-            icon: <ThunderboltOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            icon: <ThunderboltOutlined style={{ fontSize: 24, color: '#000' }} />,
             title: 'Fast Delivery',
             description: 'Get your gadgets delivered within 1-3 business days.',
         },
         {
-            icon: <CheckCircleOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            icon: <CheckCircleOutlined style={{ fontSize: 24, color: '#000' }} />,
             title: 'Quality Assured',
             description: 'We only sell authentic, high-quality electronics.',
         },
         {
-            icon: <CloudOutlined style={{ fontSize: 24, color: '#2C485F' }} />,
+            icon: <CloudOutlined style={{ fontSize: 24, color: '#000' }} />,
             title: 'Easy Returns',
             description: 'Hassle-free returns within 7 days of purchase.',
         }
@@ -64,35 +73,35 @@ function Home() {
     const categories = [
         {
             title: "Printer",
-            image: "https://www.brother.com.ph/-/media/ap2/products/printer/dcp-t520w/t520-frontview.jpg?rev=9b21357df1894fe39fd94bb007faf4da",
+            icon: <PrinterOutlined style={{ fontSize: 36 }} />,
         },
         {
             title: "Monitors",
-            image: "https://www.cheapid.com.ph/cdn/shop/files/MONITOR_Nvision_N2510_Black_25_Inches_FHD_100Hz_VA_Flat_A.jpg?v=1728051924",
+            icon: <DesktopOutlined style={{ fontSize: 36 }} />,
         },
         {
             title: "CCTV",
-            image: "https://amimarine.com/wp-content/uploads/2020/09/X-MDR-System-Camera-2.jpg",
+            icon: <VideoCameraOutlined style={{ fontSize: 36 }} />,
         },
         {
             title: "Computers",
-            image: "https://image.made-in-china.com/202f0j00GkSgcQyKhEuj/15-6-Inch-Innovative-Product-Dual-Core-Laptop-for-Home-and-Student.webp",
+            icon: <LaptopOutlined style={{ fontSize: 36 }} />,
         },
         {
             title: "Smartphones",
-            image: "https://cherryshop.com.ph/cdn/shop/files/s10.jpg?v=1697530588&width=533",
+            icon: <MobileOutlined style={{ fontSize: 36 }} />,
         },
         {
             title: "Components",
-            image: "https://images.teamgroupinc.com/products/ssd/m2/ga-pro/01_s.jpg",
+            icon: <AppstoreOutlined style={{ fontSize: 36 }} />,
         },
         {
             title: "Peripherals",
-            image: "https://fantechworld.com/cdn/shop/files/ProductImage_HeliosIIProSXD3V34K8KBlack.png?v=1717055541",
+            icon: <UsbOutlined style={{ fontSize: 36 }} />,
         },
         {
             title: "Tablets",
-            image: "https://consumer.huawei.com/content/dam/huawei-cbg-site/common/mkt/plp-x/tablets-v5/product-shelf-and-pop-up/view-all/all-matepad-11-5-s.jpg",
+            icon: <TabletOutlined style={{ fontSize: 36 }} />,
         },
     ];
 
@@ -109,7 +118,7 @@ function Home() {
     }, []);
 
     return (
-        <Layout style={{ background: "#F9F9F9", width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
+        <Layout style={{ background: "#F9F9F9", width: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
             {/* Hero Section */}
             <Content style={{ width: '100%', marginTop: 20 }}>
                 <Carousel autoplay dots arrows>
@@ -137,7 +146,7 @@ function Home() {
             </Content>
 
             {/* Features Section */}
-            <div style={{ padding: '40px 5%', width: '100%' }}>
+            <div style={{ padding: '30px 5%', width: '100%', background: '#FAD86D', borderRadius: '10px', marginTop: 40 }}>
                 <Row gutter={[30, 30]} justify="space-between" align="middle">
                     {features.map((feature, index) => (
                         <Col xs={24} sm={12} md={6} key={index}>
@@ -152,7 +161,7 @@ function Home() {
                                 {feature.icon}
                                 <div>
                                     <Title level={5} style={{ margin: 0, fontSize: '14px' }}>{feature.title}</Title>
-                                    <Paragraph style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+                                    <Paragraph style={{ margin: 0, fontSize: '13px', color: '#000' }}>
                                         {feature.description}
                                     </Paragraph>
                                 </div>
@@ -176,13 +185,23 @@ function Home() {
                         <Col xs={24} sm={12} md={3} key={index}>
                             <Card
                                 hoverable
-                                variant="borderless"
-                                style={{ backgroundColor: '#F9F9F9'}}
-                                className="category-card"
                                 onClick={() => navigate(`/products?category=${encodeURIComponent(category.title)}`)}
+                                style={{
+                                    textAlign: 'center',
+                                    borderRadius: 10,
+                                    border: '2px solid #d9d9d9',
+                                    backgroundColor: '#f9f9f9',
+                                    height: 120,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
                             >
-                                <img src={category.image} alt={category.title} className="category-image" />
-                                <h3 style={{ fontWeight: 500, textAlign: "center", marginTop: 10, width: "100%" }}>{category.title}</h3>
+                                {category.icon || <AppstoreOutlined style={{ fontSize: 36 }} />}
+                                <div style={{ marginTop: 8, fontWeight: 500, fontSize: 14 }}>
+                                    {category.title}
+                                </div>
                             </Card>
                         </Col>
                     ))}
@@ -241,6 +260,7 @@ function Home() {
                                     // borderRadius: 8,
                                 }}
                             >
+                                <p style={{ fontSize: 12, color: '#2D4756', marginTop: -10 }}>In stock {product.quantity} items</p>
                                 <Card.Meta
                                     title={product.name}
                                     description={`₱${product.price?.toLocaleString()}`}
