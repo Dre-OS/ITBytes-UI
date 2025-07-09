@@ -26,6 +26,7 @@ import hero2 from '../assets/hero2.png';
 import hero3 from '../assets/hero3.png';
 import hero4 from '../assets/hero4.png';
 import hero5 from '../assets/hero5.png';
+import vertical1 from '../assets/vertical_poster.jpg';
 
 function Home() {
     const [featured, setFeatured] = useState([]);
@@ -119,34 +120,44 @@ function Home() {
 
     return (
         <Layout style={{ background: "#F9F9F9", width: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
-            {/* Hero Section */}
-            <Content style={{ width: '100%', marginTop: 20 }}>
-                <Carousel autoplay dots arrows>
-                    {[
-                        hero1,
-                        hero2,
-                        hero3,
-                        hero4,
-                        hero5
-                    ].map((url, index) => (
-                        <div key={index}>
-                            <img
-                                src={url}
-                                alt={`Slide ${index + 1}`}
-                                style={{
-                                    width: '100%',
-                                    height: '300px',
-                                    objectFit: 'cover',
-                                    borderRadius: '10px'
-                                }}
-                            />
-                        </div>
-                    ))}
-                </Carousel>
-            </Content>
+            <Row gutter={16} style={{ width: '100%', marginTop: 20 }}>
+                {/* Hero Section (span 16) */}
+                <Col xs={24} md={19}>
+                    <Carousel autoplay dots arrows>
+                        {[hero1, hero2, hero3, hero4, hero5].map((url, index) => (
+                            <div key={index}>
+                                <img
+                                    src={url}
+                                    alt={`Slide ${index + 1}`}
+                                    style={{
+                                        width: '100%',
+                                        height: '300px',
+                                        objectFit: 'cover',
+                                        borderRadius: '10px'
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </Carousel>
+                </Col>
+
+                {/* Vertical Poster (span 8) */}
+                <Col xs={24} md={5}>
+                    <img
+                        src={vertical1}
+                        alt="Poster"
+                        style={{
+                            width: '100%',
+                            height: '300px',
+                            objectFit: 'cover',
+                            borderRadius: '10px'
+                        }}
+                    />
+                </Col>
+            </Row>
 
             {/* Features Section */}
-            <div style={{ padding: '30px 5%', width: '100%', background: '#FAD86D', borderRadius: '10px', marginTop: 40 }}>
+            <div style={{ padding: '30px 5%', width: '99%', background: '#FAD86D', borderRadius: '10px', marginTop: 15,  }}>
                 <Row gutter={[30, 30]} justify="space-between" align="middle">
                     {features.map((feature, index) => (
                         <Col xs={24} sm={12} md={6} key={index}>
