@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal, Divider, Form, Input } from "antd";
+import { Card, Typography, Tag, List, Descriptions, Row, Col, message, Button, Modal, Divider, Form, Input } from "antd";
 import OrderService from "../services/OrderService";
 import "../styles/Order.css"; // Assuming you have some styles for the order page
 import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
@@ -18,7 +18,7 @@ const Order = () => {
   const [isReceiptVisible, setIsReceiptVisible] = useState(false);
   const toBusinessAccount = '666-3251-855-1642'; // Replace with actual customer account number
   const [customerAccountNumber, setcustomerAccountNumber] = useState("");
-
+  const [accountParts, setAccountParts] = useState(['', '', '', '']);
 
   const customerId = UserSession.get()?.userId;
 
@@ -36,6 +36,14 @@ const Order = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChange = (value, index) => {
+    const newParts = [...accountParts];
+    newParts[index] = value.replace(/\D/g, '').slice(0, 4); // Allow digits only, max 4
+    setAccountParts(newParts);
+    const fullAccountNumber = newParts.join('-');
+    setcustomerAccountNumber(fullAccountNumber);
   };
 
   const handlePayment = async (orderId) => {
@@ -241,54 +249,77 @@ const Order = () => {
 
           console.log("Payment Details:", paymentDetails);
 
-            try {
-              await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
-              message.success("Payment submitted to bank API.");
-              await handlePayment(selectedOrder._id);
+          try {
+            await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
+            message.success("Payment submitted to bank API.");
+            await handlePayment(selectedOrder._id);
 
           } catch (error) {
-        console.error(error);
-      message.error("Failed to submit payment.");
+            console.error(error);
+            message.error("Failed to submit payment.");
           } finally {
-        setIsModalOpen(false);
-      setModalType(null);
-      setSelectedOrder(null);
-      setcustomerAccountNumber("");
+            setIsModalOpen(false);
+            setModalType(null);
+            setSelectedOrder(null);
+            setcustomerAccountNumber("");
           }
         }}
       >
-      <Descriptions bordered column={1} size="small">
-        <Descriptions.Item label="To ITBytes Business Account">
-          {toBusinessAccount}
-        </Descriptions.Item>
-        <Descriptions.Item label="Amount">
-          ₱{selectedOrder?.totalPrice?.toLocaleString()}
-        </Descriptions.Item>
-      </Descriptions>
+        <Descriptions bordered column={1} size="small">
+          <Descriptions.Item label="To ITBytes Business Account">
+            {toBusinessAccount}
+          </Descriptions.Item>
+          <Descriptions.Item label="Amount">
+            ₱{selectedOrder?.totalPrice?.toLocaleString()}
+          </Descriptions.Item>
+        </Descriptions>
 
-      <Form layout="vertical" style={{ marginTop: 16 }}>
-        <Form.Item label="Account Number" required>
-          <Input
-            placeholder="Enter bank account number"
-            value={customerAccountNumber}
-            onChange={(e) => setcustomerAccountNumber(e.target.value)}
-          />
-        </Form.Item>
-      </Form>
+        <Form layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item label="Account Number" required>
+            <Row gutter={8}>
+              {accountParts.map((part, index) => (
+                <React.Fragment key={index}>
+                  <Col span={5}>
+                    <Input
+                      maxLength={4}
+                      value={part}
+                      onChange={(e) => handleChange(e.target.value, index)}
+                      style={{ textAlign: 'center' }}
+                    />
+                  </Col>
+                  {/* Add "-" after every input except the last one */}
+                  {index < accountParts.length - 1 && (
+                    <Col
+                      span={1}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      -
+                    </Col>
+                  )}
+                </React.Fragment>
+              ))}
+            </Row>
+          </Form.Item>
+        </Form>
 
-      <Divider />
-      <List
-        header={<strong>Order Details</strong>}
-        dataSource={selectedOrder?.orders || []}
-        bordered
-        renderItem={(item) => (
-          <List.Item>
-            <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
-            <div>₱{item.subtotal.toLocaleString()}</div>
-          </List.Item>
-        )}
-      />
-    </Modal>
+        <Divider />
+
+        <List
+          header={<strong>Order Details</strong>}
+          dataSource={selectedOrder?.orders || []}
+          bordered
+          renderItem={(item) => (
+            <List.Item>
+              <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
+              <div>₱{item.subtotal.toLocaleString()}</div>
+            </List.Item>
+          )}
+        />
+      </Modal>
 
 
     </div >
