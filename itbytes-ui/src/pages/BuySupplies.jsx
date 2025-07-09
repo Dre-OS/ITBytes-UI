@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Table, InputNumber, Button, Typography, message, Divider, Space, Badge, Image } from "antd";
+import { Table, InputNumber, Button, Typography, message, Modal, Badge, Image } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { orderSupplies } from "../services/ProductService";
+import OrderService from "../services/OrderService";
 
 const { Title } = Typography;
 
-const supplierIP = "localhost"; // Replace with your actual supplier IP
-const supplierURL = `http://${supplierIP}:3001/supplies`;
-
+const supplierURL = import.meta.env.VITE_SUPPLIER_API_URL;
+const supplierIP = supplierURL; // Replace with your actual supplier IP
 function BuySupplies() {
     const [supplierItems, setSupplierItems] = useState([]);
     const [orderQuantities, setOrderQuantities] = useState({});
     const [isConnected, setIsConnected] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
         fetchSupplierInventory();
@@ -21,7 +23,7 @@ function BuySupplies() {
     const fetchSupplierInventory = async () => {
         try {
             const res = await axios.get(supplierURL);
-            
+
             if (Array.isArray(res.data)) {
                 setSupplierItems(res.data);
             } else if (Array.isArray(res.data.supplies)) {
@@ -48,38 +50,67 @@ function BuySupplies() {
             return message.warning("Please enter a valid quantity.");
         }
 
-        const orderData = {
-            name: item.name,
-            quantity
-        };
-
-        orderSupplies(orderData)
-            .then(() => {
-                message.success(`Ordered ${quantity} of ${item.name}`);
-                // Optionally, you can refresh the inventory after ordering
-                fetchSupplierInventory();
-            })
-            .catch(err => {
-                console.error("Order failed", err);
-                message.error("Failed to place order. Please try again.");
-            }
-            );
-
-        // Optional: clear ordered quantity
-        setOrderQuantities(prev => ({ ...prev, [item.id]: 0 }));
+        setSelectedItem(item);
+        setModalVisible(true);
     };
 
+    const confirmOrder = () => {
+        const quantity = orderQuantities[selectedItem.id];
+        const orderData = {
+            quantity,
+            totalPrice: selectedItem.price * quantity,
+            product: selectedItem
+        };
+
+        const inventoryData = {
+            productId: selectedItem.id,
+            quantity,
+            totalPrice: selectedItem.price * quantity,
+            name: selectedItem.name
+        };
+
+        Promise.all([
+            OrderService.orderSupplies(orderData),
+            //orderSupplies(inventoryData)
+        ])
+            .then(() => {
+            message.success(`Ordered ${quantity} of ${selectedItem.name}`);
+            fetchSupplierInventory();
+            })
+            .catch(err => {
+            console.error("Order failed", err);
+            message.error("Failed to place order. Please try again.");
+            });
+        // Reset order quantities and close modal
+
+        setOrderQuantities(prev => ({ ...prev, [selectedItem.id]: 0 }));
+        setModalVisible(false);
+        setSelectedItem(null);
+    };
+
+
+
     const columns = [
+        {
+            title: "ID",
+            dataIndex: "id",
+            render: (text) => <span style={{ fontFamily: 'Poppins' }}>{text}</span>
+        },
         {
             title: "Image",
             dataIndex: "image",
             render: (_, record) => (
-                <Image width={50} src={record.image || "https://via.placeholder.com/50"} />
+                <Image width={50} src={record.image || "https://www.svgrepo.com/show/508699/landscape-placeholder.svg"} style={{ borderRadius: 5 }} />
             )
         },
         {
             title: "Item",
             dataIndex: "name"
+        },
+        {
+            title: "Price",
+            dataIndex: "price",
+            render: (text) => <span style={{ fontFamily: 'Poppins' }}>₱{text.toFixed(2)}</span>
         },
         {
             title: "Available Stock",
@@ -128,6 +159,21 @@ function BuySupplies() {
                     emptyText: isConnected ? "No items available from supplier." : "Not connected to supplier."
                 }}
             />
+            <Modal
+                open={modalVisible}
+                onCancel={() => setModalVisible(false)}
+                onOk={confirmOrder}
+                okText="Confirm Order"
+                cancelText="Cancel"
+            >
+                {selectedItem && (
+                    <>
+                        <p>You're about to order <strong>{orderQuantities[selectedItem.id]}</strong> unit(s) of <strong>{selectedItem.name}</strong>.</p>
+                        <p>Total Price: <strong>₱{(selectedItem.price * orderQuantities[selectedItem.id]).toFixed(2)}</strong></p>
+                    </>
+                )}
+            </Modal>
+
         </div>
     );
 }
