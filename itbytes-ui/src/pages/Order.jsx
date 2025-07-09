@@ -61,82 +61,8 @@ const Order = () => {
     }
   };
 
-  const PayOrderModal = () => (
-    <Modal
-      open={isModalOpen && modalType === "pay"}
-      title="Proceed to Payment"
-      onCancel={() => {
-        setIsModalOpen(false);
-        setModalType(null);
-        setSelectedOrder(null);
-        setcustomerAccountNumber("");
-      }}
-      onOk={async () => {
-        if (!customerAccountNumber) {
-          message.warning("Please input the recipient's account number.");
-          return;
-        }
-
-        try {
-          await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", {
-            toBusinessAccount,
-            customerAccountNumber,
-            amount: selectedOrder.totalPrice,
-            details: selectedOrder.orders,
-          });
-
-          message.success("Payment submitted to bank API.");
-          handlePayment(selectedOrder._id); // Mark as paid in your system
-
-        } catch (error) {
-          console.error(error);
-          message.error("Failed to submit payment.");
-        } finally {
-          setIsModalOpen(false);
-          setModalType(null);
-          setSelectedOrder(null);
-          setcustomerAccountNumber("");
-        }
-      }}
-
-    >
-      <Descriptions bordered column={1} size="small">
-        <Descriptions.Item label="To ITBytes Business Account">
-          {toBusinessAccount}
-        </Descriptions.Item>
-        <Descriptions.Item label="Amount">
-          ₱{selectedOrder?.totalPrice?.toLocaleString()}
-        </Descriptions.Item>
-      </Descriptions>
-
-      <Form layout="vertical" style={{ marginTop: 16 }}>
-        <Form.Item label="Account Number" required>
-          <Input
-            placeholder="Enter bank account number"
-            value={customerAccountNumber}
-            onChange={(e) => setcustomerAccountNumber(e.target.value)}
-          />
-        </Form.Item>
-      </Form>
-
-      <Divider />
-      <List
-        header={<strong>Order Details</strong>}
-        dataSource={selectedOrder?.orders || []}
-        bordered
-        renderItem={(item) => (
-          <List.Item>
-            <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
-            <div>₱{item.subtotal.toLocaleString()}</div>
-          </List.Item>
-        )}
-      />
-    </Modal>
-  );
-
-
   return (
-    <div style={{ padding: "0 5%" }}>
+    <div style={{ padding: "0 10%" }}>
       <Title level={3}>My Orders</Title>
 
       {orders.length === 0 ? (
