@@ -101,7 +101,7 @@ const ProductModal = ({ productId, visible, onClose }) => {
             <Paragraph><strong>Category:</strong> <Tag color="blue">{product.category}</Tag></Paragraph>
             <Paragraph><strong>Tags:</strong> {product.tags.map((tag, index) => <Tag key={index}>{tag}</Tag>)}</Paragraph>
             <Paragraph><strong>In Stock:</strong> {product.quantity}</Paragraph>
-            <Paragraph><strong>Price:</strong> ₱{product.price.toLocaleString()}</Paragraph>
+            <Paragraph><strong>Price:</strong> {product?.price != null ? `₱${product.price.toLocaleString()}` : "₱--"}</Paragraph>
 
             <Form form={form} layout="horizontal" onFinish={handleAddToCart}>
               <Form.Item name="quantity" label="Quantity">
