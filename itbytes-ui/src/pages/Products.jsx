@@ -221,10 +221,10 @@ const Products = () => {
                     >
                       {product.name}
                     </div>
-                    <Paragraph style={{ marginBottom: 4, color: "#888" }}>
+                    <Paragraph style={{ marginBottom: 4, color: "#888", fontSize: 12 }}>
                       Category: <Tag color="default">{product.category}</Tag>
                     </Paragraph>
-                    <Typography.Text strong style={{ fontSize: 16 }}>
+                    <Typography.Text strong style={{ fontSize: 14 }}>
                       {product?.price != null ? `₱${product.price.toLocaleString()}` : "₱--"}
                     </Typography.Text>
                     <Button
