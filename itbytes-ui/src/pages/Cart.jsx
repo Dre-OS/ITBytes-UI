@@ -27,7 +27,7 @@ const Cart = () => {
   const handleOrder = async () => {
     try {
       const order = {
-        customerId: sessionStorage.getItem("userId"),
+        customerId: UserSession.get()?.userId,
         orders: cart,
       };
       console.log("Placing order:", order);
