@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal, Divider } from "antd";
+import { Card, Typography, Tag, List, Descriptions, Spin, message, Button, Modal, Divider, Form, Input } from "antd";
 import OrderService from "../services/OrderService";
 import "../styles/Order.css"; // Assuming you have some styles for the order page
 import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
 import UserSession from "../utils/UserSession";
+import axios from "axios";
 
 const { Title, Text } = Typography;
 
@@ -15,6 +16,9 @@ const Order = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [receiptOrder, setReceiptOrder] = useState(null);
   const [isReceiptVisible, setIsReceiptVisible] = useState(false);
+  const toBusinessAccount = '666-3251-855-1642'; // Replace with actual customer account number
+  const [customerAccountNumber, setcustomerAccountNumber] = useState("");
+
 
   const customerId = UserSession.get()?.userId;
 
@@ -36,6 +40,7 @@ const Order = () => {
 
   const handlePayment = async (orderId) => {
     try {
+
       await OrderService.markAsPaid(orderId);
       fetchOrders();
       message.success("Payment successful.");
@@ -55,6 +60,80 @@ const Order = () => {
       message.error("Cancellation failed.");
     }
   };
+
+  const PayOrderModal = () => (
+    <Modal
+      open={isModalOpen && modalType === "pay"}
+      title="Proceed to Payment"
+      onCancel={() => {
+        setIsModalOpen(false);
+        setModalType(null);
+        setSelectedOrder(null);
+        setcustomerAccountNumber("");
+      }}
+      onOk={async () => {
+        if (!customerAccountNumber) {
+          message.warning("Please input the recipient's account number.");
+          return;
+        }
+
+        try {
+          await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", {
+            toBusinessAccount,
+            customerAccountNumber,
+            amount: selectedOrder.totalPrice,
+            details: selectedOrder.orders,
+          });
+
+          message.success("Payment submitted to bank API.");
+          handlePayment(selectedOrder._id); // Mark as paid in your system
+
+        } catch (error) {
+          console.error(error);
+          message.error("Failed to submit payment.");
+        } finally {
+          setIsModalOpen(false);
+          setModalType(null);
+          setSelectedOrder(null);
+          setcustomerAccountNumber("");
+        }
+      }}
+
+    >
+      <Descriptions bordered column={1} size="small">
+        <Descriptions.Item label="To ITBytes Business Account">
+          {toBusinessAccount}
+        </Descriptions.Item>
+        <Descriptions.Item label="Amount">
+          ₱{selectedOrder?.totalPrice?.toLocaleString()}
+        </Descriptions.Item>
+      </Descriptions>
+
+      <Form layout="vertical" style={{ marginTop: 16 }}>
+        <Form.Item label="Account Number" required>
+          <Input
+            placeholder="Enter bank account number"
+            value={customerAccountNumber}
+            onChange={(e) => setcustomerAccountNumber(e.target.value)}
+          />
+        </Form.Item>
+      </Form>
+
+      <Divider />
+      <List
+        header={<strong>Order Details</strong>}
+        dataSource={selectedOrder?.orders || []}
+        bordered
+        renderItem={(item) => (
+          <List.Item>
+            <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
+            <div>₱{item.subtotal.toLocaleString()}</div>
+          </List.Item>
+        )}
+      />
+    </Modal>
+  );
+
 
   return (
     <div style={{ padding: "0 5%" }}>
@@ -189,36 +268,104 @@ const Order = () => {
                 </div>
               )}
             </Modal>
-            <Modal
-              open={isModalOpen}
-              onCancel={() => {
-                setIsModalOpen(false);
-                setModalType(null);
-                setSelectedOrder(null);
-              }}
-              onOk={() => {
-                if (modalType === "pay") {
-                  handlePayment(selectedOrder._id);
-                } else if (modalType === "cancel") {
-                  handleCancelOrder(selectedOrder._id);
-                }
-                setIsModalOpen(false);
-                setModalType(null);
-                setSelectedOrder(null);
-              }}
-              title={modalType === "pay" ? "Proceed to Payment" : "Cancel Order"}
-            >
-              <p>
-                {modalType === "pay"
-                  ? "Are you sure you want to pay for this order?"
-                  : "Are you sure you want to cancel this order?"}
-              </p>
-            </Modal>
 
           </Card>
         ))
       )}
-    </div>
+      {modalType === "cancel" && (
+        <Modal
+          open={isModalOpen}
+          onCancel={() => {
+            setIsModalOpen(false);
+            setModalType(null);
+            setSelectedOrder(null);
+          }}
+          onOk={() => {
+            handleCancelOrder(selectedOrder._id);
+            setIsModalOpen(false);
+            setModalType(null);
+            setSelectedOrder(null);
+          }}
+          title="Cancel Order"
+        >
+          <p>Are you sure you want to cancel this order?</p>
+        </Modal>
+      )}
+
+      <Modal
+        open={isModalOpen && modalType === "pay"}
+        title="Proceed to Payment"
+        onCancel={() => {
+          setIsModalOpen(false);
+          setModalType(null);
+          setSelectedOrder(null);
+          setcustomerAccountNumber("");
+        }}
+        onOk={async () => {
+          if (!customerAccountNumber) {
+            message.warning("Please input the recipient's account number.");
+            return;
+          }
+          const paymentDetails = {
+            toBusinessAccount,
+            customerAccountNumber,
+            amount: selectedOrder.totalPrice,
+            details: selectedOrder.orders.map(item => `${item.name} x${item.quantity}`).join(', '),
+          };
+
+          console.log("Payment Details:", paymentDetails);
+
+            try {
+              await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
+              message.success("Payment submitted to bank API.");
+              await handlePayment(selectedOrder._id);
+
+          } catch (error) {
+        console.error(error);
+      message.error("Failed to submit payment.");
+          } finally {
+        setIsModalOpen(false);
+      setModalType(null);
+      setSelectedOrder(null);
+      setcustomerAccountNumber("");
+          }
+        }}
+      >
+      <Descriptions bordered column={1} size="small">
+        <Descriptions.Item label="To ITBytes Business Account">
+          {toBusinessAccount}
+        </Descriptions.Item>
+        <Descriptions.Item label="Amount">
+          ₱{selectedOrder?.totalPrice?.toLocaleString()}
+        </Descriptions.Item>
+      </Descriptions>
+
+      <Form layout="vertical" style={{ marginTop: 16 }}>
+        <Form.Item label="Account Number" required>
+          <Input
+            placeholder="Enter bank account number"
+            value={customerAccountNumber}
+            onChange={(e) => setcustomerAccountNumber(e.target.value)}
+          />
+        </Form.Item>
+      </Form>
+
+      <Divider />
+      <List
+        header={<strong>Order Details</strong>}
+        dataSource={selectedOrder?.orders || []}
+        bordered
+        renderItem={(item) => (
+          <List.Item>
+            <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
+            <div>₱{item.subtotal.toLocaleString()}</div>
+          </List.Item>
+        )}
+      />
+    </Modal>
+
+
+    </div >
   );
 };
 
