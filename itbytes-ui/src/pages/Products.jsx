@@ -116,7 +116,7 @@ const Products = () => {
   };
 
   return (
-    <div style={{ padding: "0 5%" }}>
+    <div style={{ padding: "0 10%" }}>
       <Title level={3} style={{ marginBottom: "30px" }}>All Products</Title>
 
       {loading ? (
