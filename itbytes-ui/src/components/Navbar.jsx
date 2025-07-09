@@ -13,6 +13,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [role, setRole] = useState("");
     const { cart, clearCart } = useCart();
 
@@ -23,6 +24,7 @@ const Navbar = () => {
         if (user) {
             setIsAuthenticated(user.isAuthenticated);
             setFirstName(user.firstname);
+            setLastName(user.lastname);
             setRole(user.role);
         }
     }, []);
@@ -72,6 +74,10 @@ const Navbar = () => {
         console.log('Search:', value);
     };
 
+    const avatarText = lastName
+        ? `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+        : firstName;
+
     return (
         <div className="navbar">
             {/* Left: Logo + Nav Links */}
@@ -81,7 +87,7 @@ const Navbar = () => {
                     <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}> <HomeOutlined /> &nbsp; Home</NavLink>
                     <NavLink to="/products" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}> <ProductOutlined /> &nbsp; Products</NavLink>
                     <NavLink to="/orders" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}> <ShoppingOutlined /> &nbsp; Orders</NavLink>
-                    {(role !== "customer" && role !== "business") && (
+                    {(role && role !== "customer" && role !== "business") && (
                         <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                             <DashboardOutlined /> &nbsp; Dashboard
                         </NavLink>
@@ -118,7 +124,10 @@ const Navbar = () => {
                 {isAuthenticated ? (
                     <Dropdown overlay={userMenu} placement="bottomRight" arrow>
                         <div className='navbar-icon' style={{ cursor: "pointer" }}>
-                            <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#2C485F' }} />
+                            <Avatar style={{ backgroundColor: '#2C485F', fontWeight: '' }}>
+                                {avatarText}
+                            </Avatar>
+
                             <p style={{ color: "#2C485F" }}>{firstName}</p>
                         </div>
                     </Dropdown>
