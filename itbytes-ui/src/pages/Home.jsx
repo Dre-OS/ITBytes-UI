@@ -27,6 +27,10 @@ import hero3 from '../assets/hero3.png';
 import hero4 from '../assets/hero4.png';
 import hero5 from '../assets/hero5.png';
 import vertical1 from '../assets/vertical_poster.jpg';
+import vertical3 from '../assets/vertical_poster3.jpg';
+import horizontal1 from '../assets/horizontal1.jpg';
+import horizontal2 from '../assets/horizontal2.jpg';
+import horizontal3 from '../assets/horizontal3.jpg';
 
 function Home() {
     const [featured, setFeatured] = useState([]);
@@ -143,21 +147,44 @@ function Home() {
 
                 {/* Vertical Poster (span 8) */}
                 <Col xs={24} md={5}>
-                    <img
-                        src={vertical1}
-                        alt="Poster"
-                        style={{
-                            width: '100%',
-                            height: '300px',
-                            objectFit: 'cover',
-                            borderRadius: '10px'
-                        }}
-                    />
+                    <Carousel autoplay dots>
+                        {[vertical1, vertical3].map((url, index) => (
+                            <div key={index}>
+                                <img
+                                    src={url}
+                                    alt={`Slide ${index + 1}`}
+                                    style={{
+                                        width: '100%',
+                                        height: '300px',
+                                        objectFit: 'cover',
+                                        borderRadius: '10px'
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </Carousel>
                 </Col>
             </Row>
 
+            {/* <Row gutter={16} style={{ width: '100%', marginTop: 10, marginBottom: 10 }}>
+                {[horizontal1, horizontal2, horizontal3].map((url, index) => (
+                    <Col xs={24} md={8} key={index}>   
+                    <img
+                        src={url}
+                        alt={`Horizontal Banner ${index + 1}`}
+                        style={{
+                            width: '100%',
+                            height: '250px',
+                            objectFit: 'cover',
+                            borderRadius: '10px',
+                        }}
+                    />
+                </Col>
+            ))}
+        </Row> */}
+
             {/* Features Section */}
-            <div style={{ padding: '30px 5%', width: '99%', background: '#FAD86D', borderRadius: '10px', marginTop: 15,  }}>
+            <div style={{ padding: '30px 5%', width: '99%', background: '#FAD86D', borderRadius: '10px', marginTop: 10, }}>
                 <Row gutter={[30, 30]} justify="space-between" align="middle">
                     {features.map((feature, index) => (
                         <Col xs={24} sm={12} md={6} key={index}>
@@ -266,7 +293,7 @@ function Home() {
                                     </div>
                                 }
                                 style={{
-                                    background: "#fafafa",      // Content background
+                                    background: "#fff",      // Content background
                                     // border: "1px solid #d9d9d9", // Light border
                                     // borderRadius: 8,
                                 }}
@@ -277,10 +304,19 @@ function Home() {
                                     description={`₱${product.price?.toLocaleString()}`}
                                 />
                                 <Button
-                                    type="primary"
+                                    type="default"
                                     block
-                                    style={{ marginTop: 16 }}
                                     onClick={() => openProductModal(product.id)}
+                                    style={{
+                                        marginTop: 16,
+                                        borderWidth: 2,
+                                        borderColor: '#2F4860',
+                                        color: '#2F4860',
+                                        fontSize: 13,
+                                        fontWeight: 500,
+                                        padding: "6px 12px",
+                                        backgroundColor: '#fff',
+                                    }}
                                 >
                                     View Product
                                 </Button>
