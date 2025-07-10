@@ -49,7 +49,7 @@ function OrderHistory() {
             title: "Order Date",
             dataIndex: "createdAt",
             key: "createdAt",
-            render: (date) => moment(date).format("MMMM D, YYYY - h:mm A")
+            render: (date) => moment(date).format("MMMM D, YYYY h:mm A")
         }
     ];
 
