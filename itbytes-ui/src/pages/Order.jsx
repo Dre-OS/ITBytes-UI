@@ -79,15 +79,23 @@ const Order = () => {
         [...orders].reverse().map((order) => (
           <Card
             key={order._id}
-            title={`Order ID: ${order._id}`}
             style={{
               marginBottom: 24,
-              opacity: order.status === "cancelled" ? 0.5 : 1,        // Grays it out
-              pointerEvents: order.status === "cancelled" ? "none" : "auto", // Optional: disable interaction
+              opacity: order.status === "cancelled" ? 0.5 : 1,
+              pointerEvents: order.status === "cancelled" ? "none" : "auto",
             }}
             variant="bordered"
-            extra={
-              order.status !== "cancelled" ? (
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <h3 style={{ margin: 0 }}>Order ID: {order._id} </h3>
+              {order.status !== "cancelled" && (
                 order.isPaid ? (
                   <Button
                     type="primary"
@@ -123,48 +131,57 @@ const Order = () => {
                     </Button>
                   </div>
                 )
-              ) : null
-            }
-
-          >
-
-            <Descriptions bordered column={1} size="small">
-              <Descriptions.Item label="Total Price">
-                ₱{order.totalPrice.toLocaleString()}
-              </Descriptions.Item>
-              <Descriptions.Item label="Status">
-                <Tag color={
-                  order.status === "Completed" ? "green" :
-                    order.status === "cancelled" ? "gray" : "orange"
-                }>
-                  {order.status}
-                </Tag>
-
-              </Descriptions.Item>
-              <Descriptions.Item label="Payment">
-                <Tag color={order.isPaid ? "green" : "red"}>
-                  {order.isPaid ? "Paid" : "Unpaid"}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Date Ordered">
-                {new Date(order.createdAt).toLocaleString()}
-              </Descriptions.Item>
-            </Descriptions>
+              )}
+            </div>
+            <div style={{ marginBottom: 20, marginTop: -16 }}>
+              <p style={{ fontSize: 12, color: "gray", marginTop: 4, marginBottom: 0 }}>{new Date(order.createdAt).toLocaleString()}</p>
+            </div>
+            <Tag color={
+              order.status === "Completed" ? "green" :
+                order.status === "cancelled" ? "gray" : "orange"
+            }>
+              {order.status}
+            </Tag>
+            <Tag color={order.isPaid ? "green" : "red"}>
+              {order.isPaid ? "Paid" : "Unpaid"}
+            </Tag>
 
             <List
               header={<strong>Ordered Items</strong>}
               dataSource={order.orders}
-              style={{ marginTop: 20 }}
+              style={{ marginTop: 20, fontFamily: "Poppins" }}
               bordered
               renderItem={(item) => (
-                <List.Item>
+                <List.Item
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start", // Align items at the top
+                  }}
+                >
+                  {/* Left side (name + price) */}
                   <div style={{ flex: 1 }}>
-                    <strong>{item.name}</strong> (₱{item.price.toLocaleString()} x {item.quantity})
+                    <p style={{ margin: 0 }}>
+                      <strong>{item.name}</strong>
+                    </p>
+                    <p style={{ fontSize: 12, color: "gray", marginTop: 4, marginBottom: 0 }}>
+                      ₱{item.price.toLocaleString()}
+                    </p>
                   </div>
-                  <div><strong>Subtotal:</strong> ₱{item.subtotal.toLocaleString()}</div>
+
+                  {/* Right side (subtotal + qty) */}
+                  <div style={{ textAlign: "right", minWidth: 140 }}>
+                    <p style={{ margin: 0 }}>
+                      ₱{item.subtotal.toLocaleString()}
+                    </p>
+                    <p style={{ fontSize: 12, color: "gray", marginTop: 4, marginBottom: 0, textAlign: "right" }}>
+                      Qty: {item.quantity}
+                    </p>
+                  </div>
                 </List.Item>
               )}
             />
+            <h4 style={{ textAlign: 'right', marginBottom: 0 }}>Total: ₱{order.totalPrice.toLocaleString()} &nbsp;</h4>
             <Modal
               title="Receipt"
               open={isReceiptVisible}
@@ -195,10 +212,6 @@ const Order = () => {
                   />
                   <Divider />
                   <Title level={5}>Total: ₱{receiptOrder.totalPrice.toLocaleString()}</Title>
-
-                  <style>
-
-                  </style>
                 </div>
               )}
             </Modal>
