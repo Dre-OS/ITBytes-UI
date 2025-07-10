@@ -141,8 +141,8 @@ const Order = () => {
             }>
               {order.status}
             </Tag>
-            <Tag color={order.isPaid ? "green" : "red"}>
-              {order.isPaid ? "Paid" : "Unpaid"}
+            <Tag color={order.paymentStatus === 'paid' ? "green" : "red"}>
+              {order.paymentStatus === 'paid' ? "Paid" : "Unpaid"}
             </Tag>
 
             <List
