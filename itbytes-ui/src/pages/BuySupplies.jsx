@@ -65,13 +65,12 @@ function BuySupplies() {
         const inventoryData = {
             productId: selectedItem.id,
             quantity,
-            totalPrice: selectedItem.price * quantity,
             name: selectedItem.name
         };
 
         Promise.all([
             OrderService.orderSupplies(orderData),
-            //orderSupplies(inventoryData)
+            orderSupplies(inventoryData)
         ])
             .then(() => {
             message.success(`Ordered ${quantity} of ${selectedItem.name}`);
