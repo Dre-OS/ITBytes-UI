@@ -48,7 +48,6 @@ const Order = () => {
 
   const handlePayment = async (orderId) => {
     try {
-
       await OrderService.markAsPaid(orderId);
       fetchOrders();
       message.success("Payment successful.");
@@ -88,7 +87,7 @@ const Order = () => {
             variant="bordered"
             extra={
               order.status !== "cancelled" ? (
-                order.isPaid ? (
+                order.paymentStatus === 'paid' ? (
                   <Button
                     type="primary"
                     onClick={() => {
@@ -142,8 +141,8 @@ const Order = () => {
 
               </Descriptions.Item>
               <Descriptions.Item label="Payment">
-                <Tag color={order.isPaid ? "green" : "red"}>
-                  {order.isPaid ? "Paid" : "Unpaid"}
+                <Tag color={order.paymentStatus === 'paid' ? "green" : "red"}>
+                  {order.paymentStatus === 'paid' ? "Paid" : "Unpaid"}
                 </Tag>
               </Descriptions.Item>
               <Descriptions.Item label="Date Ordered">
@@ -180,7 +179,7 @@ const Order = () => {
                   <Text>Order ID: {receiptOrder._id}</Text><br />
                   <Text>Date: {new Date(receiptOrder.createdAt).toLocaleString()}</Text><br />
                   {/* <Text>Status: {receiptOrder.status}</Text><br /> */}
-                  <Text>Payment: {receiptOrder.isPaid ? "Received" : "Unpaid"}</Text><br />
+                  <Text>Payment: {receiptOrder.paymentStatus === 'paid' ? "Received" : "Unpaid"}</Text><br />
                   <Divider />
                   <List
                     header="Items"
