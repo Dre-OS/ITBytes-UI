@@ -64,7 +64,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
           key: "/dashboard/manage-purchases/pending-supplies",
           icon: <EditOutlined />,
           label: <Link to="/dashboard/manage-purchases/pending-supplies">Pending Supplies</Link>
-        }
+        },
       ]
     }
     // { key: "/dashboard/manage-sales", icon: <DollarOutlined />, label: <Link to="/dashboard/manage-sales">Manage Sales</Link> },
