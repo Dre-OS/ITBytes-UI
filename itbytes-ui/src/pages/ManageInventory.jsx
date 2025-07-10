@@ -350,7 +350,7 @@ const ManageInventory = () => {
               </Upload>
             </Form.Item>
             <Form.Item name="description" label="Description"><Input.TextArea placeholder="Enter description" rows={3} showCount maxLength={200} /></Form.Item>
-            <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please select a category!" }]}><Select placeholder="Select category">{['CCTV', 'Printer', 'Smartphones', 'Computer', 'Electronics', 'Monitors'].map(cat => (<Select.Option key={cat} value={cat}>{cat}</Select.Option>))}</Select></Form.Item>
+            <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please select a category!" }]}><Select placeholder="Select category">{['CCTV', 'Printer', 'Smartphones', 'Computer', 'Peripherals', 'Monitors', 'Components', 'Tablets'].map(cat => (<Select.Option key={cat} value={cat}>{cat}</Select.Option>))}</Select></Form.Item>
             <Form.Item
               name="tags"
               label="Tags"

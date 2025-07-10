@@ -152,10 +152,10 @@ const ManageOrders = () => {
       ),
     },
     {
-      title: "Paid",
-      dataIndex: "isPaid",
-      key: "isPaid",
-      render: (paid) => <Tag color={paid ? "green" : "red"}>{paid ? "Paid" : "Unpaid"}</Tag>,
+      title: "Payment Status",
+      dataIndex: "paymentStatus",
+      key: "paymentStatus",
+      render: (paid) => <Tag color={paid === 'paid' ? "green" : "red"}>{paid === 'paid' ? "Paid" : "Unpaid"}</Tag>,
     },
     {
       title: "Actions",

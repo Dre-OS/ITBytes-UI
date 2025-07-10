@@ -2,7 +2,7 @@ import axios from "axios";
 import { message } from "antd";
 
 const apiUrl = import.meta.env.VITE_INVENTORY_API_URL;
-
+const inventoryInUrl = import.meta.env.VITE_INVENTORY_IN_API_URL || "http://localhost:5000/api/inventory/product-in";
 export const fetchItems = async () => {
   try {
     const { data } = await axios.get(`${apiUrl}`);
@@ -63,7 +63,7 @@ export const fetchFeaturedProducts = async (limit = 6) => {
 
 export const orderSupplies = async (orderData) => {
   try {
-    const response = await axios.post(`${apiUrl}/in`, orderData);
+    const response = await axios.post(`${inventoryInUrl}`, orderData);
     console.log(apiUrl);
     message.success("Order placed successfully");
     return response.data;

@@ -135,7 +135,7 @@ function Home() {
                                     alt={`Slide ${index + 1}`}
                                     style={{
                                         width: '100%',
-                                        height: '300px',
+                                        height: '350px',
                                         objectFit: 'cover',
                                         borderRadius: '10px'
                                     }}
@@ -155,7 +155,7 @@ function Home() {
                                     alt={`Slide ${index + 1}`}
                                     style={{
                                         width: '100%',
-                                        height: '300px',
+                                        height: '350px',
                                         objectFit: 'cover',
                                         borderRadius: '10px'
                                     }}
