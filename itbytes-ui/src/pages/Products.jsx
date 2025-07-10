@@ -228,10 +228,20 @@ const Products = () => {
                       {product?.price != null ? `₱${product.price.toLocaleString()}` : "₱--"}
                     </Typography.Text>
                     <Button
-                      type="primary"
+                      type="default"
                       block
-                      style={{ marginTop: 16 }}
+                      style={{
+                        marginTop: 16,
+                        borderWidth: 2,
+                        borderColor: '#2F4860',
+                        color: '#2F4860',
+                        fontSize: 13,
+                        fontWeight: 500,
+                        padding: "6px 12px",
+                        backgroundColor: '#fff',
+                      }}
                       onClick={() => openProductModal(product.id)}
+
                     >
                       View Product
                     </Button>
