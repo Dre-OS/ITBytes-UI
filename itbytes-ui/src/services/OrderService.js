@@ -16,7 +16,7 @@ const OrderService = {
   },
 
   markAsPaid: async (orderId) => {
-    const response = await axios.put(`${apiUrl}/out/${orderId}`, { isPaid: true });
+    const response = await axios.put(`${apiUrl}/out/${orderId}`, { paymentStatus: 'paid' });
     return response.data;
   },
 
@@ -27,7 +27,7 @@ const OrderService = {
 
   orderSupplies: async (orderData) => {
     try {
-      const response = await axiost.post(`${apiUrl}/in`, orderData);
+      const response = await axios.post(`${apiUrl}/in`, orderData);
       return response;
     } catch (error) {
       console.error("Error ordering supplies:", error);
