@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Card, Typography, Tag, List, Descriptions, Row, Col, message, Button, Modal, Divider, Form, Input } from "antd";
 import OrderService from "../services/OrderService";
 import "../styles/Order.css"; // Assuming you have some styles for the order page
 import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
 import UserSession from "../utils/UserSession";
+import html2pdf from "html2pdf.js";
 import axios from "axios";
 
 const { Title, Text } = Typography;
@@ -19,6 +20,8 @@ const Order = () => {
   const toBusinessAccount = '666-3251-855-1642'; // Replace with actual customer account number
   const [customerAccountNumber, setcustomerAccountNumber] = useState("");
   const [accountParts, setAccountParts] = useState(['', '', '', '']);
+  const pdfRef = useRef();
+
 
   const customerId = UserSession.get()?.userId;
 
@@ -185,7 +188,23 @@ const Order = () => {
               title="Receipt"
               open={isReceiptVisible}
               footer={[
-                <Button key="print" icon={<PrinterOutlined />} onClick={() => window.print()} type="primary">Print</Button>,
+                <Button
+                  key="download"
+                  type="primary"
+                  onClick={() => {
+                    html2pdf()
+                      .from(pdfRef.current)
+                      .set({
+                        margin: 10,
+                        filename: `Receipt-${receiptOrder._id}.pdf`,
+                        html2canvas: { scale: 2 },
+                        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                      })
+                      .save();
+                  }}
+                >
+                  Download PDF
+                </Button>,
                 <Button key="close" onClick={() => setIsReceiptVisible(false)}>Close</Button>,
               ]}
               onCancel={() => setIsReceiptVisible(false)}
@@ -225,6 +244,8 @@ const Order = () => {
             setIsModalOpen(false);
             setModalType(null);
             setSelectedOrder(null);
+            setcustomerAccountNumber("");
+            setAccountParts(['', '', '', '']); // reset inputs
           }}
           onOk={() => {
             handleCancelOrder(selectedOrder._id);
@@ -238,6 +259,7 @@ const Order = () => {
         </Modal>
       )}
 
+      { /* Payment Modal */}
       <Modal
         open={isModalOpen && modalType === "pay"}
         title="Proceed to Payment"
@@ -298,6 +320,16 @@ const Order = () => {
                       value={part}
                       onChange={(e) => handleChange(e.target.value, index)}
                       style={{ textAlign: 'center' }}
+                      onPaste={index === 0 ? (e) => {
+                        const pasted = e.clipboardData.getData('Text');
+                        const cleaned = pasted.replace(/\s/g, '').replace(/[^\d-]/g, '');
+                        const parts = cleaned.includes('-') ? cleaned.split('-') : cleaned.match(/.{1,4}/g);
+                        if (parts && parts.length === 4) {
+                          setAccountParts(parts);
+                          setcustomerAccountNumber(parts.join('-'));
+                          e.preventDefault();
+                        }
+                      } : undefined}
                     />
                   </Col>
                   {/* Add "-" after every input except the last one */}
@@ -334,8 +366,25 @@ const Order = () => {
         />
       </Modal>
 
-
-    </div >
+      {receiptOrder && (
+        <div style={{ display: "none" }}>
+          <div ref={pdfRef}>
+            <h2>ITBytes Receipt</h2>
+            <p>Order ID: {receiptOrder._id}</p>
+            <p>Date: {new Date(receiptOrder.createdAt).toLocaleString()}</p>
+            <p>Payment: {receiptOrder.paymentStatus}</p>
+            <hr />
+            {receiptOrder.orders.map((item, index) => (
+              <div key={index}>
+                {item.name} x {item.quantity} — ₱{item.subtotal.toLocaleString()}
+              </div>
+            ))}
+            <hr />
+            <h3>Total: ₱{receiptOrder.totalPrice.toLocaleString()}</h3>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
