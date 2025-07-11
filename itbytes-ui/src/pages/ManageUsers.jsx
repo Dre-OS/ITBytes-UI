@@ -154,6 +154,7 @@ const ManageUsers = () => {
     {
       title: "Status",
       key: "status",
+      width: 100,
       render: (_, record) => {
         const tags = [
           <Tag color={record.isDeleted ? "red" : "green"} key="active">
