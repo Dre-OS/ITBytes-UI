@@ -10,7 +10,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
   const [email, setEmail] = useState('');
   const [form] = Form.useForm();
 
-  const API_BASE = 'http://192.168.9.4:4000/api';
+  const API_BASE = 'http://192.168.1.247:4000/api'; //'http://192.168.9.4:4000/api'
   const apiUrl = import.meta.env.VITE_USER_API_URL;
 
   const handleSendOTP = async () => {
@@ -30,14 +30,24 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
   const [otp, setOtp] = useState(Array(6).fill(''));
 
   const handleOTPChange = (value, index) => {
-    if (!/^\d*$/.test(value)) return; // Only digits
-    const updated = [...otp];
-    updated[index] = value;
-    setOtp(updated);
+    if (!/^\d*$/.test(value)) return; // Only allow digits
 
-    // Auto-focus next input
-    if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`)?.focus();
+    if (value.length === 6) {
+      // If user pastes the full OTP at once
+      const newOtp = value.split('').slice(0, 6);
+      setOtp(newOtp);
+
+      // Focus the last box
+      document.getElementById(`otp-5`)?.focus();
+    } else {
+      const updated = [...otp];
+      updated[index] = value;
+      setOtp(updated);
+
+      // Auto-focus next input
+      if (value && index < 5) {
+        document.getElementById(`otp-${index + 1}`)?.focus();
+      }
     }
   };
 
@@ -70,7 +80,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
       message.error("Failed to reset password.");
     }
   };
-  
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
@@ -168,6 +178,14 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
                     value={otp[index] || ''}
                     onChange={(e) => handleOTPChange(e.target.value, index)}
                     onKeyDown={(e) => handleOTPKeyDown(e, index)}
+                    onPaste={(e) => {
+                      const pasted = e.clipboardData.getData('Text');
+                      if (/^\d{6}$/.test(pasted)) {
+                        setOtp(pasted.split(''));
+                        e.preventDefault(); // prevent default paste behavior
+                        setTimeout(() => document.getElementById(`otp-5`)?.focus(), 0);
+                      }
+                    }}
                     style={{
                       width: 48,
                       height: 48,
