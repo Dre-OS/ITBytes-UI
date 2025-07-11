@@ -8,6 +8,7 @@ import {
     Card,
     Badge,
     Avatar,
+    Skeleton,
 } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 
@@ -73,6 +74,7 @@ const BusinessDirectory = () => {
     const [loading, setLoading] = useState(false);
 
     const checkStatus = async () => {
+        setStatusMap({}); // Clear current statuses to show Skeletons again
         setLoading(true);
         const newStatus = {};
         await Promise.all(
@@ -92,6 +94,7 @@ const BusinessDirectory = () => {
         setLoading(false);
     };
 
+
     useEffect(() => {
         checkStatus();
     }, []);
@@ -110,13 +113,14 @@ const BusinessDirectory = () => {
                 <Title level={4} style={{ textAlign: "left", marginBottom: "30px" }}>
                     Business Directory
                 </Title>
-                <Button
-                    onClick={checkStatus}
-                    disabled={loading}
-                    type="link"
-                >
-                    <ReloadOutlined style={{ color: "#2F4860", fontSize: "20px" }} />
+                <Button onClick={checkStatus} disabled={loading} type="link">
+                    {loading ? (
+                        <Spin indicator={<ReloadOutlined style={{ fontSize: 20, color: "#2F4860" }} spin />} />
+                    ) : (
+                        <ReloadOutlined style={{ fontSize: 20, color: "#2F4860" }} />
+                    )}
                 </Button>
+
             </div>
 
             <Row gutter={[16, 16]} justify="center">
@@ -131,9 +135,19 @@ const BusinessDirectory = () => {
                                 bodyStyle={{ padding: 20 }}
                             >
                                 {isActive === undefined ? (
-                                    <Spin />
+                                    <div>
+                                        <Skeleton
+                                            active
+                                            avatar={{ size: 80, shape: "circle" }}
+                                        />
+                                        <Skeleton
+                                            active
+                                            title={false}
+                                            paragraph={{ rows: 2, width: ['80%', '60%'] }}
+                                        />
+                                    </div>
                                 ) : (
-                                    <div style={{ textAlign: "left" }}> {/* Align everything left */}
+                                    <div style={{ textAlign: "left" }}>
                                         <Badge
                                             count={isActive ? "Online" : "Offline"}
                                             offset={[0, 80]}
@@ -146,7 +160,12 @@ const BusinessDirectory = () => {
                                                 src={biz.image}
                                                 size={80}
                                                 shape="circle"
-                                                style={{ marginBottom: 16, backgroundColor: biz.bg, border: "1px solid #ddd", objectFit: "contain" }}
+                                                style={{
+                                                    marginBottom: 16,
+                                                    backgroundColor: biz.bg,
+                                                    border: "1px solid #ddd",
+                                                    objectFit: "contain"
+                                                }}
                                                 alt={biz.name}
                                             />
                                         </Badge>
@@ -178,7 +197,7 @@ const BusinessDirectory = () => {
                                                 overflow: "hidden",
                                                 textOverflow: "ellipsis",
                                                 lineHeight: "1.4em",
-                                                height: "2.8em", // 2 lines × 1.4em
+                                                height: "2.8em",
                                                 marginBottom: 12,
                                             }}
                                         >
