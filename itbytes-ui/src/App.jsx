@@ -123,9 +123,9 @@ export default function App() {
           />
         </Route>
 
-        <Route path="/login" element={<FramerFadeLayout><Login /></FramerFadeLayout>} />
-        <Route path="/register" element={<FramerFadeLayout><Register /></FramerFadeLayout>} />
-        <Route path="/test" element={<FramerFadeLayout><Test /></FramerFadeLayout>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/test" element={<Test />} />
       </Routes>
     </AnimatePresence>
   );
