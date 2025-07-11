@@ -273,7 +273,7 @@ const ManageInventory = () => {
               ))}
             </Select>
           </div>
-          <Button
+          {/* <Button
             icon={<PlusOutlined />}
             type="primary"
             onClick={() => {
@@ -284,7 +284,7 @@ const ManageInventory = () => {
             }}
           >
             Add Item
-          </Button>
+          </Button> */}
         </div>
         <Table
           bordered
@@ -382,8 +382,8 @@ const ManageInventory = () => {
                 ].map((t) => ({ label: t, value: t }))}
               />
             </Form.Item>
-            <Form.Item name="quantity" label="Quantity" rules={[{ required: true, message: "Please enter quantity!" }]}><Input type="number" min={0} placeholder="Enter quantity" /></Form.Item>
-            <Form.Item name="price" label="Price" rules={[{ required: true, message: "Please enter price!" }]}><Input type="number" min={1} step="0.01" placeholder="Enter price" /></Form.Item>
+            <Form.Item name="quantity" label="Quantity" rules={[{ required: true, message: "Please enter quantity!" }]}><Input type="number" disabled min={0} placeholder="Enter quantity" /></Form.Item>
+            <Form.Item name="price" label="Price" disabled rules={[{ required: true, message: "Please enter price!" }]}><Input type="number" min={1} step="0.01" placeholder="Enter price" /></Form.Item>
             <Form.Item wrapperCol={{ span: 24 }}>
               <Button type="primary" htmlType="submit" block>
                 {editingItem ? "Update" : "Add"} Item
