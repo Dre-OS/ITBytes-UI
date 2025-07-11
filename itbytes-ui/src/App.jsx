@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import FramerFadeLayout from "./layouts/FramerFadeLayout";
 import UserSession from "./utils/UserSession";
 
-//Admin Routes
+// Admin Routes
 import Admin from "./layouts/AdminLayout";
 import Dashboard from "./pages/Dashboard";
 import ManageInventory from "./pages/ManageInventory";
@@ -12,7 +14,7 @@ import BuySupplies from "./pages/BuySupplies";
 import PendingSupplies from "./pages/PendingSupplies";
 import OrderHistory from "./pages/OrderHistory";
 
-//Customer Routes
+// Customer Routes
 import Main from "./layouts/MainLayout";
 import Products from "./pages/Products";
 import Home from "./pages/Home";
@@ -23,13 +25,10 @@ import Test from "./pages/Test";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-
 const PrivateRoute = () => {
   const role = UserSession.getRole();
   UserSession.set({ ...UserSession.get(), isAuthenticated: true });
-  if (role == "customer") {
-    return <Navigate to="/" />;
-  }
+  if (role == "customer") return <Navigate to="/" />;
   const token = UserSession.isAuthenticated();
   return token ? <Outlet /> : <Navigate to="/" />;
 };
@@ -45,23 +44,24 @@ const RoleRoute = ({ allowedRoles, children }) => {
 };
 
 export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Main />}>
-          <Route index element={<Home />} />
-          <Route path="products" element={<Products />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="orders" element={<Order />} />
-        </Route>
+  const location = useLocation();
 
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Main />}>
+          <Route index element={<FramerFadeLayout><Home /></FramerFadeLayout>} />
+          <Route path="products" element={<FramerFadeLayout><Products /></FramerFadeLayout>} />
+          <Route path="cart" element={<FramerFadeLayout><Cart /></FramerFadeLayout>} />
+          <Route path="orders" element={<FramerFadeLayout><Order /></FramerFadeLayout>} />
+        </Route>
 
         <Route path="/dashboard" element={<Admin />}>
           <Route
             index
             element={
               <RoleRoute allowedRoles={["admin", "sales", "inventory"]}>
-                <Dashboard />
+                <FramerFadeLayout><Dashboard /></FramerFadeLayout>
               </RoleRoute>
             }
           />
@@ -69,7 +69,7 @@ export default function App() {
             path="manage-inventory"
             element={
               <RoleRoute allowedRoles={["admin", "inventory"]}>
-                <ManageInventory />
+                <FramerFadeLayout><ManageInventory /></FramerFadeLayout>
               </RoleRoute>
             }
           />
@@ -77,7 +77,7 @@ export default function App() {
             path="manage-orders"
             element={
               <RoleRoute allowedRoles={["admin", "sales"]}>
-                <ManageOrders />
+                <FramerFadeLayout><ManageOrders /></FramerFadeLayout>
               </RoleRoute>
             }
           />
@@ -85,7 +85,7 @@ export default function App() {
             path="supplies"
             element={
               <RoleRoute allowedRoles={["admin", "inventory"]}>
-                <BuySupplies />
+                <FramerFadeLayout><BuySupplies /></FramerFadeLayout>
               </RoleRoute>
             }
           />
@@ -93,7 +93,7 @@ export default function App() {
             path="manage-purchases/pending-supplies"
             element={
               <RoleRoute allowedRoles={["admin", "inventory"]}>
-                <PendingSupplies />
+                <FramerFadeLayout><PendingSupplies /></FramerFadeLayout>
               </RoleRoute>
             }
           />
@@ -101,15 +101,15 @@ export default function App() {
             path="manage-purchases/order-history"
             element={
               <RoleRoute allowedRoles={["admin", "inventory"]}>
-                <OrderHistory />
+                <FramerFadeLayout><OrderHistory /></FramerFadeLayout>
               </RoleRoute>
             }
-          />,
+          />
           <Route
             path="manage-users"
             element={
               <RoleRoute allowedRoles={["admin"]}>
-                <ManageUsers />
+                <FramerFadeLayout><ManageUsers /></FramerFadeLayout>
               </RoleRoute>
             }
           />
@@ -117,15 +117,16 @@ export default function App() {
             path="settings"
             element={
               <RoleRoute allowedRoles={["admin"]}>
-                <Settings />
+                <FramerFadeLayout><Settings /></FramerFadeLayout>
               </RoleRoute>
             }
           />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/test" element={<Test />} />
+
+        <Route path="/login" element={<FramerFadeLayout><Login /></FramerFadeLayout>} />
+        <Route path="/register" element={<FramerFadeLayout><Register /></FramerFadeLayout>} />
+        <Route path="/test" element={<FramerFadeLayout><Test /></FramerFadeLayout>} />
       </Routes>
-    </Router>
+    </AnimatePresence>
   );
 }
