@@ -54,8 +54,9 @@ function OrderHistory() {
     ];
 
     return (
-        <div style={{ padding: "20px 40px", background: "#FAFAFA", minHeight: "100vh" }}>
-            <Title level={2}>Order History</Title>
+        <div style={{ padding: "10px 35px", background: "#f9f9f9", minHeight: "100vh" }}>
+            <h1 style={{ marginBottom: -5, }}>Order History</h1>
+            <p style={{ marginBottom: 30}}>View a record of all items ordered from suppliers, including order details, status, and dates for easy tracking and inventory management.</p>
             <Table
                 dataSource={orders}
                 columns={columns}
