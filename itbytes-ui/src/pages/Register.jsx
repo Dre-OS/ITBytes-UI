@@ -2,12 +2,22 @@ import React, { useState, useRef, useEffect, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isEmailAvailable, registerUser } from '../services/AuthService';
 import '../styles/Register.css';
-import { Form, Input, Button, Divider, message, Select, Row, Col, Segmented } from "antd";
+import { Form, Input, Button, Divider, message, Select, Row, Col, Segmented, Progress } from "antd";
 import { CloseOutlined, LaptopOutlined, LockOutlined, CustomerServiceOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
 
 function Register() {
     const [loading, setLoading] = useState(false);
     const [accountType, setAccountType] = useState(null);
+    const [password, setPassword] = useState("");
+    const [focused, setFocused] = useState(false);
+
+    const requirements = [
+        { label: "At least 8 characters", test: (pw) => pw.length >= 8 },
+        { label: "Uppercase letter", test: (pw) => /[A-Z]/.test(pw) },
+        { label: "Lowercase letter", test: (pw) => /[a-z]/.test(pw) },
+        { label: "Number", test: (pw) => /\d/.test(pw) },
+        { label: "Symbol", test: (pw) => /[^A-Za-z0-9]/.test(pw) },
+    ];
 
     useEffect(() => {
         setAccountType('individual');
@@ -285,13 +295,47 @@ function Register() {
                         <Col span={12}>
                             <Form.Item
                                 label="Password"
-                                className="password-field"
                                 name="password"
-                                rules={[{ required: true, message: "Please enter your password!" }]}
-                                style={{ marginBottom: '12px' }}
+                                className="password-field"
+                                rules={[
+                                    {
+                                        validator: (_, value) => {
+                                            const allPassed = requirements.every((req) => req.test(value));
+                                            return allPassed
+                                                ? Promise.resolve()
+                                                : Promise.reject("Password does not meet requirements.");
+                                        },
+                                    },
+                                ]}
+                                style={{ marginBottom: "12px" }}
                             >
-                                <Input.Password placeholder="Password" />
+                                <Input.Password
+                                    placeholder="Password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    onFocus={() => setFocused(true)}
+                                    onBlur={() => setFocused(false)}
+                                />
                             </Form.Item>
+
+                            {focused && (
+                                <>
+                                    <ul style={{ marginBottom: "8px", paddingLeft: "20px" }}>
+                                        {requirements.map((req, index) => (
+                                            <li
+                                                key={index}
+                                                style={{
+                                                    color: req.test(password) ? "green" : "gray",
+                                                    fontWeight: req.test(password) ? "bold" : "normal",
+                                                    fontFamily: 'Poppins',
+                                                }}
+                                            >
+                                                {req.label}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+
                         </Col>
                         <Col span={12}>
                             <Form.Item
