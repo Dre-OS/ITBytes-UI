@@ -268,7 +268,8 @@ const Order = () => {
 
           } catch (error) {
             console.error(error);
-            message.error("Failed to submit payment.");
+            const errorMsg = error.response?.data?.error || "Something went wrong!";
+            message.error(errorMsg);
           } finally {
             setIsModalOpen(false);
             setModalType(null);
