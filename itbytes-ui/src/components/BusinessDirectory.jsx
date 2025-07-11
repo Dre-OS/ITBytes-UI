@@ -139,6 +139,7 @@ const BusinessDirectory = () => {
                                             offset={[0, 80]}
                                             style={{
                                                 backgroundColor: isActive ? "#52c41a" : "#f5222d",
+                                                fontFamily: "Poppins, sans-serif",
                                             }}
                                         >
                                             <Avatar
