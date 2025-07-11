@@ -7,6 +7,7 @@ import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import logo from '../assets/logo_white.webp';
 import { loginUser } from '../services/AuthService'; // Adjust the import path as necessary
 import UserSession from '../utils/UserSession';
+import { motion } from 'framer-motion';
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -14,35 +15,46 @@ function Login() {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleLogin = async (values) => {
-  setLoading(true);
+    setLoading(true);
 
-  const { user, error } = await loginUser(values.email, values.password);
+    const { user, error } = await loginUser(values.email, values.password);
 
-  if (error) {
-    message.error(error);
+    if (error) {
+      message.error(error);
+      setLoading(false);
+      return;
+    }
+
+    UserSession.set(user);
+
+    message.success('Login successful!');
+    navigate(user.role === 'customer' ? '/' : '/dashboard');
     setLoading(false);
-    return;
-  }
-
-  UserSession.set(user);
-
-  message.success('Login successful!');
-  navigate(user.role === 'customer' ? '/' : '/dashboard');
-  setLoading(false);
-};
+  };
 
   return (
     <div className="login-container">
-      <div className="login-image">
+      <motion.div
+        className="login-image"
+        initial={{ x: '-100%', opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: '-100%', opacity: 0 }}
+        transition={{ duration: 1.5, ease: 'easeInOut' }}
+      >
         <img src={logo} alt="" className="login-image-logo" />
         <div style={{ textAlign: 'center', width: '60%', marginTop: '-30px' }}>
           <p style={{ fontSize: 13 }}>
             <p style={{ fontSize: 13 }}>A user-friendly online store for IT products and CCTV systems, offering seamless browsing, ordering, and secure checkout for customers.</p>
           </p>
         </div>
-
-      </div>
-      <div className="login-form">
+      </motion.div>
+      <motion.div
+        className="login-form"
+        initial={{ x: '100%', opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: '100%', opacity: 0 }}
+        transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.1 }}
+      >
         <div className='login-back'>
           <CloseOutlined
             style={{ fontSize: '24px', cursor: 'pointer' }}
@@ -83,9 +95,9 @@ function Login() {
         </Form>
         <div className="login-form-footer" style={{ justifyContent: 'space-between', width: '500px' }}>
           <p>No account? <a href="/register">Register Now</a></p>
-          <p><a onClick={() => setModalVisible(true)} style={{ cursor: 'pointer'}}>Forgot Password?</a></p>
+          <p><a onClick={() => setModalVisible(true)} style={{ cursor: 'pointer' }}>Forgot Password?</a></p>
         </div>
-      </div>
+      </motion.div>
       <ForgotPasswordModal
         visible={isModalVisible}
         onClose={() => setModalVisible(false)}
