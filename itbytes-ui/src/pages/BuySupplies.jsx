@@ -73,12 +73,12 @@ function BuySupplies() {
             orderSupplies(inventoryData)
         ])
             .then(() => {
-            message.success(`Ordered ${quantity} of ${selectedItem.name}`);
-            fetchSupplierInventory();
+                message.success(`Ordered ${quantity} of ${selectedItem.name}`);
+                fetchSupplierInventory();
             })
             .catch(err => {
-            console.error("Order failed", err);
-            message.error("Failed to place order. Please try again.");
+                console.error("Order failed", err);
+                message.error("Failed to place order. Please try again.");
             });
         // Reset order quantities and close modal
 
@@ -151,9 +151,9 @@ function BuySupplies() {
             <Table
                 dataSource={supplierItems}
                 columns={columns}
+                pagination={{ pageSize: 5, showSizeChanger: false }}
                 rowKey="id"
                 bordered
-                pagination={false}
                 locale={{
                     emptyText: isConnected ? "No items available from supplier." : "Not connected to supplier."
                 }}
