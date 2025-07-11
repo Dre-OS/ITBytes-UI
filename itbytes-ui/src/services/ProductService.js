@@ -73,3 +73,15 @@ export const orderSupplies = async (orderData) => {
     return null;
   }
 }
+
+export const addtoInventory = async (inventoryData) => {
+  try {
+    const response = await axios.post(`${apiUrl}/in`, inventoryData);
+    message.success("Item added to inventory successfully");
+    return response.data;
+  } catch (error) {
+    console.error("Error adding item to inventory:", error);
+    message.error(error.response?.data?.error || "Failed to add item to inventory");
+    return null;
+  }
+}
