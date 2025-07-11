@@ -4,6 +4,7 @@ import { isEmailAvailable, registerUser } from '../services/AuthService';
 import '../styles/Register.css';
 import { Form, Input, Button, Divider, message, Select, Row, Col, Segmented, Progress } from "antd";
 import { CloseOutlined, LaptopOutlined, LockOutlined, CustomerServiceOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
+import { motion } from 'framer-motion';
 
 function Register() {
     const [loading, setLoading] = useState(false);
@@ -52,7 +53,13 @@ function Register() {
 
     return (
         <div className="register-container" style={{ fontFamily: 'Poppins' }}>
-            <div className='register-image'>
+            <motion.div
+                className="register-image"
+                initial={{ x: '-100%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: '-100%', opacity: 0 }}
+                transition={{ duration: 1.5, ease: 'easeInOut' }}
+            >
                 <div
                     style={{
                         marginTop: '40px',
@@ -146,9 +153,15 @@ function Register() {
                         </Col>
                     </Row>
                 </div>
-            </div>
-            <div className='register-form'>
+            </motion.div>
 
+            <motion.div
+                className="register-form"
+                initial={{ x: '100%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: '100%', opacity: 0 }}
+                transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.1 }}
+            >
                 <div className='register-back'>
                     <CloseOutlined
                         style={{ fontSize: '24px', cursor: 'pointer' }}
@@ -373,8 +386,8 @@ function Register() {
                 <div className='register-form-footer'>
                     <p>Already have an account? <a href="/login">Log in</a></p>
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </div >
     );
 }
 
