@@ -138,7 +138,7 @@ const Products = () => {
               style={{ display: "flex", flexDirection: "column", marginBottom: 16 }}
             >
               {uniqueCategories.map((cat) => (
-                <Checkbox key={cat} value={cat}>
+                <Checkbox key={cat} value={cat} style={{ fontFamily: 'Poppins'}}>
                   {cat}
                 </Checkbox>
               ))}
