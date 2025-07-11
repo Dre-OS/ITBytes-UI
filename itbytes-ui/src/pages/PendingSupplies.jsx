@@ -4,6 +4,7 @@ import {
 } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { addtoInventory } from "../services/ProductService";
 
 const { Option } = Select;
 
@@ -14,13 +15,16 @@ function PendingSupplies() {
   const [isNewItemModalVisible, setIsNewItemModalVisible] = useState(false);
   const [form] = Form.useForm();
 
+  const apiURl = import.meta.env.VITE_INVENTORY_IN_API_URL || "http://localhost:5000";
+  const productApiUrl = import.meta.env.VITE_INVENTORY_API_URL || "http://localhost:5000/api/inventory/product-in";
+
   useEffect(() => {
     fetchPendingSupplies();
   }, []);
 
   const fetchPendingSupplies = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/pending");
+      const res = await axios.get(`${apiURl}`);
       setSupplies(res.data);
     } catch (err) {
       console.error(err);
@@ -29,15 +33,14 @@ function PendingSupplies() {
   };
 
   const checkIfProductExist = async (item) => {
-    // Placeholder logic
-    return Math.random() > 0.5; // randomly return true/false for demo
+    const payload = { productId: item.productId };
+    const response = await axios.post(`${productApiUrl}/exists`, payload);
+    const exist = response.data;
+    console.log(exist);
+    return exist.exists;
   };
 
   const handleApprove = async (item) => {
-    if (!item.name || item.quantity == null) {
-      return message.warning("Name and quantity must be filled before approving");
-    }
-
     const exists = await checkIfProductExist(item);
     setSelectedItem(item);
 
@@ -55,33 +58,51 @@ function PendingSupplies() {
   };
 
   const handleAddInventory = async (item) => {
-    // PUT request logic here
+    const payload = {
+      productId: item.productId,
+      name: item.name,
+      quantity: item.quantity,
+    };
+    await addtoInventory(payload);
+    console.log("Adding to inventory:", item.productId + " with quantity:", item.quantity);
     message.success(`Added stock for ${item.name}`);
-    setSupplies(prev => prev.filter(s => s.id !== item.id));
     setIsExistingModalVisible(false);
+    fetchPendingSupplies(); // Refresh the supplies list
   };
 
   const handleAddNewItem = async () => {
     try {
-      const values = await form.validateFields();
-      // POST request logic here
-      message.success(`New item "${values.name}" added`);
-      setSupplies(prev => prev.filter(s => s.id !== selectedItem.id));
+      const formValues = await form.validateFields();
+      
+      const newItem = {
+        productId: selectedItem.productId,
+        name: formValues.name,
+        description: formValues.description || "",
+        category: formValues.category || "Uncategorized",
+        price: formValues.price || 0,
+        tags: formValues.tags || [],
+        quantity: selectedItem.quantity,
+      }
+      console.log("New item to add:", newItem);
+      await addtoInventory(newItem);
+      // console.log("Adding new item:", newItem);
+      message.success(`New item "${formValues.name}" added`);
       setIsNewItemModalVisible(false);
+      fetchPendingSupplies(); // Refresh the supplies list
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleReject = (item) => {
-    message.error(`${item.name} rejected`);
-    setSupplies(prev => prev.filter(s => s.id !== item.id));
-  };
-
   const columns = [
     {
+      title: "id",
+      dataIndex: "id",
+      hidden: true,
+    },
+    {
       title: "Supplier Product ID",
-      dataIndex: "externalProductId",
+      dataIndex: "productId",
     },
     {
       title: "Name",
@@ -100,16 +121,9 @@ function PendingSupplies() {
             <Button
               icon={<CheckOutlined />}
               className="custom-disabled-button"
-              style={{ borderColor: "green", color: "green", width: 40 }}
+              style={{ borderColor: "green", color: "green", width: 80 }}
               disabled={!canApprove}
               onClick={() => handleApprove(record)}
-            />
-            <Button
-              icon={<CloseOutlined />}
-              danger
-              style={{ width: 40 }}
-              className="custom-disabled-button"
-              onClick={() => handleReject(record)}
             />
           </Space>
         );
@@ -118,8 +132,9 @@ function PendingSupplies() {
   ];
 
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Pending Supplies</h2>
+    <div style={{ padding: "10px 35px", background: "#f9f9f9", }}>
+      <h1 style={{ marginBottom: -5, }}>Pending Supplies</h1>
+            <p style={{ marginBottom: 30}}>Review and approve ordered items from suppliers. Add missing product details before confirming and adding them to the inventory.</p>
       <Table
         dataSource={supplies}
         columns={columns}
