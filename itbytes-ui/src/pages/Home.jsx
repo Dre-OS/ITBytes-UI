@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Card, Col, Layout, Row, Typography, Carousel } from "antd";
+import { Button, Card, Col, Layout, Row, Typography, Carousel, Skeleton } from "antd";
 import { fetchFeaturedProducts } from '../services/ProductService';
 import '../styles/Home.css';
 import ProductModal from '../components/ProductModal';
@@ -36,6 +36,7 @@ function Home() {
     const [featured, setFeatured] = useState([]);
     const [selectedProductId, setSelectedProductId] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [loadingFeatured, setLoadingFeatured] = useState(true);
     const navigate = useNavigate();
 
     const openProductModal = (id) => {
@@ -112,15 +113,19 @@ function Home() {
 
     useEffect(() => {
         const loadFeatured = async () => {
+            setLoadingFeatured(true);
             try {
                 const data = await fetchFeaturedProducts();
                 setFeatured(data);
             } catch (err) {
                 console.error("Failed to fetch featured products:", err);
+            } finally {
+                setLoadingFeatured(false);
             }
         };
         loadFeatured();
     }, []);
+
 
     return (
         <Layout style={{ background: "#F9F9F9", width: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto' }}>
@@ -259,70 +264,95 @@ function Home() {
                     </a>
                 </div>
                 <Row gutter={[24, 24]} justify="center" style={{ marginTop: 30 }}>
-                    {featured.map((product) => (
-                        <Col xs={24} sm={12} md={4} key={product._id}>
-                            <Card
-                                hoverable
-                                cover={
+                    {loadingFeatured ? (
+                        Array.from({ length: 6 }).map((_, index) => (
+                            <Col xs={24} sm={12} md={4} key={index}>
+                                <Card>
                                     <div
                                         style={{
-                                            background: "#fff",
-                                            padding: 10,
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            height: 180,
-                                            border: "1px solid #f0f0f0", // ✅ Border added here
-                                            borderBottom: "none",        // Optional: if you want the card border to continue smoothly
-                                            borderRadius: "8px 8px 0 0"  // Match card border radius if needed
+                                            width: '100%',
+                                            height: 140,
+                                            borderRadius: 8,
+                                            overflow: 'hidden',
+                                            marginBottom: 16,
+                                            background: '#f0f0f0',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
                                         }}
                                     >
-                                        <img
-                                            src={product.image || "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg"}
-                                            alt={product.name}
-                                            style={{
-                                                maxHeight: "100%",
-                                                maxWidth: "100%",
-                                                objectFit: "contain",
-                                            }}
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg";
-                                            }}
-                                        />
+                                        <div style={{ width: '100%', height: '100%' }}>
+                                            <div className="ant-skeleton-image" style={{ width: '100%', height: '100%' }} />
+                                        </div>
                                     </div>
-                                }
-                                style={{
-                                    background: "#fff",      // Content background
-                                    // border: "1px solid #d9d9d9", // Light border
-                                    // borderRadius: 8,
-                                }}
-                            >
-                                <p style={{ fontSize: 12, color: '#2D4756', marginTop: -10 }}>In stock {product.quantity} items</p>
-                                <Card.Meta
-                                    title={product.name}
-                                    description={`₱${product.price?.toLocaleString()}`}
-                                />
-                                <Button
-                                    type="default"
-                                    block
-                                    onClick={() => openProductModal(product.id)}
-                                    style={{
-                                        marginTop: 16,
-                                        borderWidth: 2,
-                                        borderColor: '#2F4860',
-                                        color: '#2F4860',
-                                        fontSize: 13,
-                                        fontWeight: 500,
-                                        padding: "6px 12px",
-                                        backgroundColor: '#fff',
-                                    }}
+                                    <Skeleton active paragraph={{ rows: 2 }} title={false} />
+                                </Card>
+                            </Col>
+                        ))
+                    ) : (
+                        featured.map((product) => (
+                            <Col xs={24} sm={12} md={4} key={product._id}>
+                                <Card
+                                    hoverable
+                                    cover={
+                                        <div
+                                            style={{
+                                                background: "#fff",
+                                                padding: 10,
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                height: 180,
+                                                border: "1px solid #f0f0f0",
+                                                borderBottom: "none",
+                                                borderRadius: "8px 8px 0 0"
+                                            }}
+                                        >
+                                            <img
+                                                src={product.image || "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg"}
+                                                alt={product.name}
+                                                style={{
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    objectFit: "contain",
+                                                }}
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg";
+                                                }}
+                                            />
+                                        </div>
+                                    }
+                                    style={{ background: "#fff" }}
                                 >
-                                    View Product
-                                </Button>
-                            </Card>
-                        </Col>
-                    ))}
+                                    <p style={{ fontSize: 12, color: '#2D4756', marginTop: -10 }}>
+                                        In stock {product.quantity} items
+                                    </p>
+                                    <Card.Meta
+                                        title={product.name}
+                                        description={`₱${product.price?.toLocaleString()}`}
+                                    />
+                                    <Button
+                                        type="default"
+                                        block
+                                        onClick={() => openProductModal(product.id)}
+                                        style={{
+                                            marginTop: 16,
+                                            borderWidth: 2,
+                                            borderColor: '#2F4860',
+                                            color: '#2F4860',
+                                            fontSize: 13,
+                                            fontWeight: 500,
+                                            padding: "6px 12px",
+                                            backgroundColor: '#fff',
+                                        }}
+                                    >
+                                        View Product
+                                    </Button>
+                                </Card>
+                            </Col>
+                        ))
+                    )}
                 </Row>
             </Content>
             <ProductModal
