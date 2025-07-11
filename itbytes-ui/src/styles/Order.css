@@ -2,15 +2,14 @@
   body * {
     visibility: hidden;
   }
+
   .receipt-content, .receipt-content * {
     visibility: visible;
   }
+
   .receipt-content {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    padding: 20px;
-    background: white;
   }
 }
