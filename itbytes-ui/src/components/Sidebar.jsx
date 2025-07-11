@@ -27,9 +27,8 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   const role = UserSession.getRole();
   const name = UserSession.get()?.firstname + " " + UserSession.get()?.lastname;
 
-  const toggleSidebar = (value) => {
-    setCollapsed(value);
-    sessionStorage.setItem("sidebarCollapsed", JSON.stringify(value));
+  const toggleSidebar = () => {
+    setCollapsed(prev => !prev);          // Parent useEffect persists it
   };
 
   const handleLogout = () => {
