@@ -9,7 +9,8 @@ import {
   Input,
   Checkbox,
   InputNumber,
-  Tag
+  Tag,
+  Skeleton
 } from "antd";
 import { useLocation } from "react-router-dom";
 import ProductModal from "../components/ProductModal";
@@ -118,60 +119,87 @@ const Products = () => {
   return (
     <div style={{ padding: "0 10%" }}>
       <Title level={3} style={{ marginBottom: "30px" }}>All Products</Title>
+      <Row gutter={[24, 24]}>
+        {/* Sidebar filters */}
+        <Col xs={24} md={6}>
+          <div style={{ padding: 16, background: "#f9f9f9", borderRadius: 8, paddingTop: 0, paddingLeft: 0, marginTop: '-30px' }}>
+            <Title level={5}>Search</Title>
+            <Input
+              placeholder="Search products"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              style={{ marginBottom: 0 }}
+            />
 
-      {loading ? (
-        <div style={{ textAlign: "center", marginTop: "50px", height: "50vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <Spin size="large" />
-        </div>
-      ) : (
-        <Row gutter={[24, 24]}>
-          {/* Sidebar filters */}
-          <Col xs={24} md={6}>
-            <div style={{ padding: 16, background: "#f9f9f9", borderRadius: 8, paddingTop: 0, paddingLeft: 0, marginTop: '-30px' }}>
-              <Title level={5}>Search</Title>
-              <Input
-                placeholder="Search products"
-                value={searchText}
-                onChange={e => setSearchText(e.target.value)}
-                style={{ marginBottom: 0 }}
+            <Title level={5}>Category</Title>
+            <Checkbox.Group
+              value={selectedCategories}
+              onChange={setSelectedCategories}
+              style={{ display: "flex", flexDirection: "column", marginBottom: 16 }}
+            >
+              {uniqueCategories.map((cat) => (
+                <Checkbox key={cat} value={cat}>
+                  {cat}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+
+
+            <Title level={5}>Price Range</Title>
+            <div style={{ display: "flex", gap: 8 }}>
+              <InputNumber
+                min={0}
+                placeholder="Min"
+                value={minPrice}
+                onChange={setMinPrice}
+                style={{ width: "50%" }}
               />
-
-              <Title level={5}>Category</Title>
-              <Checkbox.Group
-                value={selectedCategories}
-                onChange={setSelectedCategories}
-                style={{ display: "flex", flexDirection: "column", marginBottom: 16 }}
-              >
-                {uniqueCategories.map((cat) => (
-                  <Checkbox key={cat} value={cat}>
-                    {cat}
-                  </Checkbox>
-                ))}
-              </Checkbox.Group>
-
-
-              <Title level={5}>Price Range</Title>
-              <div style={{ display: "flex", gap: 8 }}>
-                <InputNumber
-                  min={0}
-                  placeholder="Min"
-                  value={minPrice}
-                  onChange={setMinPrice}
-                  style={{ width: "50%" }}
-                />
-                <InputNumber
-                  min={0}
-                  placeholder="Max"
-                  value={maxPrice}
-                  onChange={setMaxPrice}
-                  style={{ width: "50%" }}
-                />
-              </div>
+              <InputNumber
+                min={0}
+                placeholder="Max"
+                value={maxPrice}
+                onChange={setMaxPrice}
+                style={{ width: "50%" }}
+              />
             </div>
-          </Col>
+          </div>
+        </Col>
 
-          {/* Product list */}
-          <Col xs={24} md={18}>
+        {/* Product list */}
+        <Col xs={24} md={18}>
+          {loading ? (
+            <Row gutter={[24, 24]}>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <Col key={index} xs={24} sm={12} md={8} lg={6}>
+                  <Card>
+                    <div
+                      style={{
+                        width: '100%',
+                        height: 160,
+                        borderRadius: 8,
+                        overflow: 'hidden',
+                        marginBottom: 16,
+                        background: '#f0f0f0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Skeleton.Image
+                        active
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </div>
+                    <Skeleton
+                      active
+                      title={false}
+                      paragraph={{ rows: 3, width: ['80%', '60%', '100%'] }}
+                    />
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          ) : (
             <Row gutter={[24, 24]}>
               {filtered.map((product) => (
                 <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
@@ -249,9 +277,9 @@ const Products = () => {
                 </Col>
               ))}
             </Row>
-          </Col>
-        </Row>
-      )}
+          )}
+        </Col>
+      </Row>
       <ProductModal
         productId={selectedProductId}
         visible={modalVisible}
