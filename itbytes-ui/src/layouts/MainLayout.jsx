@@ -8,20 +8,6 @@ import { useEffect, useState } from "react";
 import BusinessDirectory from "../components/BusinessDirectory";
 
 const { Content } = Layout;
-const { Option } = Select;
-
-const categoryMenu = (
-    <Menu
-        onClick={(e) => console.log("Selected:", e.key)}
-        items={[
-            { key: 'printers', label: 'Printers' },
-            { key: 'monitors', label: 'Monitors' },
-            { key: 'cctvs', label: 'CCTVs' },
-            { key: 'tablets', label: 'Tablets' },
-            { key: 'smartphones', label: 'Smartphones' },
-        ]}
-    />
-);
 
 export default function MainLayout() {
     const [showButton, setShowButton] = useState(false);
