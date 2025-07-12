@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Card, Typography, Tag, List, Descriptions, Row, Col, message, Button, Modal, Divider, Form, Input } from "antd";
+import { Card, Typography, Tag, List, Descriptions, Row, Col, message, Button, Modal, Divider, Form, Input, Steps } from "antd";
 import OrderService from "../services/OrderService";
 import "../styles/Order.css"; // Assuming you have some styles for the order page
 import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
@@ -22,8 +22,21 @@ const Order = () => {
   const [accountParts, setAccountParts] = useState(['', '', '', '']);
   const pdfRef = useRef();
 
-
   const customerId = UserSession.get()?.userId;
+
+  const stepItems = [
+    { title: "Ordered" },
+    { title: "Paid" },
+    { title: "Delivered" },
+  ];
+
+  const getStepIndex = (order) => {
+    if (order.status === "cancelled") return 0; // stays at Ordered
+    if (order.paymentStatus !== "paid") return 0;
+    if (order.paymentStatus === "paid" && order.status !== "Completed") return 1;
+    if (order.status === "Completed") return 2;
+    return 0;
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -147,7 +160,13 @@ const Order = () => {
             <Tag color={order.paymentStatus === 'paid' ? "green" : "red"}>
               {order.paymentStatus === 'paid' ? "Paid" : "Unpaid"}
             </Tag>
-
+            <Steps
+              className="custom-steps"
+              size="small"
+              current={getStepIndex(order)}
+              items={stepItems}
+              style={{ marginBottom: 16, marginTop: 16, fontFamily: "Poppins" }}
+            />
             <List
               header={<strong>Ordered Items</strong>}
               dataSource={order.orders}
