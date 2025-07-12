@@ -4,7 +4,8 @@ import { isEmailAvailable, registerUser } from '../services/AuthService';
 import '../styles/Register.css';
 import { Form, Input, Button, Divider, message, Select, Row, Col, Segmented, Progress } from "antd";
 import { CloseOutlined, LaptopOutlined, LockOutlined, CustomerServiceOutlined, UserOutlined, ShopOutlined } from '@ant-design/icons';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 function Register() {
     const [loading, setLoading] = useState(false);
@@ -154,7 +155,12 @@ function Register() {
                     </Row>
                 </div>
             </motion.div>
-
+            <div className='register-back'>
+                <CloseOutlined
+                    style={{ fontSize: '24px', cursor: 'pointer' }}
+                    onClick={() => navigate('/')}
+                />
+            </div>
             <motion.div
                 className="register-form"
                 initial={{ x: '100%', opacity: 0 }}
@@ -162,12 +168,6 @@ function Register() {
                 exit={{ x: '100%', opacity: 0 }}
                 transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.1 }}
             >
-                <div className='register-back'>
-                    <CloseOutlined
-                        style={{ fontSize: '24px', cursor: 'pointer' }}
-                        onClick={() => navigate('/')}
-                    />
-                </div>
                 <Form
                     layout="vertical"
                     style={{ width: '100%', maxWidth: '500px' }}
@@ -228,81 +228,90 @@ function Register() {
                     >
                         <Input placeholder="Email" />
                     </Form.Item>
+                    <AnimatePresence mode="wait">
+                        {accountType === 'business' ? (
+                            <motion.div
+                                key="business"
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -50 }}
+                                transition={{ duration: 0.4 }}
+                            >
+                                <Form.Item
+                                    label="Business Name"
+                                    name="firstName"
+                                    rules={[{ required: true, message: "Please enter your business name!" }]}
+                                    style={{ marginBottom: 12 }}
+                                >
+                                    <Input placeholder="Business Name" />
+                                </Form.Item>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="individual"
+                                initial={{ opacity: 0, x: -50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 50 }}
+                                transition={{ duration: 0.4 }}
+                            >
+                                <Row gutter={12}>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label="First Name"
+                                            name="firstName"
+                                            rules={[
+                                                { required: true, message: "Please enter your first name!" },
+                                                { pattern: /^[A-Za-z\s]+$/, message: 'Only letters and spaces are allowed' },
+                                            ]}
+                                            style={{ marginBottom: 8 }}
+                                        >
+                                            <Input placeholder="First Name" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label="Last Name"
+                                            name="lastName"
+                                            rules={[
+                                                { required: true, message: "Please enter your last name!" },
+                                                { pattern: /^[A-Za-z\s]+$/, message: 'Only letters and spaces are allowed' },
+                                            ]}
+                                            style={{ marginBottom: 8 }}
+                                        >
+                                            <Input placeholder="Last Name" />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row gutter={12}>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label="Middle Name"
+                                            name="middleName"
+                                            rules={[{ pattern: /^[A-Za-z\s]+$/, message: 'Only letters and spaces are allowed' }]}
+                                            style={{ marginBottom: '12px' }}
+                                        >
+                                            <Input placeholder="Middle Name" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label="Role"
+                                            name="role"
+                                            rules={[{ required: true, message: 'Please select a role!' }]}
+                                            style={{ marginBottom: '12px' }}
+                                        >
+                                            <Select placeholder="Select a role">
+                                                <Select.Option value="customer">Customer</Select.Option>
+                                                <Select.Option value="sales">Sales</Select.Option>
+                                                <Select.Option value="inventory">Inventory</Select.Option>
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                    {accountType === 'business' ? (
-                        <Form.Item
-                            label="Business Name"
-                            name="firstName"
-                            rules={[{ required: true, message: "Please enter your business name!" }]}
-                            style={{ marginBottom: 12 }}
-                        >
-                            <Input placeholder="Business Name" />
-                        </Form.Item>
-                    ) : (
-                        <>
-                            <Row gutter={12}>
-                                <Col span={12}>
-                                    <Form.Item
-                                        label="First Name"
-                                        name="firstName"
-                                        rules={[
-                                            { required: true, message: "Please enter your first name!" },
-                                            { pattern: /^[A-Za-z\s]+$/, message: 'Only letters and spaces are allowed' },
-                                        ]}
-                                        style={{ marginBottom: 8 }}
-                                    >
-                                        <Input placeholder="First Name" />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12}>
-                                    <Form.Item
-                                        label="Last Name"
-                                        name="lastName"
-                                        rules={
-                                            accountType === 'individual'
-                                                ? [
-                                                    { required: true, message: "Please enter your last name!" },
-                                                    { pattern: /^[A-Za-z\s]+$/, message: 'Only letters and spaces are allowed' },
-                                                ]
-                                                : []
-                                        }
-                                        style={{ marginBottom: 8 }}
-                                    >
-                                        <Input placeholder="Last Name" disabled={accountType !== 'individual'} />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-
-                            <Row gutter={12}>
-                                <Col span={12}>
-                                    <Form.Item
-                                        label="Middle Name"
-                                        name="middleName"
-                                        rules={[
-                                            { pattern: /^[A-Za-z\s]+$/, message: 'Only letters and spaces are allowed' },
-                                        ]}
-                                        style={{ marginBottom: '12px' }}
-                                    >
-                                        <Input placeholder="Middle Name" />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12}>
-                                    <Form.Item
-                                        label="Role"
-                                        name="role"
-                                        rules={[{ required: true, message: 'Please select a role!' }]}
-                                        style={{ marginBottom: '12px' }}
-                                    >
-                                        <Select placeholder="Select a role">
-                                            <Select.Option value="customer">Customer</Select.Option>
-                                            <Select.Option value="sales">Sales</Select.Option>
-                                            <Select.Option value="inventory">Inventory</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </>
-                    )}
 
                     <Row gutter={12}>
                         <Col span={12}>
@@ -330,9 +339,16 @@ function Register() {
                                 />
                             </Form.Item>
 
-                            {focused && (
-                                <>
-                                    <ul style={{ marginBottom: "8px", paddingLeft: "20px" }}>
+                            <AnimatePresence>
+                                {focused && (
+                                    <motion.ul
+                                        key="password-reqs"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        transition={{ duration: 0.3 }}
+                                        style={{ marginBottom: "8px", paddingLeft: "20px" }}
+                                    >
                                         {requirements.map((req, index) => (
                                             <li
                                                 key={index}
@@ -345,10 +361,9 @@ function Register() {
                                                 {req.label}
                                             </li>
                                         ))}
-                                    </ul>
-                                </>
-                            )}
-
+                                    </motion.ul>
+                                )}
+                            </AnimatePresence>
                         </Col>
                         <Col span={12}>
                             <Form.Item
@@ -384,7 +399,7 @@ function Register() {
                     </Button>
                 </Form>
                 <div className='register-form-footer'>
-                    <p>Already have an account? <a href="/login">Log in</a></p>
+                    <p>Already have an account? <Link to="/login">Log in</Link></p>
                 </div>
             </motion.div>
         </div >
