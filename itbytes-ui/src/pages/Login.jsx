@@ -8,6 +8,7 @@ import logo from '../assets/logo_white.webp';
 import { loginUser } from '../services/AuthService'; // Adjust the import path as necessary
 import UserSession from '../utils/UserSession';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -34,6 +35,12 @@ function Login() {
 
   return (
     <div className="login-container">
+      <div className='login-back'>
+        <CloseOutlined
+          style={{ fontSize: '24px', cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        />
+      </div>
       <motion.div
         className="login-image"
         initial={{ x: '-100%', opacity: 0 }}
@@ -55,12 +62,6 @@ function Login() {
         exit={{ x: '100%', opacity: 0 }}
         transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.1 }}
       >
-        <div className='login-back'>
-          <CloseOutlined
-            style={{ fontSize: '24px', cursor: 'pointer' }}
-            onClick={() => navigate('/')}
-          />
-        </div>
         <Form
           layout="vertical"
           style={{ width: '100%', maxWidth: '500px' }}
@@ -94,7 +95,7 @@ function Login() {
           </Form.Item>
         </Form>
         <div className="login-form-footer" style={{ justifyContent: 'space-between', width: '500px' }}>
-          <p>No account? <a href="/register">Register Now</a></p>
+          <p>No account? <Link to="/register">Register Now</Link></p>
           <p><a onClick={() => setModalVisible(true)} style={{ cursor: 'pointer' }}>Forgot Password?</a></p>
         </div>
       </motion.div>
