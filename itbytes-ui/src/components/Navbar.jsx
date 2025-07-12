@@ -6,8 +6,10 @@ import '../styles/Navbar.css';
 import logo from '../assets/logo_colored1.png';
 import { useCart } from "../context/CartContext"; // adjust path if needed
 import UserSession from '../utils/UserSession'; // adjust path if needed
+import { motion } from 'framer-motion';
 
 const { Search } = Input;
+let hasAnimated = false;
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -16,6 +18,12 @@ const Navbar = () => {
     const [lastName, setLastName] = useState("");
     const [role, setRole] = useState("");
     const { cart, clearCart } = useCart();
+    const [shouldAnimate, setShouldAnimate] = useState(!hasAnimated);
+
+    useEffect(() => {
+        hasAnimated = true; // mark as animated
+    }, []);
+
 
     const uniqueItems = cart.length;
 
@@ -104,7 +112,11 @@ const Navbar = () => {
         : firstName;
 
     return (
-        <div>
+        <motion.nav
+            initial={shouldAnimate ? { y: -60, opacity: 0 } : false}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+        >
             <div className="navbar">
                 {/* Left: Logo + Nav Links */}
                 <div className="navbar-content">
@@ -177,7 +189,7 @@ const Navbar = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.nav>
     );
 };
 
