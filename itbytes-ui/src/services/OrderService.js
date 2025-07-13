@@ -16,7 +16,7 @@ const OrderService = {
   },
 
   markAsPaid: async (orderId) => {
-    const response = await axios.put(`${apiUrl}/out/${orderId}`, { paymentStatus: 'paid' });
+    const response = await axios.put(`${apiUrl}/out/pay/${orderId}`, { paymentStatus: 'paid' });
     return response.data;
   },
 
