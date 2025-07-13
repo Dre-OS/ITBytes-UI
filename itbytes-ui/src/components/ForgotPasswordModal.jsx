@@ -10,7 +10,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
   const [email, setEmail] = useState('');
   const [form] = Form.useForm();
 
-  const API_BASE = 'http://192.168.1.247:4000/api'; //'http://192.168.9.4:4000/api'
+  const API_BASE = 'http://192.168.9.4:4000/api';
   const apiUrl = import.meta.env.VITE_USER_API_URL;
 
   const handleSendOTP = async () => {
