@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, InputNumber, Button, Typography, message, Modal, Badge, Image } from "antd";
+import { Table, InputNumber, Button, Typography, message, Modal, Badge, Image, Descriptions, Input } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { orderSupplies } from "../services/ProductService";
@@ -12,13 +12,23 @@ const supplierIP = supplierURL; // Replace with your actual supplier IP
 function BuySupplies() {
     const [supplierItems, setSupplierItems] = useState([]);
     const [orderQuantities, setOrderQuantities] = useState({});
+    const [totalPrice, setTotalPrice] = useState(0);
     const [isConnected, setIsConnected] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const toBusinessAccount = "123456789"; // Replace with actual business account number
+    const customerAccountNumber = "666-3251-855-1642"; // This should be set by the user in the modal
+
 
     useEffect(() => {
         fetchSupplierInventory();
     }, []);
+
+    const filteredItems = supplierItems.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const fetchSupplierInventory = async () => {
         try {
@@ -39,6 +49,32 @@ function BuySupplies() {
         }
     };
 
+    const handlePayment = async () => {
+        const paymentDetails = {
+            toBusinessAccount,
+            customerAccountNumber,
+            amount: selectedItem.price * orderQuantities[selectedItem.id],
+            details: `${selectedItem.name} - ${orderQuantities[selectedItem.id]} units`
+        };
+
+        console.log("Payment Details:", paymentDetails);
+
+        try {
+            await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
+            message.success("Payment submitted to bank API.");
+            await handlePayment(selectedOrder._id);
+
+        } catch (error) {
+            console.error(error);
+            const errorMsg = error.response?.data?.error || "Something went wrong!";
+            message.error(errorMsg);
+        } finally {
+            setModalVisible(false);
+            setModalType(null);
+            setSelectedOrder(null);
+            setcustomerAccountNumber("");
+        }
+    };
 
     const handleQuantityChange = (id, value) => {
         setOrderQuantities(prev => ({ ...prev, [id]: value }));
@@ -54,39 +90,44 @@ function BuySupplies() {
         setModalVisible(true);
     };
 
-    const confirmOrder = () => {
-        const quantity = orderQuantities[selectedItem.id];
-        const orderData = {
-            quantity,
-            totalPrice: selectedItem.price * quantity,
-            product: selectedItem
-        };
+    const confirmOrder = async () => {
+        setConfirmLoading(true); // Start loading
 
-        const inventoryData = {
-            productId: selectedItem.id,
-            quantity,
-            name: selectedItem.name
-        };
+        try {
+            // await handlePayment();
 
-        Promise.all([
-            OrderService.orderSupplies(orderData),
-            orderSupplies(inventoryData)
-        ])
-            .then(() => {
-                message.success(`Ordered ${quantity} of ${selectedItem.name}`);
-                fetchSupplierInventory();
-            })
-            .catch(err => {
-                console.error("Order failed", err);
-                message.error("Failed to place order. Please try again.");
-            });
-        // Reset order quantities and close modal
+            const quantity = orderQuantities[selectedItem.id];
+            setTotalPrice(selectedItem.price * quantity);
 
-        setOrderQuantities(prev => ({ ...prev, [selectedItem.id]: 0 }));
-        setModalVisible(false);
-        setSelectedItem(null);
+            const orderData = {
+                quantity,
+                totalPrice: selectedItem.price * quantity,
+                product: selectedItem
+            };
+
+            const inventoryData = {
+                productId: selectedItem.id,
+                quantity,
+                name: selectedItem.name
+            };
+
+            await Promise.all([
+                OrderService.orderSupplies(orderData),
+                orderSupplies(inventoryData)
+            ]);
+
+            message.success(`Ordered ${quantity} of ${selectedItem.name}`);
+            fetchSupplierInventory();
+            setOrderQuantities(prev => ({ ...prev, [selectedItem.id]: 0 }));
+            setModalVisible(false);
+            setSelectedItem(null);
+        } catch (err) {
+            console.error("Order failed", err);
+            message.error("Failed to place order. Please try again.");
+        } finally {
+            setConfirmLoading(false); // End loading
+        }
     };
-
 
 
     const columns = [
@@ -140,7 +181,7 @@ function BuySupplies() {
         <div style={{ padding: "10px 35px", background: "#F5F5F5", height: "100vh" }}>
             <h1 style={{ marginBottom: -5 }}>Buy Supplies</h1>
             <div style={{ display: "flex", alignItems: "center", marginBottom: 16, gap: 10 }}>
-                <p>Supplier IP: {supplierIP}</p>
+                <p>Supplier IP: <code style={{ color: 'blue' }}>192.168.8.4</code></p>
                 <Badge
                     style={{ fontFamily: 'Poppins' }}
                     status={isConnected ? "success" : "error"}
@@ -148,8 +189,14 @@ function BuySupplies() {
                 />
                 <Button onClick={fetchSupplierInventory} icon={<ReloadOutlined />}> Refresh</Button>
             </div>
+            <Input
+                placeholder="Search items..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                style={{ width: 300, marginBottom: 16 }}
+            />
             <Table
-                dataSource={supplierItems}
+                dataSource={filteredItems}
                 columns={columns}
                 pagination={{ pageSize: 5, showSizeChanger: false }}
                 rowKey="id"
@@ -164,13 +211,24 @@ function BuySupplies() {
                 onOk={confirmOrder}
                 okText="Confirm Order"
                 cancelText="Cancel"
+                confirmLoading={confirmLoading} // 👈 this is the key line
             >
-                {selectedItem && (
-                    <>
-                        <p>You're about to order <strong>{orderQuantities[selectedItem.id]}</strong> unit(s) of <strong>{selectedItem.name}</strong>.</p>
-                        <p>Total Price: <strong>₱{(selectedItem.price * orderQuantities[selectedItem.id]).toFixed(2)}</strong></p>
-                    </>
-                )}
+                <div style={{ paddingTop: 0 }}> {/* 👈 Add padding here */}
+                    {selectedItem && (
+                        <>
+                            <p>You're about to order <strong>{orderQuantities[selectedItem.id]}</strong> unit(s) of <strong>{selectedItem.name}</strong>.</p>
+                            <Descriptions bordered column={1} size="small" style={{ fontFamily: 'Poppins' }}>
+                                <Descriptions.Item label="To Mock Supplier Business Account">
+                                    {toBusinessAccount}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="ITBytes Account Number">
+                                    {customerAccountNumber}
+                                </Descriptions.Item>
+                            </Descriptions>
+                            <p>Total Price: <strong>₱{(selectedItem.price * orderQuantities[selectedItem.id]).toFixed(2)}</strong></p>
+                        </>
+                    )}
+                </div>
             </Modal>
 
         </div>
