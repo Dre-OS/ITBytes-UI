@@ -59,7 +59,7 @@ function Register() {
                 initial={{ x: '-100%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: '-100%', opacity: 0 }}
-                transition={{ duration: 1.5, ease: 'easeInOut' }}
+                transition={{ duration: .8, ease: 'easeInOut' }}
             >
                 <div
                     style={{
@@ -166,7 +166,7 @@ function Register() {
                 initial={{ x: '100%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: '100%', opacity: 0 }}
-                transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.1 }}
+                transition={{ duration: .8, ease: 'easeInOut', delay: 0.1 }}
             >
                 <Form
                     layout="vertical"
