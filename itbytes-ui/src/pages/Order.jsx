@@ -203,59 +203,62 @@ const Order = () => {
               )}
             />
             <h4 style={{ textAlign: 'right', marginBottom: 0 }}>Total: ₱{order.totalPrice.toLocaleString()} &nbsp;</h4>
-            <Modal
-              title="Receipt"
-              open={isReceiptVisible}
-              footer={[
-                <Button
-                  key="download"
-                  type="primary"
-                  onClick={() => {
-                    html2pdf()
-                      .from(pdfRef.current)
-                      .set({
-                        margin: 10,
-                        filename: `Receipt-${receiptOrder._id}.pdf`,
-                        html2canvas: { scale: 2 },
-                        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-                      })
-                      .save();
-                  }}
-                >
-                  Download PDF
-                </Button>,
-                <Button key="close" onClick={() => setIsReceiptVisible(false)}>Close</Button>,
-              ]}
-              onCancel={() => setIsReceiptVisible(false)}
-            >
-              {receiptOrder && (
-                <div className="receipt-content">
-                  <Title level={4}>ITBytes Order Receipt</Title>
-                  <Text>Order ID: {receiptOrder._id}</Text><br />
-                  <Text>Date: {new Date(receiptOrder.createdAt).toLocaleString()}</Text><br />
-                  {/* <Text>Status: {receiptOrder.status}</Text><br /> */}
-                  <Text>Payment: {receiptOrder.paymentStatus === 'paid' ? "Received" : "Unpaid"}</Text><br />
-                  <Divider />
-                  <List
-                    header="Items"
-                    style={{ fontFamily: "Poppins" }}
-                    dataSource={receiptOrder.orders}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
-                        <div>₱{item.subtotal.toLocaleString()}</div>
-                      </List.Item>
-                    )}
-                  />
-                  <Divider />
-                  <Title level={5}>Total: ₱{receiptOrder.totalPrice.toLocaleString()}</Title>
-                </div>
-              )}
-            </Modal>
-
           </Card>
         ))
       )}
+
+      <Modal
+        title="Receipt"
+        // maskStyle={{ background: "rgba(0, 0, 0, 0.14)" }} // Transparent mask
+        // style={{ boxShadow: 'none' }} // softer shadow
+        open={isReceiptVisible}
+        footer={[
+          <Button
+            key="download"
+            type="primary"
+            onClick={() => {
+              html2pdf()
+                .from(pdfRef.current)
+                .set({
+                  margin: 10,
+                  filename: `Receipt-${receiptOrder._id}.pdf`,
+                  html2canvas: { scale: 2 },
+                  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                })
+                .save();
+            }}
+          >
+            Download PDF
+          </Button>,
+          <Button key="close" onClick={() => setIsReceiptVisible(false)}>Close</Button>,
+        ]}
+        onCancel={() => setIsReceiptVisible(false)}
+      >
+        {receiptOrder && (
+          <div className="receipt-content">
+            <Title level={4}>ITBytes Order Receipt</Title>
+            <Text>Order ID: {receiptOrder._id}</Text><br />
+            <Text>Date: {new Date(receiptOrder.createdAt).toLocaleString()}</Text><br />
+            {/* <Text>Status: {receiptOrder.status}</Text><br /> */}
+            <Text>Payment: {receiptOrder.paymentStatus === 'paid' ? "Received" : "Unpaid"}</Text><br />
+            <Divider />
+            <List
+              header="Items"
+              style={{ fontFamily: "Poppins" }}
+              dataSource={receiptOrder.orders}
+              renderItem={(item) => (
+                <List.Item>
+                  <div style={{ flex: 1 }}>{item.name} x {item.quantity}</div>
+                  <div>₱{item.subtotal.toLocaleString()}</div>
+                </List.Item>
+              )}
+            />
+            <Divider />
+            <Title level={5}>Total: ₱{receiptOrder.totalPrice.toLocaleString()}</Title>
+          </div>
+        )}
+      </Modal>
+
       {modalType === "cancel" && (
         <Modal
           open={isModalOpen}
@@ -287,6 +290,7 @@ const Order = () => {
           setModalType(null);
           setSelectedOrder(null);
           setcustomerAccountNumber("");
+          setAccountParts(['', '', '', '']); // 💡 Reset account inputs
         }}
         onOk={async () => {
           if (!customerAccountNumber) {
@@ -386,7 +390,16 @@ const Order = () => {
       </Modal>
 
       {receiptOrder && (
-        <div style={{ display: "none" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            opacity: 0,
+            pointerEvents: "none",
+            zIndex: -9999,
+          }}
+        >
           <div ref={pdfRef}>
             <h2>ITBytes Receipt</h2>
             <p>Order ID: {receiptOrder._id}</p>
