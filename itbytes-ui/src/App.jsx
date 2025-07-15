@@ -9,7 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import ManageInventory from "./pages/ManageInventory";
 import ManageOrders from "./pages/ManageOrders";
 import ManageUsers from "./pages/ManageUsers";
-import Settings from "./pages/Settings";
+import AuditLog from "./pages/AuditLog";
 import BuySupplies from "./pages/BuySupplies";
 import PendingSupplies from "./pages/PendingSupplies";
 import OrderHistory from "./pages/OrderHistory";
@@ -24,6 +24,8 @@ import Test from "./pages/Test";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
+import NotFound from "./pages/NotFound";
 
 const PrivateRoute = () => {
   const role = UserSession.getRole();
@@ -114,10 +116,10 @@ export default function App() {
             }
           />
           <Route
-            path="settings"
+            path="audit-log"
             element={
               <RoleRoute allowedRoles={["admin"]}>
-                <FramerFadeLayout><Settings /></FramerFadeLayout>
+                <FramerFadeLayout><AuditLog /></FramerFadeLayout>
               </RoleRoute>
             }
           />
@@ -126,6 +128,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/test" element={<Test />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
   );
