@@ -90,7 +90,7 @@ function Home() {
             icon: <VideoCameraOutlined style={{ fontSize: 36 }} />,
         },
         {
-            title: "Computers",
+            title: "Computer",
             icon: <LaptopOutlined style={{ fontSize: 36 }} />,
         },
         {
