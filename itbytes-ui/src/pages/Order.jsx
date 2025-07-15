@@ -63,13 +63,37 @@ const Order = () => {
   };
 
   const handlePayment = async (orderId) => {
+
+    if (!customerAccountNumber) {
+      message.warning("Please input the recipient's account number.");
+      return;
+    }
+    const paymentDetails = {
+      toBusinessAccount,
+      customerAccountNumber,
+      amount: selectedOrder.totalPrice,
+      details: selectedOrder.orders.map(item => `${item.name} x${item.quantity}`).join(', '),
+    };
+
+    console.log("Payment Details:", paymentDetails);
+
     try {
+      await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
+      message.success("Payment submitted to bank API.");
       await OrderService.markAsPaid(orderId);
-      fetchOrders();
       message.success("Payment successful.");
-    } catch (err) {
-      console.error(err);
-      message.error("Payment failed.");
+      setLoading(true);
+      setTimeout(fetchOrders, 500);
+
+    } catch (error) {
+      console.error(error);
+      const errorMsg = error.response?.data?.error || "Something went wrong!";
+      message.error(errorMsg);
+    } finally {
+      setIsModalOpen(false);
+      setModalType(null);
+      setSelectedOrder(null);
+      setcustomerAccountNumber("");
     }
   };
 
@@ -292,36 +316,10 @@ const Order = () => {
           setcustomerAccountNumber("");
           setAccountParts(['', '', '', '']); // 💡 Reset account inputs
         }}
-        onOk={async () => {
-          if (!customerAccountNumber) {
-            message.warning("Please input the recipient's account number.");
-            return;
-          }
-          const paymentDetails = {
-            toBusinessAccount,
-            customerAccountNumber,
-            amount: selectedOrder.totalPrice,
-            details: selectedOrder.orders.map(item => `${item.name} x${item.quantity}`).join(', '),
-          };
-
-          console.log("Payment Details:", paymentDetails);
-
-          try {
-            await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
-            message.success("Payment submitted to bank API.");
-            await handlePayment(selectedOrder._id);
-
-          } catch (error) {
-            console.error(error);
-            const errorMsg = error.response?.data?.error || "Something went wrong!";
-            message.error(errorMsg);
-          } finally {
-            setIsModalOpen(false);
-            setModalType(null);
-            setSelectedOrder(null);
-            setcustomerAccountNumber("");
-          }
-        }}
+        onOk={() => {
+          handlePayment(selectedOrder._id);
+        }
+        }
       >
         <Descriptions bordered column={1} size="small">
           <Descriptions.Item label="To ITBytes Business Account">
