@@ -10,13 +10,12 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
   const [email, setEmail] = useState('');
   const [form] = Form.useForm();
 
-  const API_BASE = 'http://192.168.9.4:4000/api';
   const apiUrl = import.meta.env.VITE_USER_API_URL;
 
   const handleSendOTP = async () => {
     setSendingOTP(true); // Disable button
     try {
-      await axios.post(`${API_BASE}/send-otp`, { email });
+      await axios.post(`${apiUrl}/send-otp`, { email });
       message.success("OTP sent to your email.");
       setCurrentStep(1);
     } catch {
@@ -60,7 +59,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
   const handleVerifyOTP = async () => {
     const otpString = otp.join('');
     try {
-      await axios.post(`${API_BASE}/verify-otp`, { email, otp: otpString });
+      await axios.post(`${apiUrl}/verify-otp`, { email, otp: otpString });
       message.success("OTP verified.");
       setCurrentStep(2);
     } catch {
@@ -71,7 +70,7 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
 
   const handleResetPassword = async ({ password }) => {
     try {
-      await axios.post(`${apiUrl}/password-reset`, { email, password });
+      await axios.post(`${apiUrl}/reset-password`, { email, password });
       message.success("Password reset successfully!");
       form.resetFields();
       setCurrentStep(0);
@@ -303,6 +302,9 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
       visible={visible}
       onCancel={() => {
         setCurrentStep(0);
+        setEmail("");                // Clear email
+        setOtp(Array(6).fill(""));   // Clear OTP
+        form.resetFields();
         onClose();
       }}
       footer={null}
