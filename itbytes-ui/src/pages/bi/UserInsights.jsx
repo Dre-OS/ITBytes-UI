@@ -22,12 +22,21 @@ const UserInsights = () => {
       const { data } = await axios.get(`${apiUrl}/all`);
       setUsers(data);
 
-      const adminCount = data.filter(user => user.role == "admin").length;
-      const recentUser = users.reduce((latest, user) =>
-        new Date(user.createdAt) > new Date(latest.createdAt) ? user : latest, users[0] || {}
-      );
+      const adminCount = data.filter(user => user.role?.toLowerCase() === "admin").length;
       setAdminCount(adminCount);
+
+      const recentUser = data
+        .filter(user => user.createdAt) // ensure the field exists
+        .reduce((latest, user) =>
+          new Date(user.createdAt) > new Date(latest.createdAt) ? user : latest,
+          data[0] // fallback if all are valid
+        );
+
+      console.log("Users with createdAt:", data.map(u => ({ name: u.firstname, createdAt: u.createdAt })));
+      console.log("Most Recent User:", recentUser);
+
       setRecentUser(recentUser);
+
 
       // Role counts
       const roles = data.reduce((acc, user) => {
@@ -107,7 +116,7 @@ const UserInsights = () => {
               style={{ fontFamily: 'Poppins' }}
               valueStyle={{ fontSize: '16px', fontWeight: 600 }}
               title="Most Recent User"
-              value={recentUser?.firstName ? `${recentUser.firstName} ${recentUser.lastName}` : "-"}
+              value={recentUser?.firstname ? `${recentUser.firstname} ${recentUser.lastname}` : "-"}
             />
           </Card>
         </Col>
