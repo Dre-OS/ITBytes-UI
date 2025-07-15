@@ -29,10 +29,16 @@ const OrderInsights = () => {
       console.log("Fetched Orders:", data);
 
       // Total Sales
-      const total = data
-        .filter(order => order.isPaid)
-        .reduce((acc, order) => acc + order.totalPrice, 0);
+      const paidOrders = data.filter(order => order.paymentStatus === 'paid');
+      const total = paidOrders.reduce((acc, order) => acc + order.totalPrice, 0);
       setTotalSales(total);
+
+      if (paidOrders.length > 0) {
+        setAverageOrderValue(total / paidOrders.length);
+      } else {
+        setAverageOrderValue(0);
+      }
+
 
       // Order Status Breakdown
       const statusMap = {};
@@ -48,7 +54,7 @@ const OrderInsights = () => {
       // Sales per Day
       const salesMap = {};
       data.forEach((order) => {
-        if (order.isPaid) {  // ✅ Include only paid orders
+        if (order.paymentStatus === 'paid') {  // ✅ Include only paid orders
           const date = new Date(order.createdAt).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
@@ -89,7 +95,7 @@ const OrderInsights = () => {
       let unpaid = 0;
 
       data.forEach((order) => {
-        if (order.isPaid) {
+        if (order.paymentStatus === 'paid') {
           paid += 1;
         } else {
           unpaid += 1;
@@ -104,10 +110,6 @@ const OrderInsights = () => {
         { type: "Paid", value: paid },
         { type: "Unpaid", value: unpaid },
       ]);
-      
-      if (data.length > 0) {
-        setAverageOrderValue(totalSales / data.length);
-      }
 
     } catch (err) {
       console.error("Failed to fetch orders:", err);
@@ -130,7 +132,7 @@ const OrderInsights = () => {
         <Col span={6}>
           <Card>
             <Statistic
-              title="Total Sales"
+              title="Total Sales (Paid Orders)"
               prefix="₱"
               style={{ fontFamily: 'Poppins' }}
               value={totalSales.toFixed(2)}
@@ -155,7 +157,7 @@ const OrderInsights = () => {
         <Col span={6}>
           <Card>
             <Statistic
-              title="Average Order Value"
+              title="Average Order Value (Paid Orders)"
               style={{ fontFamily: 'Poppins' }}
               prefix="₱"
               value={averageOrderValue.toFixed(2)}
@@ -194,7 +196,7 @@ const OrderInsights = () => {
 
       <Row gutter={24} style={{ marginTop: 20 }}>
         <Col span={16}>
-          <Card title="Top Ordered Items" style={{ height: 360 }}>
+          <Card title="Top 5 Ordered Items" style={{ height: 360 }}>
             <Column
               data={topItems}
               xField="name"        // Product name at the bottom (x-axis)
