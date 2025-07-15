@@ -1,6 +1,5 @@
 // services/OrderService.js
 import axios from "axios";
-import { orderSupplies } from "./ProductService";
 
 const apiUrl = import.meta.env.VITE_ORDER_API_URL;
 
