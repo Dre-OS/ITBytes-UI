@@ -22,3 +22,7 @@ body, html, * {
 .ant-table {
   font-family: 'Poppins', sans-serif !important;
 }
+
+.ant-form-item-explain-error {
+  font-family: 'Poppins', sans-serif !important;
+}
