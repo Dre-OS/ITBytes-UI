@@ -72,17 +72,29 @@ const Cart = () => {
               <InputNumber
                 min={1}
                 value={item.quantity}
-                onChange={(val) => updateQuantity(item.itemId, val)}
+                step={1}
+                stringMode
+                parser={(value) => value.replace(/[^\d]/g, "")} // only allow digits
+                onKeyPress={(e) => {
+                  if (!/^\d$/.test(e.key)) {
+                    e.preventDefault(); // block letters/symbols
+                  }
+                }}
+                onChange={(val) => {
+                  const numeric = Number(val);
+                  updateQuantity(item.itemId, isNaN(numeric) || numeric < 1 ? 1 : numeric);
+                }}
                 onBlur={async () => {
                   const res = await axios.get(`${productApiUrl}/${item.itemId}`);
-                  console.log("Stock response:", res.data);
                   const stock = res.data.quantity;
+
                   if (item.quantity > stock) {
                     message.warning(`Only ${stock} available`);
                     updateQuantity(item.itemId, stock);
                   }
                 }}
               />
+
               ,
               <Button danger onClick={() => removeFromCart(item.itemId)}>Remove</Button>
             ]}
