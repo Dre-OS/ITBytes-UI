@@ -62,7 +62,7 @@ function OrderHistory() {
                 columns={columns}
                 rowKey="_id"
                 bordered
-                pagination={{ pageSize: 10 }}
+                pagination={{ pageSize: 5, showSizeChanger: false }}
                 locale={{ emptyText: "No orders have been placed yet." }}
             />
         </div>
