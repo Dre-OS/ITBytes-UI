@@ -50,16 +50,19 @@ export const deleteItem = async (id) => {
 export const fetchFeaturedProducts = async (limit = 6) => {
   try {
     const res = await axios.get(apiUrl);
-    // Ensure the result is always an array
+
     if (Array.isArray(res.data)) {
-      return res.data.slice(0, limit);
+      const availableProducts = res.data.filter(product => product.quantity > 0);
+      return availableProducts.slice(0, limit);
     }
+
     return [];
   } catch (error) {
     console.error("Error fetching featured products:", error);
     return [];
   }
 };
+
 
 export const orderSupplies = async (orderData) => {
   try {
