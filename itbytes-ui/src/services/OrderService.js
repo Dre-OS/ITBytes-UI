@@ -39,6 +39,12 @@ const OrderService = {
     const response = await axios.get(`${apiUrl}/in`);
     return response.data;
   },
+
+  updateStatus : async (orderId, status) => {
+    console.log("Updating order status:", orderId, status);
+    const response = await axios.put(`${apiUrl}/out/${orderId}`, { status });
+    return response.data;
+  }
 };
 
 export default OrderService;
