@@ -18,7 +18,7 @@ function BuySupplies() {
     const [selectedItem, setSelectedItem] = useState(null);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const toBusinessAccount = "123456789"; // Replace with actual business account number
+    const toBusinessAccount = "316-5404-901-7045"; // Replace with actual business account number
     const customerAccountNumber = "666-3251-855-1642"; // This should be set by the user in the modal
 
 
@@ -62,17 +62,12 @@ function BuySupplies() {
         try {
             await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
             message.success("Payment submitted to bank API.");
-            await handlePayment(selectedOrder._id);
-
         } catch (error) {
             console.error(error);
             const errorMsg = error.response?.data?.error || "Something went wrong!";
             message.error(errorMsg);
         } finally {
             setModalVisible(false);
-            setModalType(null);
-            setSelectedOrder(null);
-            setcustomerAccountNumber("");
         }
     };
 
@@ -94,7 +89,7 @@ function BuySupplies() {
         setConfirmLoading(true); // Start loading
 
         try {
-            // await handlePayment();
+            await handlePayment();
 
             const quantity = orderQuantities[selectedItem.id];
             setTotalPrice(selectedItem.price * quantity);
