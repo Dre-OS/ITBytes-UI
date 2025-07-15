@@ -2,6 +2,7 @@ import React from "react";
 import UserInsights from "./bi/UserInsights";
 import ProductInsights from "./bi/ProductInsights";
 import OrderInsights from "./bi/OrderInsights";
+import PurchaseInsights from "./bi/PurchaseInsights";
 import { Layout, Tag, Tabs } from "antd";
 import "../styles/Dashboard.css"; // Assuming you have a CSS file for styling
 import UserSession from "../utils/UserSession";
@@ -29,6 +30,9 @@ const Dashboard = () => {
             <TabPane tab="Order Insights" key="3">
               <OrderInsights />
             </TabPane>
+            <TabPane tab="Purchase Insights" key="4">
+              <PurchaseInsights />
+            </TabPane>
           </Tabs>
         );
       case "sales":
@@ -44,6 +48,9 @@ const Dashboard = () => {
           <Tabs defaultActiveKey="1">
             <TabPane tab="Product Insights" key="1">
               <ProductInsights />
+            </TabPane>
+            <TabPane tab="Purchase Insights" key="2">
+              <PurchaseInsights />
             </TabPane>
           </Tabs>
         );
