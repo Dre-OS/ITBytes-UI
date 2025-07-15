@@ -140,7 +140,7 @@ function PendingSupplies() {
         columns={columns}
         rowKey="id"
         bordered
-        pagination={false}
+        pagination={{ pageSize: 5, showSizeChanger: false }}
       />
 
       {/* Modal: Add to existing stock */}
