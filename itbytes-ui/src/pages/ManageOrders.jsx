@@ -87,17 +87,14 @@ const ManageOrders = () => {
     applyFilters(searchText, statusFilter, value);
   };
 
-
-
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const handleStatusUpdate = async (values) => {
     try {
-      await axios.put(`${apiUrl}/${editingOrder._id}`, {
-        status: values.status,
-      });
+      const status = values.status;
+      await OrderService.updateStatus(editingOrder._id, status);
       message.success("Order status updated successfully");
       setIsModalOpen(false);
       fetchOrders();
@@ -238,10 +235,11 @@ const ManageOrders = () => {
               rules={[{ required: true, message: "Please select a status" }]}
             >
               <Select placeholder="Select status">
-                <Option value="Pending">Pending</Option>
-                <Option value="Processing">Processing</Option>
-                <Option value="Completed">Completed</Option>
-                <Option value="Cancelled">Cancelled</Option>
+                <Option value="pending">Pending</Option>
+                {/* <Option value="returned">Returned</Option> */}
+                {/* <Option value="processing">Processing</Option> */}
+                <Option value="delivered">Delivered</Option>
+                <Option value="cancelled">Cancelled</Option>
               </Select>
             </Form.Item>
             <Form.Item>
