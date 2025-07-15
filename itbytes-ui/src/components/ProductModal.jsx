@@ -22,7 +22,7 @@ const ProductModal = ({ productId, visible, onClose }) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart();
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -43,25 +43,39 @@ const ProductModal = ({ productId, visible, onClose }) => {
     }
   }, [productId, visible]);
 
-  const handleAddToCart = () => {
-    if (!UserSession.isAuthenticated()) {
-      message.error("Please log in to add items to your cart.");
-      return;
+  const handleAddToCart = async () => {
+    try {
+      const values = await form.validateFields();
+      if (!UserSession.isAuthenticated()) {
+        message.error("Please log in to add items to your cart.");
+        return;
+      }
+      const existingInCart = cart.find((i) => i.itemId === product.id)?.quantity || 0;
+
+      // Desired total after this add
+      const desiredTotal = existingInCart + values.quantity;
+
+      if (desiredTotal > product.quantity) {
+        message.error(
+          `You already have ${existingInCart} in the cart. ` +
+          `Only ${product.quantity - existingInCart} more can be added.`
+        );
+        return;
+      }
+
+      addToCart(
+        {
+          itemId: product.id,
+          name: product.name,
+          price: product.price,
+        },
+        values.quantity
+      );
+      message.success(`${values.quantity} x "${product.name}" added to cart`);
+      onClose();
+    } catch {
+      // Validation errors are shown by the form
     }
-
-    if (quantity < 1) {
-      message.warning("Please enter a valid quantity.");
-      return;
-    }
-
-    addToCart({
-      itemId: product.id,
-      name: product.name,
-      price: product.price,
-    }, quantity);
-
-    message.success(`${quantity} x "${product.name}" added to cart`);
-    onClose();
   };
 
   return (
@@ -104,17 +118,51 @@ const ProductModal = ({ productId, visible, onClose }) => {
             <Paragraph><strong>Price:</strong> {product?.price != null ? `₱${product.price.toLocaleString()}` : "₱--"}</Paragraph>
 
             <Form form={form} layout="horizontal" onFinish={handleAddToCart}>
-              <Form.Item name="quantity" label="Quantity">
+              <Form.Item
+                name="quantity"
+                label="Quantity"
+                rules={[
+                  { required: true, message: "Please enter a quantity." },
+                  {
+                    type: "number",
+                    min: 1,
+                    max: product.quantity,
+                    message: `Quantity must be between 1 and ${product.quantity}`,
+                    transform: (value) => Number(value),
+                  },
+                ]}
+              >
                 <InputNumber
                   min={1}
                   max={product.quantity}
                   value={quantity}
+                  step={1}
+                  stringMode
+                  parser={(value) => value.replace(/[^\d]/g, "")} // strip non-digits
+                  onKeyPress={(e) => {
+                    if (!/^\d$/.test(e.key)) {
+                      e.preventDefault(); // block letters/symbols
+                    }
+                  }}
                   onChange={(val) => {
-                    setQuantity(val);
-                    form.setFieldsValue({ quantity: val });
+                    let numberVal = Number(val);
+
+                    if (!val || isNaN(numberVal)) {
+                      numberVal = 1;
+                    }
+
+                    // Clamp to max if over
+                    if (numberVal > product.quantity) {
+                      numberVal = product.quantity;
+                    }
+
+                    setQuantity(numberVal);
+                    form.setFieldsValue({ quantity: numberVal });
                   }}
                 />
               </Form.Item>
+
+
               <Form.Item>
                 <Button type="primary" htmlType="submit">
                   Add to Cart
