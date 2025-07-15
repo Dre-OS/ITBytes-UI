@@ -12,12 +12,14 @@ import {
   PlusCircleOutlined,
   HistoryOutlined,
   EditOutlined,
-  MoreOutlined
+  MoreOutlined,
+  AuditOutlined
 
 } from "@ant-design/icons";
 import '../styles/Sidebar.css';
 import logo from "../assets/logo_small_white.png";
 import UserSession from "../utils/UserSession";
+import { useState, useEffect } from "react";
 
 const { Sider } = Layout;
 
@@ -26,6 +28,21 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   const selectedKey = location.pathname;
   const role = UserSession.getRole();
   const name = UserSession.get()?.firstname + " " + UserSession.get()?.lastname;
+
+  const [openKeys, setOpenKeys] = useState(() => {
+    const stored = sessionStorage.getItem("openKeys");
+    if (stored) return JSON.parse(stored);
+
+    const paths = location.pathname.split("/").filter(Boolean);
+    if (paths.length >= 3) return [`/${paths[0]}/${paths[1]}/${paths[2]}`];
+    if (paths.length >= 2) return [`/${paths[0]}/${paths[1]}`];
+    return [];
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem("openKeys", JSON.stringify(openKeys));
+  }, [openKeys]);
+
 
   const toggleSidebar = () => {
     setCollapsed(prev => !prev);          // Parent useEffect persists it
@@ -65,7 +82,8 @@ export default function Sidebar({ collapsed, setCollapsed }) {
           label: <Link to="/dashboard/manage-purchases/pending-supplies">Pending Supplies</Link>
         },
       ]
-    }
+    },
+    { key: "audit", icon: <AuditOutlined />, label: <Link to="/dashboard/audit-log">Audit Log</Link> },
   ];
 
   const salesMenu = [
@@ -112,7 +130,6 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   const menuItems = [
     ...baseMenu,
     ...roleBasedItems,
-    { key: "settings", icon: <SettingOutlined />, label: <Link to="/dashboard/settings">Settings</Link> },
   ];
 
   return (
@@ -137,7 +154,15 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       </div>
 
       {/* MIDDLE: Menu */}
-      <Menu theme="dark" mode="inline" items={menuItems} selectedKeys={[selectedKey]} />
+      <Menu
+        theme="dark"
+        mode="inline"
+        items={menuItems}
+        selectedKeys={[selectedKey]}
+        openKeys={openKeys}
+        onOpenChange={(keys) => setOpenKeys(keys)}
+      />
+
 
       {/* BOTTOM: Profile + Logout */}
       <div style={{ padding: collapsed ? "10px" : "15px", borderTop: "1px solid #3A5F7A", color: "#fff" }}>
