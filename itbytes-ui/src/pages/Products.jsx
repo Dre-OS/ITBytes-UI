@@ -17,6 +17,8 @@ import ProductModal from "../components/ProductModal";
 import { fetchItems } from "../services/ProductService";
 
 const { Title, Paragraph } = Typography;
+const digitsOnly = (val = '') => val.replace(/[^\d]/g, '');   // strip everything but 0‑9
+const toNumber = (val) => (val === '' || val === null ? null : Number(val));
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -138,7 +140,7 @@ const Products = () => {
               style={{ display: "flex", flexDirection: "column", marginBottom: 16 }}
             >
               {uniqueCategories.map((cat) => (
-                <Checkbox key={cat} value={cat} style={{ fontFamily: 'Poppins'}}>
+                <Checkbox key={cat} value={cat} style={{ fontFamily: 'Poppins' }}>
                   {cat}
                 </Checkbox>
               ))}
@@ -148,18 +150,36 @@ const Products = () => {
             <Title level={5}>Price Range</Title>
             <div style={{ display: "flex", gap: 8 }}>
               <InputNumber
-                min={0}
                 placeholder="Min"
                 value={minPrice}
-                onChange={setMinPrice}
-                style={{ width: "50%" }}
-              />
-              <InputNumber
                 min={0}
+                parser={digitsOnly}                // ⭠ keeps only digits while typing
+                onKeyPress={(e) => {               // ⭠ stops any non‑digit key immediately
+                  if (!/^\d$/.test(e.key)) e.preventDefault();
+                }}
+                onChange={(raw) => {
+                  const num = toNumber(raw);
+                  // block anything that would violate the rule
+                  if (num !== null && maxPrice !== null && num > maxPrice) return;
+                  setMinPrice(num);
+                }}
+                style={{ width: '50%' }}
+              />
+
+              <InputNumber
                 placeholder="Max"
                 value={maxPrice}
-                onChange={setMaxPrice}
-                style={{ width: "50%" }}
+                min={0}
+                parser={digitsOnly}
+                onKeyPress={(e) => {
+                  if (!/^\d$/.test(e.key)) e.preventDefault();
+                }}
+                onChange={(raw) => {
+                  const num = toNumber(raw);
+                  if (num !== null && minPrice !== null && num < minPrice) return;
+                  setMaxPrice(num);
+                }}
+                style={{ width: '50%' }}
               />
             </div>
           </div>
@@ -201,81 +221,102 @@ const Products = () => {
             </Row>
           ) : (
             <Row gutter={[24, 24]}>
-              {filtered.map((product) => (
-                <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
-                  <Card
-                    hoverable
-                    cover={
+              {filtered.map((product) => {
+                const isOutOfStock = product.quantity === 0;
+
+                return (
+                  <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
+                    <Card
+                      hoverable={!isOutOfStock}
+                      style={{
+                        opacity: isOutOfStock ? 0.5 : 1,
+                        pointerEvents: isOutOfStock ? "none" : "auto"
+                      }}
+                      cover={
+                        <div
+                          style={{
+                            background: "#fff",
+                            padding: 10,
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: 180,
+                            border: "1px solid #f0f0f0",
+                            borderBottom: "none",
+                            borderRadius: "8px 8px 0 0"
+                          }}
+                        >
+                          <img
+                            alt={product.name}
+                            src={product.image}
+                            style={{
+                              maxHeight: "160px",
+                              maxWidth: "100%",
+                              width: "auto",
+                              objectFit: "contain"
+                            }}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg";
+                            }}
+                          />
+                        </div>
+                      }
+                    >
                       <div
                         style={{
-                          background: "#fff",
-                          padding: 10,
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          height: 180,
-                          border: "1px solid #f0f0f0", // ✅ Border added here
-                          borderBottom: "none",        // Optional: if you want the card border to continue smoothly
-                          borderRadius: "8px 8px 0 0"  // Match card border radius if needed
+                          fontWeight: 600,
+                          fontSize: 16,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          height: 24
+                        }}
+                        title={product.name}
+                      >
+                        {product.name}
+                      </div>
+                      <Paragraph style={{ marginBottom: 4, color: "#888", fontSize: 12 }}>
+                        Category: <Tag color="default">{product.category}</Tag>
+                      </Paragraph>
+                      <Typography.Text strong style={{ fontSize: 14 }}>
+                        {product?.price != null ? `₱${product.price.toLocaleString()}` : "₱--"}
+                      </Typography.Text>
+
+                      <Paragraph
+                        style={{
+                          margin: "8px 0",
+                          fontSize: 12,
+                          color: isOutOfStock ? "red" : "#888"
                         }}
                       >
-                        <img
-                          alt={product.name}
-                          src={product.image}
-                          style={{
-                            maxHeight: "160px",
-                            maxWidth: "100%",
-                            width: "auto",
-                            objectFit: "contain"
-                          }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "https://st4.depositphotos.com/17828278/24401/v/450/depositphotos_244011872-stock-illustration-image-vector-symbol-missing-available.jpg";
-                          }}
-                        />
-                      </div>
-                    }
-                  >
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        fontSize: 16,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        height: 24,
-                      }}
-                      title={product.name} // Tooltip shows full name on hover
-                    >
-                      {product.name}
-                    </div>
-                    <Paragraph style={{ marginBottom: 4, color: "#888", fontSize: 12 }}>
-                      Category: <Tag color="default">{product.category}</Tag>
-                    </Paragraph>
-                    <Typography.Text strong style={{ fontSize: 14 }}>
-                      {product?.price != null ? `₱${product.price.toLocaleString()}` : "₱--"}
-                    </Typography.Text>
-                    <Button
-                      type="default"
-                      block
-                      style={{
-                        marginTop: 16,
-                        borderWidth: 2,
-                        borderColor: '#2F4860',
-                        color: '#2F4860',
-                        fontSize: 13,
-                        fontWeight: 500,
-                        padding: "6px 12px",
-                        backgroundColor: '#fff',
-                      }}
-                      onClick={() => openProductModal(product.id)}
+                        {isOutOfStock ? "Out of Stock" : `In Stock: ${product.quantity}`}
+                      </Paragraph>
 
-                    >
-                      View Product
-                    </Button>
-                  </Card>
-                </Col>
-              ))}
+                      <Button
+                        type="default"
+                        block
+                        disabled={isOutOfStock}
+                        style={{
+                          marginTop: 8,
+                          borderWidth: 2,
+                          borderColor: "#2F4860",
+                          color: "#2F4860",
+                          fontSize: 13,
+                          fontWeight: 500,
+                          padding: "6px 12px",
+                          backgroundColor: "#fff",
+                          cursor: isOutOfStock ? "not-allowed" : "pointer"
+                        }}
+                        onClick={() => openProductModal(product.id)}
+                      >
+                        View Product
+                      </Button>
+                    </Card>
+                  </Col>
+                );
+              })}
             </Row>
           )}
         </Col>
