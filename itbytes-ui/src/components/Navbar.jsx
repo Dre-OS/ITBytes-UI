@@ -7,6 +7,7 @@ import logo from '../assets/logo_colored1.png';
 import { useCart } from "../context/CartContext"; // adjust path if needed
 import UserSession from '../utils/UserSession'; // adjust path if needed
 import { motion } from 'framer-motion';
+import { logoutUser } from '../services/AuthService';
 
 const { Search } = Input;
 let hasAnimated = false;
@@ -46,6 +47,8 @@ const Navbar = () => {
                 okType: "danger",
                 cancelText: "Cancel",
                 onOk: () => {
+                    const user = UserSession.get();
+                    logoutUser(user.userId)
                     sessionStorage.clear();
                     localStorage.clear();
                     clearCart();
@@ -63,9 +66,9 @@ const Navbar = () => {
     };
 
     const categories = [
-        "Monitor",
+        "Monitors",
         "CCTV",
-        "Computers",
+        "Computer",
         "Smartphones",
         "Tablets",
         "Components",
