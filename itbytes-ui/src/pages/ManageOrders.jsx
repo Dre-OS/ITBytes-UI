@@ -13,7 +13,7 @@ import {
 } from "antd";
 import OrderService from "../services/OrderService";
 import UserService from "../services/UserService";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, ReloadOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -176,7 +176,10 @@ const ManageOrders = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "10px 35px", background: "#F5F5F5" }}>
         <h1 style={{ marginBottom: -5 }}>Manage Orders</h1>
-        <p>View and update the status of customer orders</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <p>View and update the status of customer orders</p>
+          <Button icon={<ReloadOutlined />} onClick={fetchOrders}>Refresh</Button>
+        </div>
         <div style={{ display: "flex", gap: 10, marginBottom: 20, marginTop: 30, flexWrap: "wrap" }}>
           <Input.Search
             placeholder="Search by Order ID or Customer ID"
@@ -192,10 +195,9 @@ const ManageOrders = () => {
             onChange={handleStatusChange}
             style={{ width: 180 }}
           >
-            <Option value="Pending">Pending</Option>
-            <Option value="Processing">Processing</Option>
-            <Option value="Completed">Completed</Option>
-            <Option value="Cancelled">Cancelled</Option>
+            <Option value="pending">Pending</Option>
+            <Option value="delivered">Completed</Option>
+            <Option value="cancelled">Cancelled</Option>
           </Select>
           <Select
             placeholder="Filter by Payment"
