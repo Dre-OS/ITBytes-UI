@@ -8,11 +8,11 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false); // 👈 Add this
 
-  // ✅ Load cart from localStorage
+  // ✅ Load cart from sessionStorage
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    const storedCart = JSON.parse(sessionStorage.getItem("cart")) || [];
     setCart(storedCart);
-    console.log("Cart loaded from localStorage:", storedCart);
+    console.log("Cart loaded from sessionStorage:", storedCart);
     setIsInitialized(true); // 👈 Only allow saving AFTER this
   }, []);
 
@@ -20,9 +20,9 @@ export const CartProvider = ({ children }) => {
     if (isInitialized) {
       try {
         const serializedCart = JSON.stringify(cart);
-        localStorage.setItem("cart", serializedCart);
+        sessionStorage.setItem("cart", serializedCart);
       } catch (err) {
-        console.error("❌ Error saving cart to localStorage:", err);
+        console.error("❌ Error saving cart to sessionStorage:", err);
         console.log("Problematic cart:", cart);
       }
     }
