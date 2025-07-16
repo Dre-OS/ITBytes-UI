@@ -16,6 +16,18 @@ const apis = [
     name: "Order API",
     url: import.meta.env.VITE_ORDER_API_URL,
   },
+  {
+    name: 'Supplier API',
+    url: import.meta.env.VITE_SUPPLIER_API_URL,
+  },
+  {
+    name: 'Audit API',
+    url: import.meta.env.VITE_AUDIT_API_URL,
+  },
+  {
+    name: 'RabbitMQ URL',
+    url: 'amqps://cjodwydd:5ycFMEa-7OilmVBsHMvPMrKSPI1ipii_@armadillo.rmq.cloudamqp.com/cjodwydd',
+  },
 ];
 
 const Test = () => {
