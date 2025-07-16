@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Tag, Button, Space, Spin, message as antdMessage } from "antd";
+import { Table, Tag, Button, Space, Spin, message as antdMessage, Tooltip } from "antd";
 import { ReloadOutlined, DownloadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import AuditService from "../services/AuditService";
@@ -16,8 +16,8 @@ const AuditLog = () => {
       const auditLogs = await AuditService.getAuditLogs();
       console.log("Fetched Audit Logs:", auditLogs);
       // ensure array & give every row a key
-      const shaped = Array.isArray(auditLogs)
-        ? auditLogs.map((row, i) => ({ key: i, ...row }))
+      const shaped = Array.isArray(auditLogs.data)
+        ? auditLogs.data.map((row, i) => ({ key: i, ...row }))
         : [];
       setLogs(shaped);
     } catch (err) {
@@ -57,31 +57,43 @@ const AuditLog = () => {
       title: "Action",
       dataIndex: "action",
       key: "action",
+      width: 150
     },
     {
       title: "From",
       dataIndex: "from",
       key: "from",
+      width: 150
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      // render: (status) => {
-      //   const color =
-      //     status === "success"
-      //       ? "green"
-      //       : status === "failed"
-      //         ? "volcano"
-      //         : "processing";
-      //   return <Tag color={color}>{status.toUpperCase()}</Tag>;
-      // },
+      width: 100,
+      render: (status) => {
+        const color =
+          status === "success"
+            ? "green"
+            : status === "error"
+              ? "volcano"
+              : "processing";
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
     },
     {
       title: "Message",
       dataIndex: "message",
       key: "message",
-    },
+      width: 100,
+      render: (message) =>
+        message && message.length > 200 ? (
+          <Tooltip title={message} style={{ fontFamily: "Consolas" }}>
+           <code> {message.slice(0, 200)}... </code>
+          </Tooltip>
+        ) : (
+         <code> { message }</code>
+        ),
+    }
   ];
 
   return (
@@ -113,7 +125,8 @@ const AuditLog = () => {
         <Table
           columns={columns}
           dataSource={logs}
-          pagination={{ pageSize: 5, showSizeChanger: false }}
+          pagination={{ pageSize: 10, showSizeChanger: false }}
+          scroll={{ x: "max-content" }}
         />
       </Spin>
     </div>
