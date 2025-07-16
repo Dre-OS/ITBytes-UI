@@ -8,7 +8,6 @@ import OrderService from "../services/OrderService";
 const { Title } = Typography;
 
 const supplierURL = import.meta.env.VITE_SUPPLIER_API_URL;
-const supplierIP = supplierURL; // Replace with your actual supplier IP
 function BuySupplies() {
     const [supplierItems, setSupplierItems] = useState([]);
     const [orderQuantities, setOrderQuantities] = useState({});
