@@ -20,6 +20,7 @@ import '../styles/Sidebar.css';
 import logo from "../assets/logo_small_white.png";
 import UserSession from "../utils/UserSession";
 import { useState, useEffect } from "react";
+import { logoutUser } from "../services/AuthService";
 
 const { Sider } = Layout;
 
@@ -49,6 +50,8 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   };
 
   const handleLogout = () => {
+    const user = UserSession.get();
+    logoutUser(user.userId)
     sessionStorage.clear();
     localStorage.clear();
   };
