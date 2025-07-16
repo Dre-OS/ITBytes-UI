@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Table, Typography, message } from "antd";
+import { Table, Typography, message, Button } from "antd";
 import OrderService from "../services/OrderService";
 import moment from "moment";
+import { ReloadOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -56,7 +57,10 @@ function OrderHistory() {
     return (
         <div style={{ padding: "10px 35px", background: "#f9f9f9", minHeight: "100vh" }}>
             <h1 style={{ marginBottom: -5, }}>Order History</h1>
-            <p style={{ marginBottom: 30}}>View a record of all items ordered from suppliers, including order details, status, and dates for easy tracking and inventory management.</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 30 }}>
+                <p>View a record of all items ordered from suppliers, including order details, status, and dates for easy tracking and inventory management.</p>
+                <Button icon={<ReloadOutlined />} onClick={fetchOrders}>Refresh</Button>
+            </div>
             <Table
                 dataSource={orders}
                 columns={columns}
