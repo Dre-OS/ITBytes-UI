@@ -16,7 +16,7 @@ import {
   Tooltip
 } from "antd";
 import {
-  PlusOutlined,
+  ReloadOutlined,
   EditOutlined,
   DeleteOutlined,
   ExclamationCircleOutlined
@@ -248,7 +248,10 @@ const ManageInventory = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "10px 35px", background: "#F5F5F5" }}>
         <h1 style={{ marginBottom: -5 }}>Inventory Management</h1>
-        <p>Manages stock levels, item tracking, and managing products</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <p>Manages stock levels, item tracking, and managing products</p>
+          <Button icon={<ReloadOutlined />} onClick={loadItems}>Refresh</Button>
+        </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20, marginTop: 30, className: "table-top-parent" }}>
           <div className="table-top-left">
             <Input.Search
