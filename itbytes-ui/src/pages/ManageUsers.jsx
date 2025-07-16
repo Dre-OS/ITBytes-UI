@@ -44,6 +44,8 @@ const ManageUsers = () => {
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [showDeleted, setShowDeleted] = useState(false);
   const [form] = Form.useForm();
+  const [formRole, setFormRole] = useState(null);
+
 
   useEffect(() => {
     fetchUsers();
@@ -55,7 +57,8 @@ const ManageUsers = () => {
       setAllUsers(data);
       const visibleUsers = showDeleted ? data : data.filter(user => !user.isDeleted);
       setUsers(visibleUsers);
-    } catch {
+    } catch (err) {
+      console.error("Fetch error:", err);
       message.error("Error fetching users");
     }
   };
@@ -70,6 +73,7 @@ const ManageUsers = () => {
       password: values.password
     };
 
+    console.log("Submitting user data:", userData);
     try {
       const data = editingUser
         ? await UserService.update(editingUser._id, userData)
@@ -219,6 +223,7 @@ const ManageUsers = () => {
                 role: record.role,
                 password: record.password
               });
+              setFormRole(record.role);
               setIsModalOpen(true);
             }}
           />
@@ -328,30 +333,19 @@ const ManageUsers = () => {
             wrapperCol={{ flex: 1 }}
             labelAlign="left"
           >
-            {["firstname", "lastname", "middlename"].map((field) => (
-              <Form.Item
-                key={field}
-                name={field}
-                label={field.charAt(0).toUpperCase() + field.slice(1).replace("name", " Name")}
-                rules={field !== "middlename" ? [{ required: true }] : []}
-                style={{ marginBottom: 12 }}
-              >
-                <Input
-                  placeholder={`Enter ${field}`}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^a-zA-Z\s]/g, "");
-                    form.setFieldsValue({ [field]: val });
-                  }}
-                />
-              </Form.Item>
-            ))}
             <Form.Item
               label="Role"
               name="role"
               rules={[{ required: true, message: "Please select a role!" }]}
               style={{ marginBottom: 12 }}
             >
-              <Select placeholder="Select a role">
+              <Select
+                placeholder="Select a role"
+                onChange={(value) => {
+                  setFormRole(value);
+                  form.setFieldsValue({ role: value });
+                }}
+              >
                 <Select.Option value="customer">Customer</Select.Option>
                 <Select.Option value="sales">Sales</Select.Option>
                 <Select.Option value="inventory">Inventory</Select.Option>
@@ -359,7 +353,73 @@ const ManageUsers = () => {
                 <Select.Option value="admin">Admin</Select.Option>
               </Select>
             </Form.Item>
+
+            {formRole === "business" ? (
+              <Form.Item
+                name="firstname"
+                label="Business Name"
+                rules={[{ required: true, message: "Business name is required" }]}
+                style={{ marginBottom: 12 }}
+              >
+                <Input
+                  placeholder="Enter Business Name"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    form.setFieldsValue({ firstname: val });
+                  }}
+                />
+              </Form.Item>
+            ) : (
+              <>
+                <Form.Item
+                  name="firstname"
+                  label="First Name"
+                  rules={[{ required: true, message: "First name is required" }]}
+                  style={{ marginBottom: 12 }}
+                >
+                  <Input
+                    placeholder="Enter First Name"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                      form.setFieldsValue({ firstname: val });
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="lastname"
+                  label="Last Name"
+                  rules={[{ required: true, message: "Last name is required" }]}
+                  style={{ marginBottom: 12 }}
+                >
+                  <Input
+                    placeholder="Enter Last Name"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                      form.setFieldsValue({ lastname: val });
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="middlename"
+                  label="Middle Name"
+                  rules={[]}
+                  style={{ marginBottom: 12 }}
+                >
+                  <Input
+                    placeholder="Enter Middle Name"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                      form.setFieldsValue({ middlename: val });
+                    }}
+                  />
+                </Form.Item>
+              </>
+            )}
+
             <Divider className="full-width-divider" />
+
             <Form.Item
               label="Email"
               name="email"
@@ -371,20 +431,29 @@ const ManageUsers = () => {
             >
               <Input placeholder="Email" />
             </Form.Item>
+
             <Form.Item
               name="password"
               label="Password"
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: "Password is required" },
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/,
+                  message: "Use 8+ chars incl. A-Z, a-z, 0-9, symbol"
+                }
+              ]}
               style={{ marginBottom: 12 }}
             >
               <Input.Password placeholder="Enter password" />
             </Form.Item>
+
             <Form.Item>
               <Button type="primary" htmlType="submit" block>
                 {editingUser ? "Update" : "Add"} User
               </Button>
             </Form.Item>
           </Form>
+
         </Modal>
       </Content>
     </Layout>
