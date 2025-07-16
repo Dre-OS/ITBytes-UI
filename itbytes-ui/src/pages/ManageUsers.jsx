@@ -20,6 +20,7 @@ import {
   DeleteOutlined,
   CheckOutlined,
   CloseOutlined,
+  ReloadOutlined
 } from "@ant-design/icons";
 import "../styles/ManageUsers.css";
 
@@ -233,7 +234,10 @@ const ManageUsers = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "10px 35px", background: "#F5F5F5" }}>
         <h1 style={{ marginBottom: -5 }}>User Management</h1>
-        <p>Handles user registration and access control.</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <p>Handles user registration and access control.</p>
+          <Button icon={<ReloadOutlined />} onClick={fetchUsers}>Refresh</Button>
+        </div>
         <div className="table-top-parent">
           <div className="table-top-left" style={{ alignItems: "center" }}>
             <Input.Search
