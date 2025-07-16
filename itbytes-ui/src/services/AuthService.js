@@ -35,11 +35,9 @@ export const registerUser = async (values, accountType) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await axios.get(apiUrl);
-    console.log("Fetched users:", apiUrl); // Debugging line to check fetched users
-    const users = response.data;
-
-    const user = users.find((u) => u.email === email && u.password === password);
+    const response = await axios.post(`${apiUrl}/login`, {email, password});
+    console.log("Fetched user:", apiUrl); // Debugging line to check fetched users
+    const user = response.data;
 
     if (!user) return { error: "Invalid email or password." };
 
@@ -50,6 +48,17 @@ export const loginUser = async (email, password) => {
     return { user };
   } catch (error) {
     console.error("Login error:", error);
+    return { error: "Something went wrong. Please try again." };
+  }
+};
+
+export const logoutUser = async (userId) => {
+  try {
+    const data = { userId: userId }
+    await axios.post(`${apiUrl}/logout`, data);
+    console.log("User logged out:", data); // Debugging line to check fetched users
+  } catch (error) {
+    console.error("Logout error:", error);
     return { error: "Something went wrong. Please try again." };
   }
 };
