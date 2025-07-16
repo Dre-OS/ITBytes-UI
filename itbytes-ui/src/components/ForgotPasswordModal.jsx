@@ -245,7 +245,10 @@ const ForgotPasswordModal = ({ visible, onClose }) => {
               label={<span style={{ fontWeight: 500 }}>New Password</span>}
               rules={[
                 { required: true, message: 'Please enter a new password' },
-                { min: 6, message: 'Password must be at least 6 characters' }
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/,
+                  message: "Use 8+ chars incl. A-Z, a-z, 0-9, symbol"
+                }
               ]}
               hasFeedback
             >
