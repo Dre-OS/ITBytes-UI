@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
-  Table, Button, Input, InputNumber, Space, message, Modal, Form, Select
+  Table, Button, Input, Space, message, Modal, Form, Select
 } from "antd";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { CheckOutlined, ReloadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { addtoInventory } from "../services/ProductService";
 
@@ -73,7 +73,7 @@ function PendingSupplies() {
   const handleAddNewItem = async () => {
     try {
       const formValues = await form.validateFields();
-      
+
       const newItem = {
         productId: selectedItem.productId,
         name: formValues.name,
@@ -134,7 +134,10 @@ function PendingSupplies() {
   return (
     <div style={{ padding: "10px 35px", background: "#f9f9f9", }}>
       <h1 style={{ marginBottom: -5, }}>Pending Supplies</h1>
-            <p style={{ marginBottom: 30}}>Review and approve ordered items from suppliers. Add missing product details before confirming and adding them to the inventory.</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 30 }}>
+        <p>Review and approve ordered items from suppliers. Add missing product details before confirming and adding them to the inventory.</p>
+        <Button icon={<ReloadOutlined />} onClick={fetchPendingSupplies}>Refresh</Button>
+      </div>
       <Table
         dataSource={supplies}
         columns={columns}
