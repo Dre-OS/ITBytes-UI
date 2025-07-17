@@ -58,7 +58,7 @@ const PurchaseInsights = () => {
 
       // Top purchased items
       const itemMap = {};
-      inventoryData.forEach(order => {
+      orderData.forEach(order => {
         if (!itemMap[order.name]) {
           itemMap[order.name] = 0;
         }
