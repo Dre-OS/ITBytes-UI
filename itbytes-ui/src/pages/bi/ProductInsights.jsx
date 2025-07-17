@@ -27,7 +27,7 @@ const ProductInsights = () => {
       const { data } = await axios.get(apiUrl);
       setProducts(data);
 
-      const lowStock = data.filter(p => p.quantity < 5).length;
+      const lowStock = data.filter(p => p.quantity <= 10).length;
       setLowStockCount(lowStock);
 
       const buckets = {
