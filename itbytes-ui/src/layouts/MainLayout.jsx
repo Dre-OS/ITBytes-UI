@@ -1,4 +1,4 @@
-import { Layout, Divider, Dropdown, Menu, Button, Select } from "antd";
+import { Layout, Divider, Dropdown, Menu, Button, Select, Alert } from "antd";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ArrowUpOutlined from "@ant-design/icons/ArrowUpOutlined";
@@ -23,6 +23,12 @@ export default function MainLayout() {
     return (
         <Layout style={{ minHeight: "100vh", background: "#F9F9F9", transition: "background 0.3s ease" }}>
             <Navbar />
+            {/* <Alert
+                message="Site is undergoing maintenance"
+                type="warning"
+                banner
+                style={{ marginBottom: 16, fontFamily: "Poppins", padding: "10px 10%" }}
+            /> */}
             <div
                 style={{
                     display: "flex",
