@@ -116,7 +116,11 @@ const UserInsights = () => {
               style={{ fontFamily: 'Poppins' }}
               valueStyle={{ fontSize: '16px', fontWeight: 600 }}
               title="Most Recent User"
-              value={recentUser?.firstname ? `${recentUser.firstname} ${recentUser.lastname}` : "-"}
+              value={
+                recentUser
+                  ? [recentUser.firstname, recentUser.lastname].filter(Boolean).join(" ") || "-"
+                  : "-"
+              }
             />
           </Card>
         </Col>
