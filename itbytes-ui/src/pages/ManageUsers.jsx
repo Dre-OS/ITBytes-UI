@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import UserService from "../services/UserService";
 import {
   Layout,
@@ -51,11 +51,19 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchUsers();
+    }, 15000); // Refresh every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   const fetchUsers = async () => {
     try {
       const data = await UserService.getAll();
-      setAllUsers(data);
-      const visibleUsers = showDeleted ? data : data.filter(user => !user.isDeleted);
+      const reversedData = [...data].reverse()
+      setAllUsers(reversedData);
+      const visibleUsers = showDeleted ? reversedData : reversedData.filter(user => !user.isDeleted);
       setUsers(visibleUsers);
     } catch (err) {
       console.error("Fetch error:", err);
