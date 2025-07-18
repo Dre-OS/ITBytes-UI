@@ -40,6 +40,21 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
+    for (const item of cart) {
+      try {
+        const res = await axios.get(`${productApiUrl}/${item.itemId}`);
+        const stock = res.data.quantity;
+        if (item.quantity > stock) {
+          message.error(`Not enough stock for "${item.name}". Only ${stock} available.`);
+          updateQuantity(item.itemId, stock);
+          return; // Prevent checkout
+        }
+      } catch {
+        message.error(`Could not verify stock for "${item.name}".`);
+        return;
+      }
+    }
+
     const grandTotal = cart.reduce(
       (total, item) => total + item.price * item.quantity,
       0
