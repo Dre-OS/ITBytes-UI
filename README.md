@@ -30,12 +30,13 @@ npm install
 Create a `.env` file in the root directory and set your API URLs:
 
 ```env
-VITE_USER_API_URL=http://localhost:4000/api/user
-VITE_INVENTORY_API_URL=http://localhost:4000/api/inventory
-VITE_ORDER_API_URL=http://localhost:4000/api/order
-VITE_SUPPLIER_API_URL=http://localhost:4000/api/supplier
-VITE_AUDIT_API_URL=http://localhost:4000/api/audit
-VITE_BANK_API_URL=http://localhost:4000/api/bank
+VITE_USER_API_URL = http://localhost:3000/api/users
+VITE_INVENTORY_API_URL = http://localhost:3001/api/inventory/products
+VITE_INVENTORY_IN_API_URL = http://localhost:3001/api/inventory/product-in
+VITE_ORDER_API_URL = http://localhost:3002/api/orders
+VITE_SUPPLIER_API_URL = http://localhost:3003/supplies
+VITE_AUDIT_API_URL = http://localhost:3004/api/audits 
+VITE_BANK_API_URL = http://localhost:4000/api/Philippine-National-Bank/business-integration/customer/pay-business
 ```
 
 *(Adjust URLs as needed for your environment)*
