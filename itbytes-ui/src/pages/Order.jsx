@@ -8,6 +8,7 @@ import html2pdf from "html2pdf.js";
 import axios from "axios";
 
 const { Title, Text } = Typography;
+const bankUrl = import.meta.env.VITE_BANK_API_URL;
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -81,7 +82,7 @@ const Order = () => {
     console.log("Payment Details:", paymentDetails);
 
     try {
-      await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
+      await axios.post(`${bankUrl}`, paymentDetails);
       message.success("Payment submitted to bank API.");
       await OrderService.markAsPaid(orderId);
       message.success("Payment successful.");
