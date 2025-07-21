@@ -56,7 +56,7 @@ const ManageInventory = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       loadItems();
-    }, 15000); // Refresh every 5 seconds
+    }, 15000);
     return () => clearInterval(interval);
   }, []);
 
