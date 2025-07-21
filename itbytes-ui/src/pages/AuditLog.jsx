@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Table, Tag, Button, Space, Spin, message as antdMessage, Tooltip } from "antd";
 import { ReloadOutlined, DownloadOutlined } from "@ant-design/icons";
-import axios from "axios";
 import AuditService from "../services/AuditService";
 
 
