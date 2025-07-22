@@ -1,6 +1,6 @@
 # ITBytes-UI
 
-A React-based web application for managing orders, inventory, suppliers, and payments for ITBytes.
+A React-based web application for managing orders, inventory, and payments for ITBytes.
 
 ## Features
 
