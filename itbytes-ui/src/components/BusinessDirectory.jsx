@@ -65,7 +65,7 @@ const businesses = [
     },
     {
         name: "PNB",
-        url: "https://pnb-client.vercel.apps",
+        url: "https://pnb-client.vercel.app",
         image: pnbLogo,
         bg: "#FFFFFF",
         description: "Trusted banking partner for savings, loans, and remittances."
