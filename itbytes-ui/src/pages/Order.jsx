@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Card, Typography, Tag, List, Descriptions, Row, Col, message, Button, Modal, Divider, Form, Input, Steps } from "antd";
+import { Card, Typography, Tag, List, Descriptions, Row, Col, message, Button, Modal, Divider, Form, Input, Steps, Skeleton } from "antd";
 import OrderService from "../services/OrderService";
 import "../styles/Order.css"; // Assuming you have some styles for the order page
 import { FileTextOutlined, PrinterOutlined } from "@ant-design/icons";
@@ -117,7 +117,13 @@ const Order = () => {
     <div style={{ padding: "0 10%" }}>
       <Title level={3}>My Orders</Title>
 
-      {orders.length === 0 ? (
+      {loading ? (
+        Array.from({ length: 2 }).map((_, i) => (
+          <Card key={i} style={{ marginBottom: 24 }}>
+            <Skeleton active paragraph={{ rows: 7 }} />
+          </Card>
+        ))
+      ) : orders.length === 0 ? (
         <Text>No orders found.</Text>
       ) : (
         [...orders].reverse().map((order) => (
