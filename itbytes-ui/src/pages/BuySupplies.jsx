@@ -176,7 +176,7 @@ function BuySupplies() {
         <div style={{ padding: "10px 35px", background: "#F5F5F5", height: "100vh" }}>
             <h1 style={{ marginBottom: -5 }}>Buy Supplies</h1>
             <div style={{ display: "flex", alignItems: "center", marginBottom: 16, gap: 10 }}>
-                <p>Supplier IP: <code style={{ color: 'blue' }}>192.168.8.4</code></p>
+                <p>Supplier IP: <code style={{ color: 'blue' }}>{import.meta.env.VITE_SUPPLIER_API_URL}</code></p>
                 <Badge
                     style={{ fontFamily: 'Poppins' }}
                     status={isConnected ? "success" : "error"}
