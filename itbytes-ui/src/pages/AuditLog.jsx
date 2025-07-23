@@ -102,6 +102,13 @@ const AuditLog = () => {
         ) : (
           <code> {message}</code>
         ),
+    },
+    {
+      title: "Timestamp",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: 100,
+      render: (date) => new Date(date).toLocaleString(),
     }
   ];
 
