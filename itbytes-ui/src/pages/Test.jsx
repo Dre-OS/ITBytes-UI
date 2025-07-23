@@ -26,7 +26,7 @@ const apis = [
   },
   {
     name: 'RabbitMQ URL',
-    url: 'amqps://cjodwydd:5ycFMEa-7OilmVBsHMvPMrKSPI1ipii_@armadillo.rmq.cloudamqp.com/cjodwydd',
+    url: 'https//armadillo.rmq.cloudamqp.com/cjodwydd',
   },
 ];
 

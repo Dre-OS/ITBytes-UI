@@ -8,6 +8,7 @@ import OrderService from "../services/OrderService";
 const { Title } = Typography;
 
 const supplierURL = import.meta.env.VITE_SUPPLIER_API_URL;
+const bankUrl = import.meta.env.VITE_BANK_API_URL;
 function BuySupplies() {
     const [supplierItems, setSupplierItems] = useState([]);
     const [orderQuantities, setOrderQuantities] = useState({});
@@ -59,7 +60,7 @@ function BuySupplies() {
         console.log("Payment Details:", paymentDetails);
 
         try {
-            await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
+            await axios.post(`${bankUrl}`, paymentDetails);
             message.success("Payment submitted to bank API.");
         } catch (error) {
             console.error(error);
@@ -175,7 +176,7 @@ function BuySupplies() {
         <div style={{ padding: "10px 35px", background: "#F5F5F5", height: "100vh" }}>
             <h1 style={{ marginBottom: -5 }}>Buy Supplies</h1>
             <div style={{ display: "flex", alignItems: "center", marginBottom: 16, gap: 10 }}>
-                <p>Supplier IP: <code style={{ color: 'blue' }}>192.168.8.4</code></p>
+                <p>Supplier IP: <code style={{ color: 'blue' }}>{import.meta.env.VITE_SUPPLIER_API_URL}</code></p>
                 <Badge
                     style={{ fontFamily: 'Poppins' }}
                     status={isConnected ? "success" : "error"}

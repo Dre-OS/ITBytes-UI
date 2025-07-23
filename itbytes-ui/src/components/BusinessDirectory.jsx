@@ -51,7 +51,7 @@ const businesses = [
     },
     {
         name: "Dental Clinic",
-        url: "http://192.168.9.35:5173",
+        url: "https://molar-record.vercel.app",
         image: dentalLogo,
         bg: "#DDE4E4",
         description: "Quality dental care from cleanings to specialized treatments."
@@ -65,7 +65,7 @@ const businesses = [
     },
     {
         name: "PNB",
-        url: "http://192.168.9.23:5173",
+        url: "https://pnb-client.vercel.app",
         image: pnbLogo,
         bg: "#FFFFFF",
         description: "Trusted banking partner for savings, loans, and remittances."
@@ -79,7 +79,7 @@ const businesses = [
     },
     {
         name: "ITBytes",
-        url: "http://192.168.9.4:5173",
+        url: "https://it-bytes-ui.vercel.app",
         image: itbytesLogo,
         bg: "#2F4860",
         description: "Your one-stop shop for IT products and services."

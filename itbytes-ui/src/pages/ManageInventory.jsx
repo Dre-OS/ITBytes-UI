@@ -53,10 +53,18 @@ const ManageInventory = () => {
     loadItems();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadItems();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
   const loadItems = async () => {
     const data = await fetchItems();
-    setItems(data);
-    setFilteredItems(data);
+    const reversedData = [...data].reverse();
+    setItems(reversedData);
+    setFilteredItems(reversedData);
   };
 
   const handleSubmit = async (values) => {

@@ -39,16 +39,18 @@ const ManageOrders = () => {
 
       const userMap = {};
       usersData.forEach(user => {
-        userMap[user._id] = user.firstname + " " + user.lastname;
+        userMap[user._id] = [user.firstname, user.lastname].filter(Boolean).join(" ");
       });
 
       const enrichedOrders = ordersData.map(order => ({
         ...order,
-        customerName: userMap[order.customerId] || order.customerId // fallback
+        customerName: userMap[order.customerId] || order.customerId,
       }));
 
-      setOrders(enrichedOrders);
-      setFilteredOrders(enrichedOrders);
+      const reversedOrders = [...enrichedOrders].reverse(); // safe reverse
+
+      setOrders(reversedOrders);
+      setFilteredOrders(reversedOrders);
       setLoading(false);
     } catch (err) {
       message.error("Failed to fetch orders or users");
@@ -60,14 +62,13 @@ const ManageOrders = () => {
     const filtered = orders.filter((order) => {
       const matchesSearch =
         order._id.toLowerCase().includes(lower) ||
-        order.customerName?.toLowerCase().includes(lower); // ✅ use name
+        order.customerName?.toLowerCase().includes(lower);
 
       const matchesStatus = !status || order.status === status;
-      const matchesPayment = payment === null || order.isPaid === (payment === "Paid");
+      const matchesPayment = payment == null || order.paymentStatus === payment; // <-- allow null or undefined
 
       return matchesSearch && matchesStatus && matchesPayment;
     });
-
 
     setFilteredOrders(filtered);
   };
@@ -89,6 +90,13 @@ const ManageOrders = () => {
 
   useEffect(() => {
     fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 15000); // Refresh every 5 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const handleStatusUpdate = async (values) => {
@@ -206,8 +214,8 @@ const ManageOrders = () => {
             onChange={handlePaymentChange}
             style={{ width: 180 }}
           >
-            <Option value="Paid">Paid</Option>
-            <Option value="Unpaid">Unpaid</Option>
+            <Option value="paid">Paid</Option>
+            <Option value="pending">Unpaid</Option>
           </Select>
         </div>
         <Table

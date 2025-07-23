@@ -8,6 +8,7 @@ import html2pdf from "html2pdf.js";
 import axios from "axios";
 
 const { Title, Text } = Typography;
+const bankUrl = import.meta.env.VITE_BANK_API_URL;
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -19,6 +20,7 @@ const Order = () => {
   const [isReceiptVisible, setIsReceiptVisible] = useState(false);
   const toBusinessAccount = '666-3251-855-1642'; // Replace with actual customer account number
   const [customerAccountNumber, setcustomerAccountNumber] = useState("");
+  const [payLoading, setPayLoading] = useState(false);
   const [accountParts, setAccountParts] = useState(['', '', '', '']);
   const pdfRef = useRef();
 
@@ -68,6 +70,8 @@ const Order = () => {
       message.warning("Please input the recipient's account number.");
       return;
     }
+
+    setPayLoading(true);
     const paymentDetails = {
       toBusinessAccount,
       customerAccountNumber,
@@ -78,7 +82,7 @@ const Order = () => {
     console.log("Payment Details:", paymentDetails);
 
     try {
-      await axios.post("http://192.168.9.23:4000/api/Philippine-National-Bank/business-integration/customer/pay-business", paymentDetails);
+      await axios.post(`${bankUrl}`, paymentDetails);
       message.success("Payment submitted to bank API.");
       await OrderService.markAsPaid(orderId);
       message.success("Payment successful.");
@@ -90,6 +94,7 @@ const Order = () => {
       const errorMsg = error.response?.data?.error || "Something went wrong!";
       message.error(errorMsg);
     } finally {
+      setPayLoading(false);
       setIsModalOpen(false);
       setModalType(null);
       setSelectedOrder(null);
@@ -318,8 +323,8 @@ const Order = () => {
         }}
         onOk={() => {
           handlePayment(selectedOrder._id);
-        }
-        }
+        }}
+        okButtonProps={{ loading: payLoading }}
       >
         <Descriptions bordered column={1} size="small">
           <Descriptions.Item label="To ITBytes Business Account">

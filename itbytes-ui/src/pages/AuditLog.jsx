@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Table, Tag, Button, Space, Spin, message as antdMessage, Tooltip } from "antd";
 import { ReloadOutlined, DownloadOutlined } from "@ant-design/icons";
-import axios from "axios";
 import AuditService from "../services/AuditService";
 
 
@@ -15,10 +14,13 @@ const AuditLog = () => {
     try {
       const auditLogs = await AuditService.getAuditLogs();
       console.log("Fetched Audit Logs:", auditLogs);
-      // ensure array & give every row a key
+
       const shaped = Array.isArray(auditLogs.data)
-        ? auditLogs.data.map((row, i) => ({ key: i, ...row }))
+        ? [...auditLogs.data] // avoid mutating original
+          .reverse() // reverse first
+          .map((row, i) => ({ key: i, ...row })) // add key after reversing
         : [];
+
       setLogs(shaped);
     } catch (err) {
       antdMessage.error("Failed to load audit logs");
@@ -30,6 +32,13 @@ const AuditLog = () => {
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchLogs();
+    }, 15000); // Refresh every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   // Convert rows → CSV and trigger file download
   const exportCSV = () => {
@@ -88,10 +97,10 @@ const AuditLog = () => {
       render: (message) =>
         message && message.length > 200 ? (
           <Tooltip title={message} style={{ fontFamily: "Consolas" }}>
-           <code> {message.slice(0, 200)}... </code>
+            <code> {message.slice(0, 200)}... </code>
           </Tooltip>
         ) : (
-         <code> { message }</code>
+          <code> {message}</code>
         ),
     }
   ];
